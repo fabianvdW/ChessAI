@@ -1,0 +1,70 @@
+package Chess.pieces;
+
+import Chess.ChessBoard;
+import Chess.ChessColor;
+import Chess.ChessLogic;
+import Chess.ChessPosition;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Knight extends ChessPiece {
+    public Knight(ChessColor color, ChessPosition position,ChessBoard board){
+        super(color,position,board);
+        if(this.color== ChessColor.WHITE) {
+            this.representation = "\u2658";
+        }else{
+            this.representation= "\u265E";
+        }
+    }
+
+    @Override
+    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+        //TODO Pinning
+
+        List<ChessPosition> result = new ArrayList<>();
+
+        ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
+        for(int i=0;i<8;i++){
+            int xIncrementor=0;
+            int yIncrementor=0;
+            switch(i){
+                case 0: xIncrementor=2;
+                        yIncrementor=1;
+                    break;
+                case 1: xIncrementor=2;
+                        yIncrementor=-1;
+                    break;
+                case 2: xIncrementor=-2;
+                        yIncrementor=1;
+                    break;
+                case 3: xIncrementor=-2;
+                        yIncrementor=-1;
+                    break;
+                case 4: yIncrementor=2;
+                        xIncrementor=1;
+                    break;
+                case 5: yIncrementor=2;
+                        xIncrementor=-1;
+                    break;
+                case 6: yIncrementor=-2;
+                        xIncrementor=1;
+                    break;
+                case 7: yIncrementor=-2;
+                        xIncrementor=-1;
+                    break;
+            }
+            int xCoordinate= this.position.getX()+xIncrementor;
+            int yCoordinate= this.position.getY()+yIncrementor;
+            if(!(ChessLogic.isValidX(xCoordinate)&&ChessLogic.isValidY(yCoordinate))){
+                continue;
+            }
+            ChessPosition cp = new ChessPosition(xCoordinate,yCoordinate);
+            ChessPiece cPiece = b.getChessPiece(cp);
+            if(cPiece==null||cPiece.color==enemyColor) {
+                result.add(cp);
+            }
+        }
+        return result;
+    }
+}
