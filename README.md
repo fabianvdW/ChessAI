@@ -1,9 +1,12 @@
 ### Chess AI
 
-##Usage
+## Usage
+```
 java -jar xD.jar
-##Chess
+```
+## Chess
 Our own chess framework is implemented.
-##AI
-Alpha-Beta pruning mit Move ordering
-Static Evaluation with
+## AI
+Alpha-Beta pruning with Move ordering
+Static Evaluation with Neural Nets
+
