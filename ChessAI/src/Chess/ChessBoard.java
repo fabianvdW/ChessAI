@@ -103,7 +103,7 @@ public class ChessBoard {
                 if (cm.old != null) {
                     cm.old.onBoard = false;
                 }
-                if (ChessLogic.isChessMate(this)) {
+                if (ChessLogic.isCheckMate(this)) {
                     this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
                     this.winner = cm.moved.color;
                 }

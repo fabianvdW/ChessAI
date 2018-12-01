@@ -63,11 +63,17 @@ public class ChessLogic {
     public static void applyChessMoveToBoardWithoutLogic(ChessMove cm, ChessBoard cb){
         cb.setChessPiece(cm.from,null);
         cb.setChessPiece(cm.to,cm.moved);
+        if(cm.old!=null){
+            cm.old.onBoard=false;
+        }
     }
 
     public static void reverseChessMoveToBoardWithoutLogic(ChessMove cm, ChessBoard cb){
         cb.setChessPiece(cm.to,cm.old);
         cb.setChessPiece(cm.from,cm.moved);
+        if(cm.old!=null){
+            cm.old.onBoard=true;
+        }
     }
 
     //this depends on color
@@ -76,19 +82,23 @@ public class ChessLogic {
         List<ChessMove> moves = new ArrayList<>();
         for(ChessPiece cPiece: pieces){
             if(cPiece.onBoard){
-                moves.addAll(cPiece.getPossibleMoves(cb,false));
+                List<ChessMove> move = cPiece.getPossibleMoves(cb,false);
+                moves.addAll(move);
             }
         }
         return moves;
     }
     public static boolean isPinned(ChessMove cm,ChessBoard cb){
         ChessPiece king = cm.moved.color==ChessColor.WHITE?cb.WHITE_KING:cb.BLACK_KING;
-        if(isThreatened(new ChessMove(king.position,king.position,king,king),cb,king.color==ChessColor.WHITE?ChessColor.BLACK:ChessColor.WHITE)){
+        applyChessMoveToBoardWithoutLogic(cm,cb);
+        boolean threat=isThreatened(new ChessMove(king.position,king.position,king,king),cb,king.color==ChessColor.WHITE?ChessColor.BLACK:ChessColor.WHITE);
+        reverseChessMoveToBoardWithoutLogic(cm,cb);
+        if(threat){
             return true;
         }
         return false;
     }
-    public static boolean isChessMate(ChessBoard cb){
+    public static boolean isCheckMate(ChessBoard cb){
         ChessPiece k=(cb.move==ChessColor.WHITE? cb.WHITE_KING: cb.BLACK_KING);
         ChessColor enemyColor= (k.color==ChessColor.WHITE? ChessColor.BLACK:ChessColor.WHITE);
         List<ChessPiece> threatsToKing= getThreats(k.position,cb,enemyColor);
@@ -101,9 +111,11 @@ public class ChessLogic {
                     applyChessMoveToBoardWithoutLogic(cm,cb);
                     boolean noThreats=true;
                     for(ChessPiece cp:threatsToKing){
-                        if(threatensPosition(cp,cb,k.position)){
-                            noThreats=false;
-                            break;
+                        if(cp.onBoard) {
+                            if (threatensPosition(cp, cb, k.position)) {
+                                noThreats = false;
+                                break;
+                            }
                         }
                     }
                     reverseChessMoveToBoardWithoutLogic(cm,cb);

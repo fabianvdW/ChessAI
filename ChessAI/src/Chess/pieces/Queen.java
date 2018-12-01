@@ -73,6 +73,9 @@ public class Queen extends ChessPiece {
                 cp= new ChessPosition(xCoordinate,yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
                 ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
+                if(cPiece!=null&&cPiece.color!=enemyColor){
+                    break;
+                }
                 if(!pinFlag&&ChessLogic.isPinned(cm,b)){
                     continue;
                 }
@@ -80,8 +83,6 @@ public class Queen extends ChessPiece {
                     result.add(cm);
                 }else if(cPiece.color==enemyColor){
                     result.add(cm);
-                    break;
-                }else{
                     break;
                 }
             }while (true);
