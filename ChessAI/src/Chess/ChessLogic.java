@@ -73,9 +73,6 @@ public class ChessLogic {
         if(cm.from!=null) {
             cb.setChessPiece(cm.to, cm.old);
             cb.setChessPiece(cm.from, cm.moved);
-            if (cm.old != null) {
-                cm.old.onBoard = true;
-            }
         }
     }
 
