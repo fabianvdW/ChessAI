@@ -30,17 +30,33 @@ public class ChessLogic {
                         return true;
                     }
                 } else {
-                    for (ChessMove cMove : cPiece.getPossibleMoves(cb,true)) {
-                        ChessPosition cPos= cMove.to;
-                        if (cPos.equals(cpNew)) {
-                            reverseChessMoveToBoardWithoutLogic(cm,cb);
-                            return true;
-                        }
+                    if(threatensPosition(cPiece,cb,cpNew)){
+                        reverseChessMoveToBoardWithoutLogic(cm,cb);
+                        return true;
                     }
                 }
             }
         }
         reverseChessMoveToBoardWithoutLogic(cm,cb);
+        return false;
+    }
+    public static List<ChessPiece> getThreats(ChessPosition cpos, ChessBoard cb, ChessColor enemyColor){
+        ArrayList<ChessPiece> result = new ArrayList<>();
+        List<ChessPiece> enemyPieces= (enemyColor==ChessColor.WHITE) ? cb.WHITE_PIECES: cb.BLACK_PIECES;
+        for(ChessPiece cPiece: enemyPieces){
+            if(threatensPosition(cPiece,cb,cpos)){
+                result.add(cPiece);
+            }
+        }
+        return result;
+    }
+    public static boolean threatensPosition(ChessPiece cPiece,ChessBoard cb, ChessPosition cpos){
+        for (ChessMove cMove : cPiece.getPossibleMoves(cb,true)) {
+            ChessPosition cPos= cMove.to;
+            if (cPos.equals(cpos)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -50,12 +66,13 @@ public class ChessLogic {
     }
 
     public static void reverseChessMoveToBoardWithoutLogic(ChessMove cm, ChessBoard cb){
-        cb.setChessPiece(cm.from,cm.moved);
         cb.setChessPiece(cm.to,cm.old);
+        cb.setChessPiece(cm.from,cm.moved);
     }
 
-    public static List<ChessMove> getAllPossibleMoves(ChessBoard cb){
-        List<ChessPiece> pieces = cb.move==ChessColor.WHITE? cb.WHITE_PIECES: cb.BLACK_PIECES;
+    //this depends on color
+    public static List<ChessMove> getAllPossibleMoves(ChessBoard cb,ChessColor color){
+        List<ChessPiece> pieces = color==ChessColor.WHITE? cb.WHITE_PIECES: cb.BLACK_PIECES;
         List<ChessMove> moves = new ArrayList<>();
         for(ChessPiece cPiece: pieces){
             if(cPiece.onBoard){
@@ -65,7 +82,6 @@ public class ChessLogic {
         return moves;
     }
     public static boolean isPinned(ChessMove cm,ChessBoard cb){
-        applyChessMoveToBoardWithoutLogic(cm,cb);
         ChessPiece king = cm.moved.color==ChessColor.WHITE?cb.WHITE_KING:cb.BLACK_KING;
         if(isThreatened(new ChessMove(king.position,king.position,king,king),cb,king.color==ChessColor.WHITE?ChessColor.BLACK:ChessColor.WHITE)){
             return true;
@@ -74,10 +90,29 @@ public class ChessLogic {
     }
     public static boolean isChessMate(ChessBoard cb){
         ChessPiece k=(cb.move==ChessColor.WHITE? cb.WHITE_KING: cb.BLACK_KING);
-        if(isThreatened(new ChessMove(k.position,k.position,k,k),cb,cb.move==ChessColor.WHITE?ChessColor.BLACK:ChessColor.WHITE)&& k.getPossibleMoves(cb,false).isEmpty()){
-            //Ueberpruefe, ob Threats noch geschlagen werden können
-            //TODO
-            return true;
+        ChessColor enemyColor= (k.color==ChessColor.WHITE? ChessColor.BLACK:ChessColor.WHITE);
+        List<ChessPiece> threatsToKing= getThreats(k.position,cb,enemyColor);
+        if(!threatsToKing.isEmpty()) {
+            if (k.getPossibleMoves(cb, false).isEmpty()) {
+                for(ChessMove cm : getAllPossibleMoves(cb,cb.move)){
+                    if(cm.moved.equals(k)){
+                        continue;
+                    }
+                    applyChessMoveToBoardWithoutLogic(cm,cb);
+                    boolean noThreats=true;
+                    for(ChessPiece cp:threatsToKing){
+                        if(threatensPosition(cp,cb,k.position)){
+                            noThreats=false;
+                            break;
+                        }
+                    }
+                    reverseChessMoveToBoardWithoutLogic(cm,cb);
+                    if(noThreats){
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
         return false;
     }

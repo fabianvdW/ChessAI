@@ -23,6 +23,7 @@ public class Queen extends ChessPiece {
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         for(int i=0;i<8;i++){
+            ChessPosition kingPosition= b.WHITE_KING.position;
             int xIncrementor=0;
             int yIncrementor=0;
             switch (i) {

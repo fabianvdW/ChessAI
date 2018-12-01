@@ -22,4 +22,9 @@ public class ChessMove {
         }
         return false;
     }
+
+    @Override
+    public String toString(){
+        return moved.representation+" "+from.toString()+" -> "+to.toString()+ (old!=null ?"Captures: "+old.representation: "");
+    }
 }
