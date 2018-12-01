@@ -102,10 +102,35 @@ public class ChessBoard {
                 this.setChessPiece(cm.to, cm.moved);
                 if (cm.old != null) {
                     cm.old.onBoard = false;
+                    if(this.move==ChessColor.BLACK){
+                        this.BLACK_PIECES.remove(cm.old);
+                    }else{
+                        this.WHITE_PIECES.remove(cm.old);
+                    }
                 }
+
+                //Pawn transforms into Queen
+                if(cm.moved instanceof Pawn){
+                    if(cm.moved.color== ChessColor.WHITE){
+                        if(cm.moved.position.getY()==0){
+                            this.WHITE_PIECES.remove(cm.moved);
+                            cm.moved.onBoard=false;
+                            this.WHITE_PIECES.add(new Queen(ChessColor.WHITE,new ChessPosition(cm.moved.position.getX(),0),this));
+                        }
+                    }else{
+                        if(cm.moved.position.getY()==7){
+                            this.BLACK_PIECES.remove(cm.moved);
+                            cm.moved.onBoard=false;
+                            this.BLACK_PIECES.add(new Queen(ChessColor.BLACK,new ChessPosition(cm.moved.position.getX(),7),this));
+                        }
+                    }
+                }
+                //CheckMate
                 if (ChessLogic.isCheckMate(this)) {
                     this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
                     this.winner = cm.moved.color;
+                }else if(this.WHITE_PIECES.size()==1&& this.BLACK_PIECES.size()==1){                    //1-King endgame
+                    this.status= ChessGameStatus.DRAW;
                 }
             } else {
                 //TODO write specific exception
