@@ -6,8 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends ChessPiece {
-    public Queen(ChessColor color, ChessPosition position,ChessBoard board){
+    public Queen(ChessColor color, ChessPosition position, ChessBoard board){
         super(color,position,board);
+        if(this.color== ChessColor.WHITE) {
+            this.representation = "\u2655";
+        }else{
+            this.representation= "\u265B";
+        }
+    }
+
+    public Queen(ChessColor color, ChessPosition position, boolean onBoard) {
+        super(color, position, onBoard);
         if(this.color== ChessColor.WHITE) {
             this.representation = "\u2655";
         }else{
@@ -97,5 +106,10 @@ public class Queen extends ChessPiece {
             return b.position.equals(this.position);
         }
         return false;
+    }
+
+    @Override
+    public Queen clone() {
+        return new Queen(this.color, this.position.clone(), this.onBoard);
     }
 }

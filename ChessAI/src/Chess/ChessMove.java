@@ -27,4 +27,9 @@ public class ChessMove {
     public String toString(){
         return moved.representation+" "+from.toString()+" -> "+to.toString()+ (old!=null ?"Captures: "+old.representation: "");
     }
+
+    @Override
+    public ChessMove clone() {
+        return new ChessMove(this.from.clone(), this.to.clone(), this.moved.clone(), this.old == null ? null : this.old.clone());
+    }
 }

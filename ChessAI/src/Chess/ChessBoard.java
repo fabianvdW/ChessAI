@@ -5,9 +5,11 @@ import helpers.StringColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 
 public class ChessBoard {
     private ChessPiece[][] board;
+
     public List<ChessPiece> WHITE_PIECES;
     public ChessPiece WHITE_KING;
     public ChessPiece WHITE_QUEEN;
@@ -15,6 +17,7 @@ public class ChessBoard {
     public List<ChessPiece> WHITE_ROOKS;
     public List<ChessPiece> WHITE_BISHOPS;
     public List<ChessPiece> WHITE_KNIGHTS;
+
     public List<ChessPiece> BLACK_PIECES;
     public ChessPiece BLACK_KING;
     public ChessPiece BLACK_QUEEN;
@@ -22,11 +25,58 @@ public class ChessBoard {
     public List<ChessPiece> BLACK_ROOKS;
     public List<ChessPiece> BLACK_BISHOPS;
     public List<ChessPiece> BLACK_KNIGHTS;
+
     public ChessColor move;
     public ChessColor winner;
     public ChessGameStatus status;
+    public List<ChessMove> history;
+
+    public ChessPiece[][] getBoard() {
+        return this.board;
+    }
+
+    public boolean noSync() {
+        for (ChessPiece p : WHITE_PIECES) {
+            if (!p.equals(this.getChessPiece(p.position))) {
+                System.out.println("Piece " + p.toString() + " " + p.position.toString() + " not found on board");
+                return false;
+            }
+        }
+        for (ChessPiece p : BLACK_PIECES) {
+            if (!p.equals(this.getChessPiece(p.position))) {
+                System.out.println("Piece " + p.toString() + " " + p.position.toString() + " not found on board");
+                return false;
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece p = this.getChessPiece(new ChessPosition(i, j));
+                if (p != null) {
+                    if (!WHITE_PIECES.contains(p) && !BLACK_PIECES.contains(p)) {
+                        System.out.println("Piece " + p.toString() + " " + p.position.toString() + " not found in list");
+                        return false;
+                    }
+                } else {
+                    for (ChessPiece a : WHITE_PIECES) {
+                        if (a.position.equals(new ChessPosition(i, j))) {
+                            System.out.println("Piece " + p.toString() + " " + p.position.toString() + " found, but board empty");
+                            return false;
+                        }
+                    }
+                    for (ChessPiece a : BLACK_PIECES) {
+                        if (a.position.equals(new ChessPosition(i, j))) {
+                            System.out.println("Piece " + p.toString() + " " + p.position.toString() + " found, but board empty");
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     public ChessBoard() {
+        this.history = new ArrayList<>();
         this.move = ChessColor.WHITE;
         this.status = ChessGameStatus.INGAME;
         board = new ChessPiece[8][8];
@@ -97,31 +147,40 @@ public class ChessBoard {
         if (cm.moved.color == this.move && this.status == ChessGameStatus.INGAME) {
             this.move = cm.moved.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
             List<ChessMove> moves = cm.moved.getPossibleMoves(this, false);
+            System.out.println(moves.toString());
             if (moves.contains(cm)) {
+                this.history.add(cm.clone());
                 this.setChessPiece(cm.from, null);
+                if (this.move == ChessColor.WHITE) {
+                    this.BLACK_PIECES.remove(cm.moved);
+                    this.BLACK_PIECES.add(cm.moved);
+                } else {
+                    this.WHITE_PIECES.remove(cm.moved);
+                    this.WHITE_PIECES.add(cm.moved);
+                }
                 this.setChessPiece(cm.to, cm.moved);
                 if (cm.old != null) {
                     cm.old.onBoard = false;
-                    if(this.move==ChessColor.BLACK){
+                    if (this.move == ChessColor.BLACK) {
                         this.BLACK_PIECES.remove(cm.old);
-                    }else{
+                    } else {
                         this.WHITE_PIECES.remove(cm.old);
                     }
                 }
 
                 //Pawn transforms into Queen
-                if(cm.moved instanceof Pawn){
-                    if(cm.moved.color== ChessColor.WHITE){
-                        if(cm.moved.position.getY()==0){
+                if (cm.moved instanceof Pawn) {
+                    if (cm.moved.color == ChessColor.WHITE) {
+                        if (cm.moved.position.getY() == 0) {
                             this.WHITE_PIECES.remove(cm.moved);
-                            cm.moved.onBoard=false;
-                            this.WHITE_PIECES.add(new Queen(ChessColor.WHITE,new ChessPosition(cm.moved.position.getX(),0),this));
+                            cm.moved.onBoard = false;
+                            this.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(cm.moved.position.getX(), 0), this));
                         }
-                    }else{
-                        if(cm.moved.position.getY()==7){
+                    } else {
+                        if (cm.moved.position.getY() == 7) {
                             this.BLACK_PIECES.remove(cm.moved);
-                            cm.moved.onBoard=false;
-                            this.BLACK_PIECES.add(new Queen(ChessColor.BLACK,new ChessPosition(cm.moved.position.getX(),7),this));
+                            cm.moved.onBoard = false;
+                            this.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(cm.moved.position.getX(), 7), this));
                         }
                     }
                 }
@@ -129,8 +188,8 @@ public class ChessBoard {
                 if (ChessLogic.isCheckMate(this)) {
                     this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
                     this.winner = cm.moved.color;
-                }else if(this.WHITE_PIECES.size()==1&& this.BLACK_PIECES.size()==1){                    //1-King endgame
-                    this.status= ChessGameStatus.DRAW;
+                } else if (this.WHITE_PIECES.size() == 1 && this.BLACK_PIECES.size() == 1) {                    //1-King endgame
+                    this.status = ChessGameStatus.DRAW;
                 }
             } else {
                 //TODO write specific exception
@@ -153,10 +212,9 @@ public class ChessBoard {
         this.board[cpos.getX()][cpos.getY()] = cp;
         if (cp != null) {
             cp.position = cpos;
-            cp.onBoard=true;
+            cp.onBoard = true;
         }
     }
-
 
 
     @Override
