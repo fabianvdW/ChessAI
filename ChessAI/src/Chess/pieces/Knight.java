@@ -16,7 +16,7 @@ public class Knight extends ChessPiece {
     }
 
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
         //TODO Pinning
 
         List<ChessMove> result = new ArrayList<>();
@@ -56,9 +56,13 @@ public class Knight extends ChessPiece {
             if(!(ChessLogic.isValidX(xCoordinate)&&ChessLogic.isValidY(yCoordinate))){
                 continue;
             }
+
             ChessPosition cp = new ChessPosition(xCoordinate,yCoordinate);
             ChessPiece cPiece = b.getChessPiece(cp);
             ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
+            if(!pinFlag&&ChessLogic.isPinned(cm,b)){
+                continue;
+            }
             if(cPiece==null||cPiece.color==enemyColor) {
                 result.add(cm);
             }

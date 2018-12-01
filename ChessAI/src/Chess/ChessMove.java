@@ -18,7 +18,7 @@ public class ChessMove {
     public boolean equals(Object o){
         if(o instanceof ChessMove){
             ChessMove cm= (ChessMove)o;
-            return (cm.moved.equals(this.moved)&& cm.old.equals(this.old)&&cm.from.equals(this.from)&& cm.to.equals(this.to));
+            return (cm.moved.equals(this.moved)&& cm.from.equals(this.from)&& cm.to.equals(this.to)&&(cm.old==null&&this.old==null || cm.old.equals(this.old)));
         }
         return false;
     }

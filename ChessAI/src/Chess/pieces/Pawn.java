@@ -17,7 +17,7 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
         //TODO Pinning
         List<ChessMove> result = new ArrayList<>();
 
@@ -49,6 +49,9 @@ public class Pawn extends ChessPiece {
                 ChessPosition cp= new ChessPosition(newX,newY);
                 ChessPiece cpPiece = b.getChessPiece(cp);
                 ChessMove cm = new ChessMove(this.position,cp,this,cpPiece);
+                if(!pinFlag&&ChessLogic.isPinned(cm,b)){
+                    continue;
+                }
                 if(i==0||i==1){;
                     if(cpPiece==null&&(i!=1 ||this.position.getY()== (this.color== ChessColor.WHITE? 6:  1))){
                         result.add(cm);

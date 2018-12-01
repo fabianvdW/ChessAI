@@ -10,7 +10,7 @@ import Chess.pieces.Knight;
 import Chess.pieces.Rook;
 
 
-public class Test1 {
+public class TestPossibleMoves {
     public static void main(String[] args){
         PawnTest();
     }
@@ -18,7 +18,7 @@ public class Test1 {
         ChessBoard b= new ChessBoard();
         System.out.println(b.toString());
         b.WHITE_KING.position= new ChessPosition(4,2);
-        for (ChessMove p : b.WHITE_KING.getPossibleMoves(b)) {
+        for (ChessMove p : b.WHITE_KING.getPossibleMoves(b,false)) {
             new DebugFigur(b.WHITE_KING, ChessColor.WHITE, p.to, b);
         }
 
@@ -29,7 +29,7 @@ public class Test1 {
         System.out.println(b.toString());
         b.WHITE_QUEEN.position= new ChessPosition(3,4);
         b.setChessPiece(b.WHITE_QUEEN.position,b.WHITE_QUEEN);
-            for (ChessMove p : b.WHITE_QUEEN.getPossibleMoves(b)) {
+            for (ChessMove p : b.WHITE_QUEEN.getPossibleMoves(b,false)) {
                 new DebugFigur(b.WHITE_QUEEN, ChessColor.WHITE, p.to, b);
             }
 
@@ -41,7 +41,7 @@ public class Test1 {
         Knight c= new Knight(ChessColor.WHITE,new ChessPosition(3,4),b);
         b.WHITE_KNIGHTS.add(c);
         for(int i=0;i<3;i++) {
-            for (ChessMove p : b.WHITE_KNIGHTS.get(i).getPossibleMoves(b)) {
+            for (ChessMove p : b.WHITE_KNIGHTS.get(i).getPossibleMoves(b,false)) {
                 new DebugFigur(b.WHITE_KNIGHTS.get(i), ChessColor.WHITE, p.to, b);
             }
 
@@ -55,7 +55,7 @@ public class Test1 {
         Rook c= new Rook(ChessColor.WHITE,new ChessPosition(3,4),b);
         b.WHITE_ROOKS.add(c);
         for(int i=0;i<3;i++) {
-            for (ChessMove p : b.WHITE_ROOKS.get(i).getPossibleMoves(b)) {
+            for (ChessMove p : b.WHITE_ROOKS.get(i).getPossibleMoves(b,false)) {
                 new DebugFigur(b.WHITE_ROOKS.get(i), ChessColor.WHITE, p.to, b);
             }
         }
@@ -68,7 +68,7 @@ public class Test1 {
         Bishop c= new Bishop(ChessColor.WHITE,new ChessPosition(1,5),b);
         b.WHITE_BISHOPS.add(c);
         for(int i=0;i<3;i++) {
-            for (ChessMove p : b.WHITE_BISHOPS.get(i).getPossibleMoves(b)) {
+            for (ChessMove p : b.WHITE_BISHOPS.get(i).getPossibleMoves(b,false)) {
                 new DebugFigur(b.WHITE_BISHOPS.get(i), ChessColor.WHITE, p.to, b);
             }
         }
@@ -78,10 +78,10 @@ public class Test1 {
         ChessBoard b= new ChessBoard();
         System.out.println(b.toString());
         for(int i=0;i<8;i++) {
-            for (ChessMove p : b.WHITE_PAWNS.get(i).getPossibleMoves(b)) {
+            for (ChessMove p : b.WHITE_PAWNS.get(i).getPossibleMoves(b,false)) {
                 new DebugFigur(b.WHITE_PAWNS.get(i), ChessColor.WHITE, p.to, b);
             }
-            for (ChessMove p : b.BLACK_PAWNS.get(i).getPossibleMoves(b)) {
+            for (ChessMove p : b.BLACK_PAWNS.get(i).getPossibleMoves(b,false)) {
                 new DebugFigur(b.BLACK_PAWNS.get(i), ChessColor.BLACK, p.to, b);
             }
         }
