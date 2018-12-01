@@ -32,6 +32,7 @@ public class ChessPosition {
         }
         this.y = y;
     }
+
     @Override
     public boolean equals(Object o){
         if(o instanceof ChessPosition){
@@ -41,10 +42,16 @@ public class ChessPosition {
             throw new RuntimeException("Expected Chess Position object!");
         }
     }
+
     @Override
     public String toString(){
         String s="("+this.x+","+this.y+")";
 
         return s;
+    }
+
+    @Override
+    public ChessPosition clone(){
+        return new ChessPosition(this.x, this.y);
     }
 }

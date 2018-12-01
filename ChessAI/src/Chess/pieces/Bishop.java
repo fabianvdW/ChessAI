@@ -8,8 +8,17 @@ import java.util.List;
 
 public class Bishop extends ChessPiece {
 
-    public Bishop(ChessColor color, ChessPosition position,ChessBoard board){
-        super(color,position,board);
+    public Bishop(ChessColor color, ChessPosition position, ChessBoard board){
+        super(color, position, board);
+        if(this.color== ChessColor.WHITE) {
+            this.representation = "\u2657";
+        }else{
+            this.representation= "\u265D";
+        }
+    }
+
+    public Bishop(ChessColor color, ChessPosition position, boolean onBoard) {
+        super(color, position, onBoard);
         if(this.color== ChessColor.WHITE) {
             this.representation = "\u2657";
         }else{
@@ -66,5 +75,10 @@ public class Bishop extends ChessPiece {
             return b.position.equals(this.position);
         }
         return false;
+    }
+
+    @Override
+    public Bishop clone() {
+        return new Bishop(this.color, this.position.clone(), this.onBoard);
     }
 }

@@ -21,4 +21,8 @@ public class DebugFigur extends ChessPiece{
     public boolean equals(Object o){
         return false;
     }
+    @Override
+    public DebugFigur clone(){
+        return null;
+    }
 }

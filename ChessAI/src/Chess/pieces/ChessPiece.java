@@ -5,6 +5,7 @@ import Chess.ChessColor;
 import Chess.ChessMove;
 import Chess.ChessPosition;
 
+import java.lang.reflect.*;
 import java.util.List;
 
 public abstract class ChessPiece {
@@ -13,15 +14,24 @@ public abstract class ChessPiece {
     public String representation;
     public boolean onBoard;
 
-    public ChessPiece(ChessColor color, ChessPosition position,ChessBoard board) {
+    public ChessPiece(ChessColor color, ChessPosition position, boolean onBoard) {
+        this.color=color;
+        this.position=position;
+        this.onBoard=onBoard;
+    }
+
+    public ChessPiece(ChessColor color, ChessPosition position, ChessBoard board) {
         this.color=color;
         this.position=position;
         this.onBoard=true;
         board.setChessPiece(this.position,this);
     }
 
-    public abstract List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag);
+    public abstract List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag);
 
     @Override
     public abstract boolean equals(Object o);
+
+    @Override
+    public abstract ChessPiece clone();
 }

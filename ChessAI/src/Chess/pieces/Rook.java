@@ -15,6 +15,15 @@ public class Rook extends ChessPiece {
         }
     }
 
+    public Rook(ChessColor color, ChessPosition position, boolean onBoard) {
+        super(color, position, onBoard);
+        if(this.color== ChessColor.WHITE) {
+            this.representation = "\u2656";
+        }else{
+            this.representation= "\u265C";
+        }
+    }
+
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         //TODO Pinning
@@ -71,5 +80,10 @@ public class Rook extends ChessPiece {
             return b.position.equals(this.position);
         }
         return false;
+    }
+
+    @Override
+    public Rook clone() {
+        return new Rook(this.color, this.position.clone(), this.onBoard);
     }
 }

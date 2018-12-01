@@ -16,8 +16,17 @@ public class King extends ChessPiece {
         }
     }
 
+    public King(ChessColor color, ChessPosition position, boolean onBoard) {
+        super(color, position, onBoard);
+        if (this.color == ChessColor.WHITE) {
+            this.representation = "\u2654";
+        } else {
+            this.representation = "\u265A";
+        }
+    }
+
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         //TODO Pinning
 
         List<ChessMove> result = new ArrayList<>();
@@ -70,12 +79,12 @@ public class King extends ChessPiece {
                 continue;
             }
             cp = new ChessPosition(xCoordinate, yCoordinate);
-            ChessMove cm = new ChessMove(this.position,cp,this,b.getChessPiece(cp));
-            if(!pinFlag&&ChessLogic.isThreatened(cm,b,enemyColor)){
+            ChessMove cm = new ChessMove(this.position, cp, this, b.getChessPiece(cp));
+            if (!pinFlag && ChessLogic.isThreatened(cm, b, enemyColor)) {
                 continue;
             }
             ChessPiece cPiece = b.getChessPiece(cp);
-            if (cPiece == null||cPiece.color == enemyColor) {
+            if (cPiece == null || cPiece.color == enemyColor) {
                 result.add(cm);
             }
 
@@ -84,12 +93,18 @@ public class King extends ChessPiece {
         }
         return result;
     }
+
     @Override
-    public boolean equals(Object o){
-        if(o instanceof King){
-            King b = (King)o;
+    public boolean equals(Object o) {
+        if (o instanceof King) {
+            King b = (King) o;
             return b.position.equals(this.position);
         }
         return false;
+    }
+
+    @Override
+    public King clone() {
+        return new King(this.color, this.position.clone(), this.onBoard);
     }
 }
