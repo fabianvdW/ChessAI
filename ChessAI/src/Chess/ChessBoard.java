@@ -23,8 +23,12 @@ public class ChessBoard {
     public List<ChessPiece> BLACK_BISHOPS;
     public List<ChessPiece> BLACK_KNIGHTS;
     public ChessColor move;
+    public ChessColor winner;
+    public ChessGameStatus status;
 
     public ChessBoard() {
+        this.move = ChessColor.WHITE;
+        this.status = ChessGameStatus.INGAME;
         board = new ChessPiece[8][8];
         WHITE_KING = new King(ChessColor.WHITE, new ChessPosition(4, 7), this);
         WHITE_QUEEN = new Queen(ChessColor.WHITE, new ChessPosition(3, 7), this);
@@ -89,29 +93,45 @@ public class ChessBoard {
         }
     }
 
-    public void applyChessMove(ChessMove cm){
-        List<ChessMove> moves= cm.moved.getPossibleMoves(this);
-        if(moves.contains(cm)){
-            this.setChessPiece(cm.from,null);
-            this.setChessPiece(cm.to,null);
-            if(cm.old!=null){
-                cm.old.onBoard=false;
+    public void applyChessMove(ChessMove cm) {
+        if (cm.moved.color == this.move && this.status == ChessGameStatus.INGAME) {
+            this.move = cm.moved.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+            List<ChessMove> moves = cm.moved.getPossibleMoves(this, false);
+            if (moves.contains(cm)) {
+                this.setChessPiece(cm.from, null);
+                this.setChessPiece(cm.to, cm.moved);
+                if (cm.old != null) {
+                    cm.old.onBoard = false;
+                }
+                if (ChessLogic.isCheckMate(this)) {
+                    this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
+                    this.winner = cm.moved.color;
+                }
+            } else {
+                //TODO write specific exception
+                throw new RuntimeException("Illegal Move requested: Piece " + cm.moved.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
             }
-        }else{
-            //TODO write specific exception
-            throw new RuntimeException("Illegal Move requested: Piece "+cm.moved.representation+" wants to move to "+cm.to.toString()+" from "+cm.from.toString());
+        } else {
+            if (this.status == ChessGameStatus.INGAME) {
+                throw new RuntimeException("Illegal Move, wrong player!");
+            } else {
+                throw new RuntimeException("Game is already over!");
+            }
         }
     }
+
     public ChessPiece getChessPiece(ChessPosition cpos) {
         return this.board[cpos.getX()][cpos.getY()];
     }
 
-    public void setChessPiece(ChessPosition cpos, ChessPiece cp){
-        this.board[cpos.getX()][cpos.getY()]=cp;
-        if(cp!=null) {
+    public void setChessPiece(ChessPosition cpos, ChessPiece cp) {
+        this.board[cpos.getX()][cpos.getY()] = cp;
+        if (cp != null) {
             cp.position = cpos;
+            cp.onBoard=true;
         }
     }
+
 
 
     @Override

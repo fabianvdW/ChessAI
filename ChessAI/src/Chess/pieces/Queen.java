@@ -16,13 +16,14 @@ public class Queen extends ChessPiece {
     }
 
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
         //TODO Pinning
 
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         for(int i=0;i<8;i++){
+            ChessPosition kingPosition= b.WHITE_KING.position;
             int xIncrementor=0;
             int yIncrementor=0;
             switch (i) {
@@ -72,12 +73,16 @@ public class Queen extends ChessPiece {
                 cp= new ChessPosition(xCoordinate,yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
                 ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
+                if(cPiece!=null&&cPiece.color!=enemyColor){
+                    break;
+                }
+                if(!pinFlag&&ChessLogic.isPinned(cm,b)){
+                    continue;
+                }
                 if(cPiece==null){
                     result.add(cm);
                 }else if(cPiece.color==enemyColor){
                     result.add(cm);
-                    break;
-                }else{
                     break;
                 }
             }while (true);

@@ -14,7 +14,7 @@ public class DebugFigur extends ChessPiece{
         this.representation=chessPiece.representation+"\u274C";
     }
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
         return null;
     }
     @Override

@@ -20,7 +20,7 @@ public abstract class ChessPiece {
         board.setChessPiece(this.position,this);
     }
 
-    public abstract List<ChessMove> getPossibleMoves(ChessBoard b);
+    public abstract List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag);
 
     @Override
     public abstract boolean equals(Object o);
