@@ -10,6 +10,7 @@ import java.util.List;
 public class TestApplyMoves {
 
     public static void main(String[] args){
+        long t0 =System.currentTimeMillis();
         ChessBoard cb= new ChessBoard();
         int moves=0;
         while(cb.status==ChessGameStatus.INGAME){
@@ -20,5 +21,6 @@ public class TestApplyMoves {
         }
         System.out.println(cb.status);
         System.out.println("Moves: "+moves);
+        System.out.println(System.currentTimeMillis()-t0);
     }
 }
