@@ -41,4 +41,10 @@ public class ChessPosition {
             throw new RuntimeException("Expected Chess Position object!");
         }
     }
+    @Override
+    public String toString(){
+        String s="("+this.x+","+this.y+")";
+
+        return s;
+    }
 }

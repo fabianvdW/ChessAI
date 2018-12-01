@@ -1,9 +1,6 @@
 package Chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessLogic;
-import Chess.ChessPosition;
+import Chess.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +16,10 @@ public class Rook extends ChessPiece {
     }
 
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         //TODO Pinning
 
-        List<ChessPosition> result = new ArrayList<>();
+        List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         for(int i=0;i<4;i++){
@@ -48,10 +45,11 @@ public class Rook extends ChessPiece {
                 }
                 cp= new ChessPosition(xCoordinate,yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
+                ChessMove cm =new ChessMove(this.position,cp,this,cPiece);
                 if(cPiece==null){
-                    result.add(cp);
+                    result.add(cm);
                 }else if(cPiece.color==enemyColor){
-                    result.add(cp);
+                    result.add(cm);
                     break;
                 }else{
                     break;
@@ -60,5 +58,14 @@ public class Rook extends ChessPiece {
 
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Rook){
+            Rook b = (Rook)o;
+            return b.position.equals(this.position);
+        }
+        return false;
     }
 }

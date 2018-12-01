@@ -1,9 +1,6 @@
 package Chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessLogic;
-import Chess.ChessPosition;
+import Chess.*;
 
 
 import java.util.*;
@@ -20,9 +17,9 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         //TODO Pinning
-        List<ChessPosition> result = new ArrayList<>();
+        List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         int incrementor= this.color==ChessColor.WHITE? -1: 1;
@@ -51,17 +48,26 @@ public class Pawn extends ChessPiece {
             if(ChessLogic.isValidX(newX)&& ChessLogic.isValidX(newY)){
                 ChessPosition cp= new ChessPosition(newX,newY);
                 ChessPiece cpPiece = b.getChessPiece(cp);
+                ChessMove cm = new ChessMove(this.position,cp,this,cpPiece);
                 if(i==0||i==1){;
                     if(cpPiece==null&&(i!=1 ||this.position.getY()== (this.color== ChessColor.WHITE? 6:  1))){
-                        result.add(cp);
+                        result.add(cm);
                     }
                 }else{
                     if(cpPiece!=null && cpPiece.color==enemyColor){
-                        result.add(cp);
+                        result.add(cm);
                     }
                 }
             }
         }
         return result;
+    }
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Pawn){
+            Pawn b = (Pawn)o;
+            return b.position.equals(this.position);
+        }
+        return false;
     }
 }

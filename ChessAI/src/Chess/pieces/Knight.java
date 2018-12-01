@@ -1,9 +1,6 @@
 package Chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessLogic;
-import Chess.ChessPosition;
+import Chess.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +16,10 @@ public class Knight extends ChessPiece {
     }
 
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         //TODO Pinning
 
-        List<ChessPosition> result = new ArrayList<>();
+        List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         for(int i=0;i<8;i++){
@@ -61,10 +58,20 @@ public class Knight extends ChessPiece {
             }
             ChessPosition cp = new ChessPosition(xCoordinate,yCoordinate);
             ChessPiece cPiece = b.getChessPiece(cp);
+            ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
             if(cPiece==null||cPiece.color==enemyColor) {
-                result.add(cp);
+                result.add(cm);
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Knight){
+            Knight b = (Knight) o;
+            return b.position.equals(this.position);
+        }
+        return false;
     }
 }

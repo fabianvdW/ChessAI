@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoard {
-    public ChessPiece[][] board;
+    private ChessPiece[][] board;
     public List<ChessPiece> WHITE_PIECES;
     public ChessPiece WHITE_KING;
     public ChessPiece WHITE_QUEEN;
@@ -89,19 +89,30 @@ public class ChessBoard {
         }
     }
 
-    public ChessBoard(ChessMove cm) {
-        //Clone array
-        board = new ChessPiece[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-
+    public void applyChessMove(ChessMove cm){
+        List<ChessMove> moves= cm.moved.getPossibleMoves(this);
+        if(moves.contains(cm)){
+            this.setChessPiece(cm.from,null);
+            this.setChessPiece(cm.to,null);
+            if(cm.old!=null){
+                cm.old.onBoard=false;
             }
+        }else{
+            //TODO write specific exception
+            throw new RuntimeException("Illegal Move requested: Piece "+cm.moved.representation+" wants to move to "+cm.to.toString()+" from "+cm.from.toString());
         }
     }
-
     public ChessPiece getChessPiece(ChessPosition cpos) {
         return this.board[cpos.getX()][cpos.getY()];
     }
+
+    public void setChessPiece(ChessPosition cpos, ChessPiece cp){
+        this.board[cpos.getX()][cpos.getY()]=cp;
+        if(cp!=null) {
+            cp.position = cpos;
+        }
+    }
+
 
     @Override
     public String toString() {

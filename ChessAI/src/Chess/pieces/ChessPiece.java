@@ -2,6 +2,7 @@ package Chess.pieces;
 
 import Chess.ChessBoard;
 import Chess.ChessColor;
+import Chess.ChessMove;
 import Chess.ChessPosition;
 
 import java.util.List;
@@ -16,8 +17,11 @@ public abstract class ChessPiece {
         this.color=color;
         this.position=position;
         this.onBoard=true;
-        board.board[this.position.getX()][this.position.getY()]=this;
+        board.setChessPiece(this.position,this);
     }
 
-    public abstract List<ChessPosition> getPossibleMoves(ChessBoard b);
+    public abstract List<ChessMove> getPossibleMoves(ChessBoard b);
+
+    @Override
+    public abstract boolean equals(Object o);
 }

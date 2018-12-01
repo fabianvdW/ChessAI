@@ -1,9 +1,6 @@
 package Chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessLogic;
-import Chess.ChessPosition;
+import Chess.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,10 +18,10 @@ public class Bishop extends ChessPiece {
     }
 
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         //TODO Pinning
 
-        List<ChessPosition> result = new ArrayList<>();
+        List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
         //4 Diagonalen
@@ -43,10 +40,11 @@ public class Bishop extends ChessPiece {
                     }
                     cp= new ChessPosition(xCoordinate,yCoordinate);
                     ChessPiece cPiece = b.getChessPiece(cp);
+                    ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
                     if(cPiece==null){
-                        result.add(cp);
+                        result.add(cm);
                     }else if(cPiece.color==enemyColor){
-                        result.add(cp);
+                        result.add(cm);
                         break;
                     }else{
                         break;
@@ -55,5 +53,14 @@ public class Bishop extends ChessPiece {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Bishop){
+            Bishop b = (Bishop)o;
+            return b.position.equals(this.position);
+        }
+        return false;
     }
 }

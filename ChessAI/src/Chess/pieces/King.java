@@ -1,9 +1,6 @@
 package Chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessLogic;
-import Chess.ChessPosition;
+import Chess.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +17,10 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         //TODO Pinning
 
-        List<ChessPosition> result = new ArrayList<>();
+        List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         for (int i = 0; i < 8; i++) {
@@ -73,17 +70,26 @@ public class King extends ChessPiece {
                 continue;
             }
             cp = new ChessPosition(xCoordinate, yCoordinate);
-            if(ChessLogic.isThreatened(cp,b,enemyColor)){
+            ChessMove cm = new ChessMove(this.position,cp,this,b.getChessPiece(cp));
+            if(ChessLogic.isThreatened(cm,b,enemyColor)){
                 continue;
             }
             ChessPiece cPiece = b.getChessPiece(cp);
             if (cPiece == null||cPiece.color == enemyColor) {
-                result.add(cp);
+                result.add(cm);
             }
 
             //TODO Bedrohungen des Königs
 
         }
         return result;
+    }
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof King){
+            King b = (King)o;
+            return b.position.equals(this.position);
+        }
+        return false;
     }
 }

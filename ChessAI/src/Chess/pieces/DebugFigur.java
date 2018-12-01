@@ -2,6 +2,7 @@ package Chess.pieces;
 
 import Chess.ChessBoard;
 import Chess.ChessColor;
+import Chess.ChessMove;
 import Chess.ChessPosition;
 
 import java.util.List;
@@ -13,7 +14,11 @@ public class DebugFigur extends ChessPiece{
         this.representation=chessPiece.representation+"\u274C";
     }
     @Override
-    public List<ChessPosition> getPossibleMoves(ChessBoard b) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b) {
         return null;
+    }
+    @Override
+    public boolean equals(Object o){
+        return false;
     }
 }
