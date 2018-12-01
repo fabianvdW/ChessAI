@@ -1,14 +1,39 @@
 package tests;
 
 import Chess.*;
+import Chess.pieces.ChessPiece;
 import Chess.pieces.Pawn;
 
 public class TestChessMate {
 
     public static void main(String[] args){
-        scenario1();
-        scenario2();
-        scenario3();
+        assert(!scenario1());
+        assert(scenario2());
+        assert(!scenario3());
+        assert(scenario4());
+
+    }
+    public static boolean scenario4(){
+        ChessBoard cb = new ChessBoard();
+        clearBoard(cb);
+        cb.setChessPiece(new ChessPosition(7,0),cb.WHITE_KING);
+        cb.setChessPiece(new ChessPosition(1,0),cb.BLACK_ROOKS.get(0));
+        cb.setChessPiece(new ChessPosition(1,1),cb.BLACK_ROOKS.get(1));
+        System.out.println(cb.toString());
+        boolean mate = ChessLogic.isCheckMate(cb);
+        System.out.println("Mate: "+mate);
+        return mate;
+        //return false;
+    }
+    public static void clearBoard(ChessBoard cb){
+        for(ChessPiece cp: cb.WHITE_PIECES){
+            cp.onBoard=false;
+            cb.setChessPiece(cp.position,null);
+        }
+        for(ChessPiece cp: cb.BLACK_PIECES){
+            cp.onBoard=false;
+            cb.setChessPiece(cp.position,null);
+        }
     }
     public static boolean scenario3(){
         ChessBoard cb = new ChessBoard();
@@ -22,8 +47,9 @@ public class TestChessMate {
         cb.BLACK_PAWNS.get(5).onBoard=false;
         cb.move=ChessColor.BLACK;
         System.out.println(cb.toString());
-        System.out.println("Mate: "+ChessLogic.isCheckMate(cb));
-        return false;
+        boolean mate = ChessLogic.isCheckMate(cb);
+        System.out.println("Mate: "+mate);
+        return mate;
     }
     public static boolean scenario2(){
         ChessBoard cb= new ChessBoard();
@@ -33,8 +59,9 @@ public class TestChessMate {
         cb.setChessPiece(new ChessPosition(0,3),cb.WHITE_KING);
         cb.setChessPiece(new ChessPosition(4,7),null);
         System.out.println(cb.toString());
-        System.out.println("Mate: "+ChessLogic.isCheckMate(cb));
-        return false;
+        boolean mate = ChessLogic.isCheckMate(cb);
+        System.out.println("Mate: "+mate);
+        return mate;
     }
     public static boolean scenario1(){
         ChessBoard cb= new ChessBoard();

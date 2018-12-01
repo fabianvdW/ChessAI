@@ -128,6 +128,7 @@ public class ChessBoard {
         this.board[cpos.getX()][cpos.getY()] = cp;
         if (cp != null) {
             cp.position = cpos;
+            cp.onBoard=true;
         }
     }
 
