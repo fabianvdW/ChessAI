@@ -1,9 +1,6 @@
 package tests;
 
-import Chess.ChessBoard;
-import Chess.ChessGameStatus;
-import Chess.ChessLogic;
-import Chess.ChessMove;
+import Chess.*;
 
 import java.util.List;
 
@@ -11,11 +8,11 @@ public class TestApplyMoves {
 
     public static void main(String[] args){
         long t0 =System.currentTimeMillis();
-        ChessBoard cb= new ChessBoard();
+        ChessGame cb= new ChessGame(null,null);
         int moves=0;
         while(cb.status==ChessGameStatus.INGAME){
             moves++;
-            List<ChessMove> availableMoves= ChessLogic.getAllPossibleMoves(cb,cb.move);
+            List<ChessMove> availableMoves= ChessLogic.getAllPossibleMoves(cb.currentBoard,cb.move);
             cb.applyChessMove(availableMoves.get((int)(availableMoves.size()*Math.random())));
             System.out.println(cb.toString());
         }
