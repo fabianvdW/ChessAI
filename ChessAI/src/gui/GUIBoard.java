@@ -17,13 +17,15 @@ public class GUIBoard  extends JPanel {
     private JTextArea log;
     private boolean loop;
     private static int step;
+    private Dimension size;
 
     public static void main(String[] args){
         GUIBoard.draw();
     }
 
-    public GUIBoard(ChessBoard board/*, JTextArea tOutput, boolean loop*/) {
+    public GUIBoard(ChessBoard board,Dimension size/*, JTextArea tOutput, boolean loop*/) {
         this.board = board;
+        this.size=size;
         //this.log = tOutput;
         //this.loop = loop;
         //brett = m.initalMap;
@@ -77,11 +79,12 @@ public class GUIBoard  extends JPanel {
         //System.out.println(cb.status);
         //System.out.println("Moves: "+moves);
 
-        JPanel panel = new GUIBoard(cb);
+        Dimension size = new Dimension(1080,1080);
+        JPanel panel = new GUIBoard(cb,size);
         panel.setLayout(null);
         JFrame frame = new JFrame();
         frame.add(panel, null);
-        frame.setSize(415, 437);
+        frame.setSize(size);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -89,10 +92,10 @@ public class GUIBoard  extends JPanel {
         // simulated
         GUIBoard.step = 0;
         GUIBoard.simulated = new ChessBoard();
-        GUIBoard.t = new Timer(400, new ActionListener() {
+        GUIBoard.t = new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(GUIBoard.simulated.toString());
+                /*System.out.println(GUIBoard.simulated.toString());
                 System.out.println(cb.history.get(step));
                 System.out.println("WHITE");
                 for (ChessPiece p: GUIBoard.simulated.WHITE_PIECES) {
@@ -104,6 +107,7 @@ public class GUIBoard  extends JPanel {
                     System.out.println(p.representation + "\t" + p.position.toString() + "\t" + p.onBoard + "\t" + GUIBoard.simulated.getChessPiece(p.position));
                 }
                 System.out.println(GUIBoard.simulated.noSync());
+                */
                 GUIBoard.simulated.applyChessMove(cb.history.get(step));
                 panel.repaint();
                 GUIBoard.step++;
@@ -118,28 +122,49 @@ public class GUIBoard  extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-
+        int xScale  =(int)((this.size.width)/9.0-2);
+        int yScale= (int)((this.size.height-21)/9.0-2);
         boolean color = true;
-        for (int i = 0; i < 8; i++) {
-            for (int n = 0; n < 8; n++) {
+        for (int i = 0; i < 9; i++) {
+            for (int n = 0; n < 9; n++) {
                 if (color) {
                     g.setColor(new Color(255, 248, 220));
                 } else {
                     g.setColor(new Color(139, 69, 19));
                 }
-                color = !color;
-                g.fillRect(i * 50, n * 50, 50, 50);
+                if(i==8||n==8){
+                    if(! (i==8&&n==8)) {
+                        g.setFont(new Font("TimesRoman", Font.PLAIN, (yScale+xScale)*2/6));
+                        g.setColor(Color.BLACK);
+                        if(i==8){
+                            g.drawString(n+"",(int)((i+1.0/10)*xScale),(int)((n+1.0/2+0.2)*yScale));
+                        }else {
+                            g.drawString(i+"",(int)((i+1.0/3)*xScale),(int)((n+1.0/2+0.1)*yScale));
+                        }
+                    }
+                }else {
+                    color = !color;
+                    g.fillRect((int) (i * xScale), (int) (n * yScale), (int) (xScale), (int) (yScale));
+                }
             }
             color = !color;
         }
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
+        if(!GUIBoard.simulated.history.isEmpty()) {
+            ChessMove currMove = GUIBoard.simulated.history.get(GUIBoard.simulated.history.size() - 1);
+            ChessPosition start = currMove.from;
+            g.setColor(Color.GREEN);
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setStroke(new BasicStroke(10));
+            g.drawLine((int) (start.getX() * xScale + xScale / 2), (int) (start.getY() * yScale + yScale / 2), (int) (currMove.to.getX() * xScale + xScale / 2), (int) (currMove.to.getY() * yScale + yScale / 2));
+        }
+        g.setFont(new Font("TimesRoman", Font.PLAIN, (xScale+yScale)/2));
         g.setColor(new Color(255, 187, 25));
-        for (ChessPiece p: this.simulated.WHITE_PIECES) {
-            g.drawString(p.representation, p.position.getX() * 50 + 5,p.position.getY() * 50 + 40);
+        for (ChessPiece p: simulated.WHITE_PIECES) {
+            g.drawString(p.representation, (int)(p.position.getX() * xScale + 0.05*xScale),(int)(p.position.getY() * yScale + 0.90*yScale));
         }
         g.setColor(Color.BLACK);
-        for (ChessPiece p: this.simulated.BLACK_PIECES) {
-            g.drawString(p.representation, p.position.getX() * 50 + 5,p.position.getY() * 50 + 40);
+        for (ChessPiece p: simulated.BLACK_PIECES) {
+            g.drawString(p.representation, (int)(p.position.getX() * xScale + 0.05*xScale),(int)(p.position.getY() * yScale + 0.9*yScale));
         }
     }
 }

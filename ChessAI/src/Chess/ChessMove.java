@@ -18,7 +18,7 @@ public class ChessMove {
     public boolean equals(Object o){
         if(o instanceof ChessMove){
             ChessMove cm= (ChessMove)o;
-            return (cm.moved.equals(this.moved)&& cm.from.equals(this.from)&& cm.to.equals(this.to)&&(cm.old==null&&this.old==null || cm.old.equals(this.old)));
+            return (cm.from.equals(this.from)&& cm.to.equals(this.to));
         }
         return false;
     }
@@ -28,8 +28,4 @@ public class ChessMove {
         return moved.representation+" "+from.toString()+" -> "+to.toString()+ (old!=null ?"Captures: "+old.representation: "");
     }
 
-    @Override
-    public ChessMove clone() {
-        return new ChessMove(this.from.clone(), this.to.clone(), this.moved.clone(), this.old == null ? null : this.old.clone());
-    }
 }

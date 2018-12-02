@@ -15,14 +15,6 @@ public class Knight extends ChessPiece {
         }
     }
 
-    public Knight(ChessColor color, ChessPosition position, boolean onBoard) {
-        super(color, position, onBoard);
-        if (this.color == ChessColor.WHITE) {
-            this.representation = "\u2658";
-        } else {
-            this.representation = "\u265E";
-        }
-    }
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
@@ -76,7 +68,7 @@ public class Knight extends ChessPiece {
 
             ChessPosition cp = new ChessPosition(xCoordinate, yCoordinate);
             ChessPiece cPiece = b.getChessPiece(cp);
-            ChessMove cm = new ChessMove(this.position, cp, this, cPiece);
+            ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
             if (!pinFlag && ChessLogic.isPinned(cm, b)) {
                 continue;
             }
@@ -96,8 +88,4 @@ public class Knight extends ChessPiece {
         return false;
     }
 
-    @Override
-    public Knight clone() {
-        return new Knight(this.color, this.position.clone(), this.onBoard);
-    }
 }

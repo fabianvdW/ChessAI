@@ -15,15 +15,6 @@ public class Queen extends ChessPiece {
         }
     }
 
-    public Queen(ChessColor color, ChessPosition position, boolean onBoard) {
-        super(color, position, onBoard);
-        if(this.color== ChessColor.WHITE) {
-            this.representation = "\u2655";
-        }else{
-            this.representation= "\u265B";
-        }
-    }
-
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
         //TODO Pinning
@@ -81,7 +72,7 @@ public class Queen extends ChessPiece {
                 }
                 cp= new ChessPosition(xCoordinate,yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
-                ChessMove cm = new ChessMove(this.position,cp,this,cPiece);
+                ChessMove cm = new ChessMove(this.position.clone(),cp,this,cPiece);
                 if(cPiece!=null&&cPiece.color!=enemyColor){
                     break;
                 }
@@ -106,10 +97,5 @@ public class Queen extends ChessPiece {
             return b.position.equals(this.position);
         }
         return false;
-    }
-
-    @Override
-    public Queen clone() {
-        return new Queen(this.color, this.position.clone(), this.onBoard);
     }
 }

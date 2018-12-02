@@ -15,15 +15,6 @@ public class Rook extends ChessPiece {
         }
     }
 
-    public Rook(ChessColor color, ChessPosition position, boolean onBoard) {
-        super(color, position, onBoard);
-        if(this.color== ChessColor.WHITE) {
-            this.representation = "\u2656";
-        }else{
-            this.representation= "\u265C";
-        }
-    }
-
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         //TODO Pinning
@@ -54,7 +45,7 @@ public class Rook extends ChessPiece {
                 }
                 cp= new ChessPosition(xCoordinate,yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
-                ChessMove cm =new ChessMove(this.position,cp,this,cPiece);
+                ChessMove cm =new ChessMove(this.position.clone(),cp,this,cPiece);
                 if(cPiece!=null && cPiece.color!=enemyColor){
                     break;
                 }
@@ -82,8 +73,4 @@ public class Rook extends ChessPiece {
         return false;
     }
 
-    @Override
-    public Rook clone() {
-        return new Rook(this.color, this.position.clone(), this.onBoard);
-    }
 }
