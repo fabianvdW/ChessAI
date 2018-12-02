@@ -27,6 +27,7 @@ public class GUIBoard extends JPanel {
     }
 
     public static void draw() {
+        long t0= System.currentTimeMillis();
         ChessGame cb = new ChessGame(null, null);
         int moves = 0;
         while (cb.status == ChessGameStatus.INGAME) {
@@ -35,9 +36,8 @@ public class GUIBoard extends JPanel {
             cb.applyChessMove(availableMoves.get((int) (availableMoves.size() * Math.random())));
             //System.out.println(cb.toString());
         }
+        System.out.println("Time: "+(System.currentTimeMillis()-t0));
         System.out.println(cb.toString());
-
-        //System.out.println(cb.status);
         System.out.println("Moves: "+moves);
 
         Dimension size = new Dimension(1080, 1080);
