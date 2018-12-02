@@ -184,6 +184,10 @@ public class ChessBoard {
                         }
                     }
                 }
+                //StaleMate
+                if(ChessLogic.getAllPossibleMoves(this,this.move).isEmpty()){
+                    this.status=ChessGameStatus.DRAW;
+                }
                 //CheckMate
                 if (ChessLogic.isCheckMate(this)) {
                     this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
