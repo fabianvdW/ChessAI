@@ -27,10 +27,10 @@ public class TestPossibleMoves {
     public static void QueenTest(){
         ChessBoard b= new ChessBoard();
         System.out.println(b.toString());
-        b.WHITE_QUEEN.position= new ChessPosition(3,4);
-        b.setChessPiece(b.WHITE_QUEEN.position,b.WHITE_QUEEN);
-            for (ChessMove p : b.WHITE_QUEEN.getPossibleMoves(b,false)) {
-                new DebugFigur(b.WHITE_QUEEN, ChessColor.WHITE, p.to, b);
+        b.WHITE_QUEENS.get(0).position= new ChessPosition(3,4);
+        b.setChessPiece(b.WHITE_QUEENS.get(0).position,b.WHITE_QUEENS.get(0));
+            for (ChessMove p : b.WHITE_QUEENS.get(0).getPossibleMoves(b,false)) {
+                new DebugFigur(b.WHITE_QUEENS.get(0), ChessColor.WHITE, p.to, b);
             }
 
         System.out.println(b.toString());

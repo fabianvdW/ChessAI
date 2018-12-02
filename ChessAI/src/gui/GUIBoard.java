@@ -9,8 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GUIBoard  extends JPanel {
-    private ChessBoard board;
-    private static ChessBoard simulated;
+    private static ChessGame simulated;
     private ChessPiece[][] brett; // auf diesem Brett wird der ganze Verlauf erneut durchsimuliert
     private static Timer t; // schrittweise Reproduktion der Schritte
     private int atMove;
@@ -24,7 +23,6 @@ public class GUIBoard  extends JPanel {
     }
 
     public GUIBoard(ChessBoard board,Dimension size/*, JTextArea tOutput, boolean loop*/) {
-        this.board = board;
         this.size=size;
         //this.log = tOutput;
         //this.loop = loop;
@@ -66,11 +64,11 @@ public class GUIBoard  extends JPanel {
     }
 
     public static void draw() {
-        ChessBoard cb= new ChessBoard();
+        ChessGame cb= new ChessGame(null,null);
         int moves=0;
         while(cb.status== ChessGameStatus.INGAME){
             moves++;
-            java.util.List<ChessMove> availableMoves= ChessLogic.getAllPossibleMoves(cb,cb.move);
+            java.util.List<ChessMove> availableMoves= ChessLogic.getAllPossibleMoves(cb.currentBoard,cb.move);
             cb.applyChessMove(availableMoves.get((int)(availableMoves.size()*Math.random())));
             //System.out.println(cb.toString());
         }
@@ -80,7 +78,7 @@ public class GUIBoard  extends JPanel {
         //System.out.println("Moves: "+moves);
 
         Dimension size = new Dimension(1080,1080);
-        JPanel panel = new GUIBoard(cb,size);
+        JPanel panel = new GUIBoard(cb.currentBoard,size);
         panel.setLayout(null);
         JFrame frame = new JFrame();
         frame.add(panel, null);
@@ -91,7 +89,7 @@ public class GUIBoard  extends JPanel {
 
         // simulated
         GUIBoard.step = 0;
-        GUIBoard.simulated = new ChessBoard();
+        GUIBoard.simulated = new ChessGame(null,null);
         GUIBoard.t = new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,10 +106,10 @@ public class GUIBoard  extends JPanel {
                 }
                 System.out.println(GUIBoard.simulated.noSync());
                 */
-                GUIBoard.simulated.applyChessMove(cb.history.get(step));
+                GUIBoard.simulated.applyChessMove(cb.moveHistory.get(step));
                 panel.repaint();
                 GUIBoard.step++;
-                if(GUIBoard.step == cb.history.size()) {
+                if(GUIBoard.step == cb.moveHistory.size()) {
                     t.stop();
                 }
 
@@ -149,8 +147,8 @@ public class GUIBoard  extends JPanel {
             }
             color = !color;
         }
-        if(!GUIBoard.simulated.history.isEmpty()) {
-            ChessMove currMove = GUIBoard.simulated.history.get(GUIBoard.simulated.history.size() - 1);
+        if(!GUIBoard.simulated.moveHistory.isEmpty()) {
+            ChessMove currMove = GUIBoard.simulated.moveHistory.get(GUIBoard.simulated.moveHistory.size() - 1);
             ChessPosition start = currMove.from;
             g.setColor(Color.GREEN);
             Graphics2D g2 = (Graphics2D)g;
@@ -159,11 +157,11 @@ public class GUIBoard  extends JPanel {
         }
         g.setFont(new Font("TimesRoman", Font.PLAIN, (xScale+yScale)/2));
         g.setColor(new Color(255, 187, 25));
-        for (ChessPiece p: simulated.WHITE_PIECES) {
+        for (ChessPiece p: simulated.currentBoard.WHITE_PIECES) {
             g.drawString(p.representation, (int)(p.position.getX() * xScale + 0.05*xScale),(int)(p.position.getY() * yScale + 0.90*yScale));
         }
         g.setColor(Color.BLACK);
-        for (ChessPiece p: simulated.BLACK_PIECES) {
+        for (ChessPiece p: simulated.currentBoard.BLACK_PIECES) {
             g.drawString(p.representation, (int)(p.position.getX() * xScale + 0.05*xScale),(int)(p.position.getY() * yScale + 0.9*yScale));
         }
     }

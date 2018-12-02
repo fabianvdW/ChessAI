@@ -102,13 +102,13 @@ public class ChessLogic {
         return false;
     }
 
-    public static boolean isCheckMate(ChessBoard cb) {
-        ChessPiece k = (cb.move == ChessColor.WHITE ? cb.WHITE_KING : cb.BLACK_KING);
+    public static boolean isCheckMate(ChessBoard cb,ChessColor move) {
+        ChessPiece k = (move == ChessColor.WHITE ? cb.WHITE_KING : cb.BLACK_KING);
         ChessColor enemyColor = (k.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
         List<ChessPiece> threatsToKing = getThreats(k.position, cb, enemyColor);
         if (!threatsToKing.isEmpty()) {
             if (k.getPossibleMoves(cb, false).isEmpty()) {
-                for (ChessMove cm : getAllPossibleMoves(cb, cb.move)) {
+                for (ChessMove cm : getAllPossibleMoves(cb, move)) {
                     if (cm.moved.equals(k)) {
                         continue;
                     }
