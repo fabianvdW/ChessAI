@@ -89,10 +89,10 @@ public class GUIBoard  extends JPanel {
         // simulated
         GUIBoard.step = 0;
         GUIBoard.simulated = new ChessBoard();
-        GUIBoard.t = new Timer(400, new ActionListener() {
+        GUIBoard.t = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(GUIBoard.simulated.toString());
+                /*System.out.println(GUIBoard.simulated.toString());
                 System.out.println(cb.history.get(step));
                 System.out.println("WHITE");
                 for (ChessPiece p: GUIBoard.simulated.WHITE_PIECES) {
@@ -104,6 +104,7 @@ public class GUIBoard  extends JPanel {
                     System.out.println(p.representation + "\t" + p.position.toString() + "\t" + p.onBoard + "\t" + GUIBoard.simulated.getChessPiece(p.position));
                 }
                 System.out.println(GUIBoard.simulated.noSync());
+                */
                 GUIBoard.simulated.applyChessMove(cb.history.get(step));
                 panel.repaint();
                 GUIBoard.step++;

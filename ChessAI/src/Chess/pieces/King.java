@@ -16,15 +16,6 @@ public class King extends ChessPiece {
         }
     }
 
-    public King(ChessColor color, ChessPosition position, boolean onBoard) {
-        super(color, position, onBoard);
-        if (this.color == ChessColor.WHITE) {
-            this.representation = "\u2654";
-        } else {
-            this.representation = "\u265A";
-        }
-    }
-
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         //TODO Pinning
@@ -79,7 +70,7 @@ public class King extends ChessPiece {
                 continue;
             }
             cp = new ChessPosition(xCoordinate, yCoordinate);
-            ChessMove cm = new ChessMove(this.position, cp, this, b.getChessPiece(cp));
+            ChessMove cm = new ChessMove(this.position.clone(), cp, this, b.getChessPiece(cp));
             if (!pinFlag && ChessLogic.isThreatened(cm, b, enemyColor)) {
                 continue;
             }
@@ -101,10 +92,5 @@ public class King extends ChessPiece {
             return b.position.equals(this.position);
         }
         return false;
-    }
-
-    @Override
-    public King clone() {
-        return new King(this.color, this.position.clone(), this.onBoard);
     }
 }

@@ -14,12 +14,6 @@ public abstract class ChessPiece {
     public String representation;
     public boolean onBoard;
 
-    public ChessPiece(ChessColor color, ChessPosition position, boolean onBoard) {
-        this.color=color;
-        this.position=position;
-        this.onBoard=onBoard;
-    }
-
     public ChessPiece(ChessColor color, ChessPosition position, ChessBoard board) {
         this.color=color;
         this.position=position;
@@ -32,6 +26,4 @@ public abstract class ChessPiece {
     @Override
     public abstract boolean equals(Object o);
 
-    @Override
-    public abstract ChessPiece clone();
 }

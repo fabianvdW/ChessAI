@@ -146,41 +146,35 @@ public class ChessBoard {
     public void applyChessMove(ChessMove cm) {
         if (cm.moved.color == this.move && this.status == ChessGameStatus.INGAME) {
             this.move = cm.moved.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
-            List<ChessMove> moves = cm.moved.getPossibleMoves(this, false);
-            System.out.println(moves.toString());
+            ChessPiece oldPiece = this.getChessPiece(cm.to);
+            ChessPiece movedPiece= this.getChessPiece(cm.from);
+            List<ChessMove> moves = movedPiece.getPossibleMoves(this, false);
             if (moves.contains(cm)) {
-                this.history.add(cm.clone());
+                this.history.add(cm);
                 this.setChessPiece(cm.from, null);
-                if (this.move == ChessColor.WHITE) {
-                    this.BLACK_PIECES.remove(cm.moved);
-                    this.BLACK_PIECES.add(cm.moved);
-                } else {
-                    this.WHITE_PIECES.remove(cm.moved);
-                    this.WHITE_PIECES.add(cm.moved);
-                }
-                this.setChessPiece(cm.to, cm.moved);
-                if (cm.old != null) {
-                    cm.old.onBoard = false;
+                this.setChessPiece(cm.to, movedPiece );
+                if (oldPiece != null) {
+                    oldPiece.onBoard = false;
                     if (this.move == ChessColor.BLACK) {
-                        this.BLACK_PIECES.remove(cm.old);
+                        this.BLACK_PIECES.remove(oldPiece);
                     } else {
-                        this.WHITE_PIECES.remove(cm.old);
+                        this.WHITE_PIECES.remove(oldPiece);
                     }
                 }
 
                 //Pawn transforms into Queen
-                if (cm.moved instanceof Pawn) {
-                    if (cm.moved.color == ChessColor.WHITE) {
-                        if (cm.moved.position.getY() == 0) {
-                            this.WHITE_PIECES.remove(cm.moved);
-                            cm.moved.onBoard = false;
-                            this.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(cm.moved.position.getX(), 0), this));
+                if (movedPiece instanceof Pawn) {
+                    if (movedPiece.color == ChessColor.WHITE) {
+                        if (movedPiece.position.getY() == 0) {
+                            this.WHITE_PIECES.remove(movedPiece);
+                            movedPiece.onBoard = false;
+                            this.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(movedPiece.position.getX(), 0), this));
                         }
                     } else {
-                        if (cm.moved.position.getY() == 7) {
-                            this.BLACK_PIECES.remove(cm.moved);
-                            cm.moved.onBoard = false;
-                            this.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(cm.moved.position.getX(), 7), this));
+                        if (movedPiece.position.getY() == 7) {
+                            this.BLACK_PIECES.remove(movedPiece);
+                            movedPiece.onBoard = false;
+                            this.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(movedPiece.position.getX(), 7), this));
                         }
                     }
                 }
@@ -190,13 +184,14 @@ public class ChessBoard {
                 }
                 //CheckMate
                 if (ChessLogic.isCheckMate(this)) {
-                    this.status = (cm.moved.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
-                    this.winner = cm.moved.color;
+                    this.status = (movedPiece.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
+                    this.winner =movedPiece.color;
                 } else if (this.WHITE_PIECES.size() == 1 && this.BLACK_PIECES.size() == 1) {                    //1-King endgame
                     this.status = ChessGameStatus.DRAW;
                 }
             } else {
                 //TODO write specific exception
+                System.out.println(moves);
                 throw new RuntimeException("Illegal Move requested: Piece " + cm.moved.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
             }
         } else {

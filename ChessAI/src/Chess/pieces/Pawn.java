@@ -16,14 +16,6 @@ public class Pawn extends ChessPiece {
         }
     }
 
-    public Pawn(ChessColor color, ChessPosition position, boolean onBoard) {
-        super(color, position, onBoard);
-        if (this.color == ChessColor.WHITE) {
-            this.representation = "\u2659";
-        } else {
-            this.representation = "\u265F";
-        }
-    }
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
@@ -57,7 +49,7 @@ public class Pawn extends ChessPiece {
             if (ChessLogic.isValidX(newX) && ChessLogic.isValidX(newY)) {
                 ChessPosition cp = new ChessPosition(newX, newY);
                 ChessPiece cpPiece = b.getChessPiece(cp);
-                ChessMove cm = new ChessMove(this.position, cp, this, cpPiece);
+                ChessMove cm = new ChessMove(this.position.clone(), cp, this, cpPiece);
                 if (!pinFlag && ChessLogic.isPinned(cm, b)) {
                     continue;
                 }
@@ -84,8 +76,4 @@ public class Pawn extends ChessPiece {
         return false;
     }
 
-    @Override
-    public Pawn clone() {
-        return new Pawn(this.color, this.position.clone(), this.onBoard);
-    }
 }
