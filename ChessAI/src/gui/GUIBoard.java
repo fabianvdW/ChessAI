@@ -125,11 +125,12 @@ class TimerListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        panel.repaint();
         panel.step++;
         if (panel.step == cg.boardHistory.size()) {
+            panel.step-=1;
             t.stop();
         }
+        panel.repaint();
 
     }
 }

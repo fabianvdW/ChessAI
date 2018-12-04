@@ -71,13 +71,16 @@ public class ChessGame {
                     //StaleMate
                     if (ChessLogic.getAllPossibleMoves(this.currentBoard, this.move).isEmpty()) {
                         this.status = ChessGameStatus.DRAW;
+                        this.boardHistory.add(this.currentBoard);
                     }
                     //CheckMate
                     if (ChessLogic.isCheckMate(this.currentBoard, this.move)) {
                         this.status = (movedPiece.color == ChessColor.WHITE ? ChessGameStatus.WHITEWIN : ChessGameStatus.BLACKWIN);
                         this.winner = movedPiece.color;
+                        this.boardHistory.add(this.currentBoard);
                     } else if (this.currentBoard.WHITE_PIECES.size() == 1 && this.currentBoard.BLACK_PIECES.size() == 1) {                    //1-King endgame
                         this.status = ChessGameStatus.DRAW;
+                        this.boardHistory.add(this.currentBoard);
                     }
                 } else {
                     //TODO write specific exception
