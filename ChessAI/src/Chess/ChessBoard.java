@@ -248,7 +248,23 @@ public class ChessBoard {
                     newBoard.WHITE_PIECES.remove(oldPiece);
                 }
             }
-        } else {
+            //Pawn transforms into Queen
+            if (movedPiece instanceof Pawn) {
+                if (movedPiece.color == ChessColor.WHITE) {
+                    if (movedPiece.position.getY() == 0) {
+                        newBoard.WHITE_PIECES.remove(movedPiece);
+                        movedPiece.onBoard = false;
+                        newBoard.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(movedPiece.position.getX(), 0), newBoard));
+                    }
+                } else {
+                    if (movedPiece.position.getY() == 7) {
+                        newBoard.BLACK_PIECES.remove(movedPiece);
+                        movedPiece.onBoard = false;
+                        newBoard.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(movedPiece.position.getX(), 7), newBoard));
+                    }
+                }
+            }
+        }else {
             CastleMove castleMove = (CastleMove) cm;
             Rook r = (Rook) (newBoard.getChessPiece(castleMove.r.position));
             newBoard.setChessPiece(castleMove.r.position, null);
@@ -257,23 +273,6 @@ public class ChessBoard {
                 newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() + 1, r.position.getY()), r);
             } else {
                 newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() - 1, r.position.getY()), r);
-            }
-        }
-
-        //Pawn transforms into Queen
-        if (movedPiece instanceof Pawn) {
-            if (movedPiece.color == ChessColor.WHITE) {
-                if (movedPiece.position.getY() == 0) {
-                    newBoard.WHITE_PIECES.remove(movedPiece);
-                    movedPiece.onBoard = false;
-                    newBoard.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(movedPiece.position.getX(), 0), newBoard));
-                }
-            } else {
-                if (movedPiece.position.getY() == 7) {
-                    newBoard.BLACK_PIECES.remove(movedPiece);
-                    movedPiece.onBoard = false;
-                    newBoard.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(movedPiece.position.getX(), 7), newBoard));
-                }
             }
         }
         return newBoard;
