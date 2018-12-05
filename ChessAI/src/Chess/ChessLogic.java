@@ -96,13 +96,10 @@ public class ChessLogic {
         applyChessMoveToBoardWithoutLogic(cm, cb);
         boolean threat = isThreatened(new ChessMove(null, king.position, null, null), cb, king.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
         reverseChessMoveToBoardWithoutLogic(cm, cb);
-        if (threat) {
-            return true;
-        }
-        return false;
+        return threat;
     }
 
-    public static boolean isCheckMate(ChessBoard cb,ChessColor move) {
+    public static boolean isCheckMate(ChessBoard cb, ChessColor move) {
         ChessPiece k = (move == ChessColor.WHITE ? cb.WHITE_KING : cb.BLACK_KING);
         ChessColor enemyColor = (k.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
         List<ChessPiece> threatsToKing = getThreats(k.position, cb, enemyColor);

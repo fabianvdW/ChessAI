@@ -1,10 +1,11 @@
 package gui;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-public class GUIMain extends JPanel{
+public class GUIMain extends JPanel {
         /*private Map map;
         private Figur[][] brett; // auf diesem Brett wird der ganze Verlauf erneut durchsimuliert
         private Timer t; // schrittweise Reproduktion der Schritte

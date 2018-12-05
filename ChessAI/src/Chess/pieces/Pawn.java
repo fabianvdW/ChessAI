@@ -6,7 +6,6 @@ import Chess.*;
 import java.util.*;
 
 public class Pawn extends ChessPiece {
-
     public Pawn(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
@@ -60,6 +59,17 @@ public class Pawn extends ChessPiece {
                 } else {
                     if (cpPiece != null && cpPiece.color == enemyColor) {
                         result.add(cm);
+                    } else if (cpPiece == null) {
+                        int xInc = i == 2 ? 1 : -1;
+                        int cp2X = cp.getX();
+                        int cp2Y = cp.getY() - incrementor;
+                        if (ChessLogic.isValidX(cp.getX() + xInc) && ChessLogic.isValidY(cp2Y)) {
+                            ChessPiece cP2 = b.getChessPiece(new ChessPosition(cp2X, cp2Y));
+                            if (cP2 instanceof Pawn && cP2.color == enemyColor && cP2.moves == 1 && (this.color == ChessColor.WHITE ? this.position.getY() == 3 : this.position.getY() == 4)) {
+                                cm.old = cP2;
+                                result.add(cm);
+                            }
+                        }
                     }
                 }
             }

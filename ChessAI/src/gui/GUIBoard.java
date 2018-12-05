@@ -23,11 +23,11 @@ public class GUIBoard extends JPanel {
     public GUIBoard(ChessGame game, Dimension size/*, JTextArea tOutput, boolean loop*/) {
         this.size = size;
         this.game = game;
-        this.step=0;
+        this.step = 0;
     }
 
     public static void draw() {
-        long t0= System.currentTimeMillis();
+        long t0 = System.currentTimeMillis();
         ChessGame cb = new ChessGame(null, null);
         int moves = 0;
         while (cb.status == ChessGameStatus.INGAME) {
@@ -36,9 +36,9 @@ public class GUIBoard extends JPanel {
             cb.applyChessMove(availableMoves.get((int) (availableMoves.size() * Math.random())));
             //System.out.println(cb.toString());
         }
-        System.out.println("Time: "+(System.currentTimeMillis()-t0));
+        System.out.println("Time: " + (System.currentTimeMillis() - t0));
         System.out.println(cb.toString());
-        System.out.println("Moves: "+moves);
+        System.out.println("Moves: " + moves);
 
         Dimension size = new Dimension(1080, 1080);
         GUIBoard panel = new GUIBoard(cb, size);
@@ -52,8 +52,8 @@ public class GUIBoard extends JPanel {
 
         // simulated
 
-        TimerListener tl = new TimerListener(panel,cb);
-        Timer t = new Timer(2000, tl);
+        TimerListener tl = new TimerListener(panel, cb);
+        Timer t = new Timer(50, tl);
         tl.setTimer(t);
         t.start();
     }
@@ -84,7 +84,7 @@ public class GUIBoard extends JPanel {
                     color = !color;
                     g.fillRect((int) (i * xScale), (int) (n * yScale), (int) (xScale), (int) (yScale));
                 }
-                if(i<8&&n<8) {
+                if (i < 8 && n < 8) {
                     g.setFont(new Font("TimesRoman", Font.PLAIN, (xScale + yScale) / 2));
                     ChessPiece p = this.game.boardHistory.get(this.step).getBoard()[i][n];
                     if (p != null) {
@@ -99,8 +99,8 @@ public class GUIBoard extends JPanel {
             }
             color = !color;
         }
-        if (this.step>0) {
-            ChessMove currMove = this.game.moveHistory.get(this.step-1);
+        if (this.step > 0) {
+            ChessMove currMove = this.game.moveHistory.get(this.step - 1);
             ChessPosition start = currMove.from;
             g.setColor(Color.GREEN);
             Graphics2D g2 = (Graphics2D) g;
@@ -114,9 +114,10 @@ class TimerListener implements ActionListener {
     private Timer t;
     private GUIBoard panel;
     private ChessGame cg;
+
     public TimerListener(GUIBoard panel, ChessGame cg) {
-        this.panel=panel;
-        this.cg=cg;
+        this.panel = panel;
+        this.cg = cg;
     }
 
     public void setTimer(Timer t) {
@@ -125,11 +126,12 @@ class TimerListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        panel.repaint();
         panel.step++;
         if (panel.step == cg.boardHistory.size()) {
+            panel.step -= 1;
             t.stop();
         }
+        panel.repaint();
 
     }
 }

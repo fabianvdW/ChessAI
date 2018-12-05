@@ -34,24 +34,24 @@ public class ChessPosition {
     }
 
     @Override
-    public boolean equals(Object o){
-        if(o instanceof ChessPosition){
-            ChessPosition cp2= (ChessPosition) o;
-            return cp2.getX()== this.x && cp2.getY()== this.y;
-        }else{
+    public boolean equals(Object o) {
+        if (o instanceof ChessPosition) {
+            ChessPosition cp2 = (ChessPosition) o;
+            return cp2.getX() == this.x && cp2.getY() == this.y;
+        } else {
             throw new RuntimeException("Expected Chess Position object!");
         }
     }
 
     @Override
-    public String toString(){
-        String s="("+this.x+","+this.y+")";
+    public String toString() {
+        String s = "(" + this.x + "," + this.y + ")";
 
         return s;
     }
 
     @Override
-    public ChessPosition clone(){
+    public ChessPosition clone() {
         return new ChessPosition(this.x, this.y);
     }
 }
