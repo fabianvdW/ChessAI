@@ -73,7 +73,7 @@ public class ChessBoard {
     public ChessBoard() {
         board = new ChessPiece[8][8];
         WHITE_KING = new King(ChessColor.WHITE, new ChessPosition(4, 7), this);
-        WHITE_QUEENS= new ArrayList<>();
+        WHITE_QUEENS = new ArrayList<>();
         Queen WHITE_QUEEN = new Queen(ChessColor.WHITE, new ChessPosition(3, 7), this);
         WHITE_QUEENS.add(WHITE_QUEEN);
         WHITE_PAWNS = new ArrayList<>();
@@ -106,7 +106,7 @@ public class ChessBoard {
         }
 
         BLACK_KING = new King(ChessColor.BLACK, new ChessPosition(4, 0), this);
-        BLACK_QUEENS= new ArrayList<>();
+        BLACK_QUEENS = new ArrayList<>();
         Queen BLACK_QUEEN = new Queen(ChessColor.BLACK, new ChessPosition(3, 0), this);
         BLACK_QUEENS.add(BLACK_QUEEN);
         BLACK_PAWNS = new ArrayList<>();
@@ -142,7 +142,7 @@ public class ChessBoard {
     public ChessBoard(ChessBoard cb) {
         this.board = new ChessPiece[8][8];
         this.WHITE_PAWNS = new ArrayList<>();
-        this.WHITE_QUEENS= new ArrayList<>();
+        this.WHITE_QUEENS = new ArrayList<>();
         this.WHITE_ROOKS = new ArrayList<>();
         this.WHITE_BISHOPS = new ArrayList<>();
         this.WHITE_KNIGHTS = new ArrayList<>();
@@ -150,16 +150,27 @@ public class ChessBoard {
         for (ChessPiece cp : cb.WHITE_PIECES) {
             if (cp instanceof King) {
                 this.WHITE_KING = new King(ChessColor.WHITE, cb.WHITE_KING.position.clone(), this);
-            } else if(cp instanceof Queen) {
-                this.WHITE_QUEENS.add(new Queen(ChessColor.WHITE,cp.position.clone(),this));
-            }else if (cp instanceof Pawn){
-                this.WHITE_PAWNS.add(new Pawn(ChessColor.WHITE,cp.position.clone(),this));
-            }else if(cp instanceof Rook){
-                this.WHITE_ROOKS.add(new Rook(ChessColor.WHITE,cp.position,this));
-            }else if(cp instanceof Bishop){
-                this.WHITE_BISHOPS.add(new Bishop(ChessColor.WHITE,cp.position.clone(),this));
-            }else if(cp instanceof Knight){
-                this.WHITE_KNIGHTS.add(new Knight(ChessColor.WHITE,cp.position.clone(),this));
+                this.WHITE_KING.moves = cp.moves;
+            } else if (cp instanceof Queen) {
+                Queen q = new Queen(ChessColor.WHITE, cp.position.clone(), this);
+                q.moves = cp.moves;
+                this.WHITE_QUEENS.add(q);
+            } else if (cp instanceof Pawn) {
+                Pawn p = new Pawn(ChessColor.WHITE, cp.position.clone(), this);
+                p.moves = cp.moves;
+                this.WHITE_PAWNS.add(p);
+            } else if (cp instanceof Rook) {
+                Rook r = new Rook(ChessColor.WHITE, cp.position, this);
+                r.moves = cp.moves;
+                this.WHITE_ROOKS.add(r);
+            } else if (cp instanceof Bishop) {
+                Bishop b = new Bishop(ChessColor.WHITE, cp.position.clone(), this);
+                b.moves = cp.moves;
+                this.WHITE_BISHOPS.add(b);
+            } else if (cp instanceof Knight) {
+                Knight k = new Knight(ChessColor.WHITE, cp.position.clone(), this);
+                k.moves = cp.moves;
+                this.WHITE_KNIGHTS.add(k);
             }
         }
         {
@@ -173,7 +184,7 @@ public class ChessBoard {
         }
 
         this.BLACK_PAWNS = new ArrayList<>();
-        this.BLACK_QUEENS= new ArrayList<>();
+        this.BLACK_QUEENS = new ArrayList<>();
         this.BLACK_ROOKS = new ArrayList<>();
         this.BLACK_BISHOPS = new ArrayList<>();
         this.BLACK_KNIGHTS = new ArrayList<>();
@@ -181,16 +192,27 @@ public class ChessBoard {
         for (ChessPiece cp : cb.BLACK_PIECES) {
             if (cp instanceof King) {
                 this.BLACK_KING = new King(ChessColor.BLACK, cb.BLACK_KING.position.clone(), this);
-            } else if(cp instanceof Queen) {
-                this.BLACK_QUEENS.add(new Queen(ChessColor.BLACK,cp.position.clone(),this));
-            }else if (cp instanceof Pawn){
-                this.BLACK_PAWNS.add(new Pawn(ChessColor.BLACK,cp.position.clone(),this));
-            }else if(cp instanceof Rook){
-                this.BLACK_ROOKS.add(new Rook(ChessColor.BLACK,cp.position,this));
-            }else if(cp instanceof Bishop){
-                this.BLACK_BISHOPS.add(new Bishop(ChessColor.BLACK,cp.position.clone(),this));
-            }else if(cp instanceof Knight){
-                this.BLACK_KNIGHTS.add(new Knight(ChessColor.BLACK,cp.position.clone(),this));
+                this.BLACK_KING.moves = cp.moves;
+            } else if (cp instanceof Queen) {
+                Queen q = new Queen(ChessColor.BLACK, cp.position.clone(), this);
+                q.moves = cp.moves;
+                this.BLACK_QUEENS.add(q);
+            } else if (cp instanceof Pawn) {
+                Pawn p = new Pawn(ChessColor.BLACK, cp.position.clone(), this);
+                p.moves = cp.moves;
+                this.BLACK_PAWNS.add(p);
+            } else if (cp instanceof Rook) {
+                Rook r = new Rook(ChessColor.BLACK, cp.position, this);
+                r.moves = cp.moves;
+                this.BLACK_ROOKS.add(r);
+            } else if (cp instanceof Bishop) {
+                Bishop b = new Bishop(ChessColor.BLACK, cp.position.clone(), this);
+                b.moves = cp.moves;
+                this.BLACK_BISHOPS.add(b);
+            } else if (cp instanceof Knight) {
+                Knight k = new Knight(ChessColor.BLACK, cp.position.clone(), this);
+                k.moves = cp.moves;
+                this.BLACK_KNIGHTS.add(k);
             }
         }
         {
@@ -202,6 +224,59 @@ public class ChessBoard {
             BLACK_PIECES.addAll(BLACK_BISHOPS);
             BLACK_PIECES.addAll(BLACK_KNIGHTS);
         }
+
+    }
+
+    public ChessBoard applyChessMove(ChessMove cm, ChessColor move) {
+        ChessBoard newBoard = new ChessBoard(this);
+        ChessPiece oldPiece = null;
+        if (cm.old != null) {
+            oldPiece = newBoard.getChessPiece(cm.old.position);//Because of en passant.
+            newBoard.setChessPiece(oldPiece.position, null);//Because of en passant.
+        }
+        ChessPiece movedPiece = newBoard.getChessPiece(cm.from);
+        movedPiece.moves = cm.moved.moves;
+        movedPiece.moves++;
+        newBoard.setChessPiece(cm.from, null);
+        newBoard.setChessPiece(cm.to, movedPiece);
+        if (!(cm instanceof CastleMove)) {
+            if (oldPiece != null) {
+                oldPiece.onBoard = false;
+                if (move == ChessColor.BLACK) {
+                    newBoard.BLACK_PIECES.remove(oldPiece);
+                } else {
+                    newBoard.WHITE_PIECES.remove(oldPiece);
+                }
+            }
+        } else {
+            CastleMove castleMove = (CastleMove) cm;
+            Rook r = (Rook) (newBoard.getChessPiece(castleMove.r.position));
+            newBoard.setChessPiece(castleMove.r.position, null);
+            r.moves += 1;
+            if (r.position.getX() == 0) {
+                newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() + 1, r.position.getY()), r);
+            } else {
+                newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() - 1, r.position.getY()), r);
+            }
+        }
+
+        //Pawn transforms into Queen
+        if (movedPiece instanceof Pawn) {
+            if (movedPiece.color == ChessColor.WHITE) {
+                if (movedPiece.position.getY() == 0) {
+                    newBoard.WHITE_PIECES.remove(movedPiece);
+                    movedPiece.onBoard = false;
+                    newBoard.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(movedPiece.position.getX(), 0), newBoard));
+                }
+            } else {
+                if (movedPiece.position.getY() == 7) {
+                    newBoard.BLACK_PIECES.remove(movedPiece);
+                    movedPiece.onBoard = false;
+                    newBoard.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(movedPiece.position.getX(), 7), newBoard));
+                }
+            }
+        }
+        return newBoard;
     }
 
     public ChessPiece getChessPiece(ChessPosition cpos) {

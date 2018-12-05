@@ -6,26 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends ChessPiece {
-    public Queen(ChessColor color, ChessPosition position, ChessBoard board){
-        super(color,position,board);
-        if(this.color== ChessColor.WHITE) {
+    public Queen(ChessColor color, ChessPosition position, ChessBoard board) {
+        super(color, position, board);
+        if (this.color == ChessColor.WHITE) {
             this.representation = "\u2655";
-        }else{
-            this.representation= "\u265B";
+        } else {
+            this.representation = "\u265B";
         }
     }
 
     @Override
-    public List<ChessMove> getPossibleMoves(ChessBoard b,boolean pinFlag) {
+    public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         //TODO Pinning
 
         List<ChessMove> result = new ArrayList<>();
 
-        ChessColor enemyColor = this.color==ChessColor.BLACK? ChessColor.WHITE: ChessColor.BLACK;
-        for(int i=0;i<8;i++){
-            ChessPosition kingPosition= b.WHITE_KING.position;
-            int xIncrementor=0;
-            int yIncrementor=0;
+        ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        for (int i = 0; i < 8; i++) {
+            ChessPosition kingPosition = b.WHITE_KING.position;
+            int xIncrementor = 0;
+            int yIncrementor = 0;
             switch (i) {
                 case 0:
                     xIncrementor = 1;
@@ -61,39 +61,40 @@ public class Queen extends ChessPiece {
                     break;
 
             }
-            int xCoordinate= this.position.getX();
-            int yCoordinate= this.position.getY();
+            int xCoordinate = this.position.getX();
+            int yCoordinate = this.position.getY();
             ChessPosition cp = null;
-            do{
-                xCoordinate+=xIncrementor;
-                yCoordinate+=yIncrementor;
-                if(!(ChessLogic.isValidX(xCoordinate)&&ChessLogic.isValidY(yCoordinate))){
+            do {
+                xCoordinate += xIncrementor;
+                yCoordinate += yIncrementor;
+                if (!(ChessLogic.isValidX(xCoordinate) && ChessLogic.isValidY(yCoordinate))) {
                     break;
                 }
-                cp= new ChessPosition(xCoordinate,yCoordinate);
+                cp = new ChessPosition(xCoordinate, yCoordinate);
                 ChessPiece cPiece = b.getChessPiece(cp);
-                ChessMove cm = new ChessMove(this.position.clone(),cp,this,cPiece);
-                if(cPiece!=null&&cPiece.color!=enemyColor){
+                ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
+                if (cPiece != null && cPiece.color != enemyColor) {
                     break;
                 }
-                if(!pinFlag&&ChessLogic.isPinned(cm,b)){
+                if (!pinFlag && ChessLogic.isPinned(cm, b)) {
                     continue;
                 }
-                if(cPiece==null){
+                if (cPiece == null) {
                     result.add(cm);
-                }else if(cPiece.color==enemyColor){
+                } else if (cPiece.color == enemyColor) {
                     result.add(cm);
                     break;
                 }
-            }while (true);
+            } while (true);
 
         }
         return result;
     }
+
     @Override
-    public boolean equals(Object o){
-        if(o instanceof Queen){
-            Queen b = (Queen)o;
+    public boolean equals(Object o) {
+        if (o instanceof Queen) {
+            Queen b = (Queen) o;
             return b.position.equals(this.position);
         }
         return false;

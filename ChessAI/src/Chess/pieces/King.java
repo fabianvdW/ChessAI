@@ -23,6 +23,38 @@ public class King extends ChessPiece {
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        //Check Castle
+        if (this.moves == 0 && !ChessLogic.isThreatened(new ChessMove(null, this.position.clone(), null, null), b, enemyColor)) {
+            //Rochade zu Turm mit x=0
+            ChessPiece x0 = b.getChessPiece(new ChessPosition(0, this.position.getY()));
+            if (x0 instanceof Rook) {
+                Rook r0 = (Rook) x0;
+                if (r0.moves == 0) {
+                    //Check if fields inbetween are free and not threatened
+                    if (b.getChessPiece(new ChessPosition(this.position.getX() - 1, this.position.getY())) == null && b.getChessPiece(new ChessPosition(this.position.getX() - 2, this.position.getY())) == null) {
+                        if (!ChessLogic.isThreatened(new ChessMove(null, new ChessPosition(this.position.getX() - 1, this.position.getY()), null, null), b, enemyColor)) {
+                            if (!ChessLogic.isThreatened(new ChessMove(null, new ChessPosition(this.position.getX() - 2, this.position.getY()), null, null), b, enemyColor)) {
+                                result.add(new CastleMove(this.position.clone(), new ChessPosition(this.position.getX() - 2, this.position.getY()), this, null, r0));
+                            }
+                        }
+                    }
+                }
+            }
+            ChessPiece x7 = b.getChessPiece(new ChessPosition(7, this.position.getY()));
+            if (x7 instanceof Rook) {
+                Rook r7 = (Rook) x7;
+                if (r7.moves == 0) {
+                    //Check if fields inbetween are free and not threatened
+                    if (b.getChessPiece(new ChessPosition(this.position.getX() + 1, this.position.getY())) == null && b.getChessPiece(new ChessPosition(this.position.getX() + 2, this.position.getY())) == null) {
+                        if (!ChessLogic.isThreatened(new ChessMove(null, new ChessPosition(this.position.getX() + 1, this.position.getY()), null, null), b, enemyColor)) {
+                            if (!ChessLogic.isThreatened(new ChessMove(null, new ChessPosition(this.position.getX() + 2, this.position.getY()), null, null), b, enemyColor)) {
+                                result.add(new CastleMove(this.position.clone(), new ChessPosition(this.position.getX() + 2, this.position.getY()), this, null, r7));
+                            }
+                        }
+                    }
+                }
+            }
+        }
         for (int i = 0; i < 8; i++) {
             int xIncrementor = 0;
             int yIncrementor = 0;
