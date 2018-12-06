@@ -45,6 +45,9 @@ public class Bishop extends ChessPiece {
                         break;
                     }
                     if (!pinFlag && ChessLogic.isPinned(cm, b)) {
+                        if(cPiece!=null &&cPiece.color==enemyColor){
+                            break;
+                        }
                         continue;
                     }
                     if (cPiece == null) {

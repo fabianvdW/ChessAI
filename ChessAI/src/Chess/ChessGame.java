@@ -9,7 +9,6 @@ import java.util.List;
 
 public class ChessGame {
     public ChessBoard currentBoard;
-
     public ChessColor move;
     public ChessColor winner;
     public ChessGameStatus status;
@@ -17,6 +16,7 @@ public class ChessGame {
     public List<ChessBoard> boardHistory;
     public ChessPlayer player1;
     public ChessPlayer player2;
+    public int fiftyDrawMoves;
 
     public ChessGame(ChessPlayer player1, ChessPlayer player2) {
         this.moveHistory = new ArrayList<>();
@@ -27,6 +27,7 @@ public class ChessGame {
         this.boardHistory.add(this.currentBoard);
         this.player1 = player1;
         this.player2 = player2;
+        this.fiftyDrawMoves=0;
     }
 
     public void playGame() {
@@ -36,6 +37,7 @@ public class ChessGame {
     //TODO Stellungswiederholung, Promotion aussuchen, 50Zuege-Regel
     public void applyChessMove(ChessMove cm) {
         this.moveHistory.add(cm);
+        this.fiftyDrawMoves+=1;
         if (this.status == ChessGameStatus.INGAME) {
             ChessPiece movedPiece = this.currentBoard.getChessPiece(cm.from);
             if (movedPiece != null) {
@@ -43,7 +45,14 @@ public class ChessGame {
                     this.move = movedPiece.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
                     List<ChessMove> moves = movedPiece.getPossibleMoves(this.currentBoard, false);
                     if (moves.contains(cm)) {
+                        if(movedPiece instanceof  Pawn){
+                            fiftyDrawMoves=0;
+                        }
+                        int availablePieces= this.currentBoard.WHITE_PIECES.size()+this.currentBoard.BLACK_PIECES.size();
                         this.currentBoard = this.currentBoard.applyChessMove(cm, this.move);
+                        if(this.currentBoard.WHITE_PIECES.size()+this.currentBoard.BLACK_PIECES.size()<availablePieces){
+                            fiftyDrawMoves=0;
+                        }
                     } else {
                         //TODO write specific exception
                         throw new RuntimeException("Illegal Move requested: Piece " + movedPiece.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
@@ -58,6 +67,8 @@ public class ChessGame {
                         this.winner = movedPiece.color;
                     } else if (this.currentBoard.WHITE_PIECES.size() == 1 && this.currentBoard.BLACK_PIECES.size() == 1) {//Lack of Material draw
                         this.status = ChessGameStatus.DRAW;
+                    } else if(this.fiftyDrawMoves==100){
+                        this.status=ChessGameStatus.DRAW;
                     }
                 } else {
                     throw new RuntimeException("Move is for the wrong color!");

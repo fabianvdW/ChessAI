@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
 public class ChessBoard {
+
+
+    public static final boolean ENABLE_STANDARD_PROMOTION_UNIT = true;
+    public static final PromotionUnit STANDARD_PROMOTION_UNIT = PromotionUnit.QUEEN;
+
+
     private ChessPiece[][] board;
 
     public List<ChessPiece> WHITE_PIECES;
@@ -248,6 +254,38 @@ public class ChessBoard {
                     newBoard.WHITE_PIECES.remove(oldPiece);
                 }
             }
+            //Pawn transforms into Queen
+            if (movedPiece instanceof Pawn) {
+                if (movedPiece.color == ChessColor.WHITE) {
+                    if (movedPiece.position.getY() == 0) {
+                        newBoard.WHITE_PIECES.remove(movedPiece);
+                        movedPiece.onBoard = false;
+                        PromotionMove pm = null;
+                        if (cm instanceof PromotionMove) {
+                            pm = (PromotionMove) cm;
+                        } else if (ChessBoard.ENABLE_STANDARD_PROMOTION_UNIT) {
+                            pm= new PromotionMove(cm.from,cm.to,cm.moved,cm.old,ChessBoard.STANDARD_PROMOTION_UNIT);
+                        }else{
+                            throw new RuntimeException("Did not specify Promotion Unit!");
+                        }
+                        newBoard.WHITE_PIECES.add(getPromotionPiece(pm,newBoard,new ChessPosition(movedPiece.position.getX(),0),ChessColor.WHITE));
+                    }
+                } else {
+                    if (movedPiece.position.getY() == 7) {
+                        newBoard.BLACK_PIECES.remove(movedPiece);
+                        movedPiece.onBoard = false;
+                        PromotionMove pm = null;
+                        if (cm instanceof PromotionMove) {
+                            pm = (PromotionMove) cm;
+                        } else if (ChessBoard.ENABLE_STANDARD_PROMOTION_UNIT) {
+                            pm= new PromotionMove(cm.from,cm.to,cm.moved,cm.old,ChessBoard.STANDARD_PROMOTION_UNIT);
+                        }else{
+                            throw new RuntimeException("Did not specify Promotion Unit!");
+                        }
+                        newBoard.BLACK_PIECES.add(getPromotionPiece(pm,newBoard,new ChessPosition(movedPiece.position.getX(),7),ChessColor.BLACK));
+                    }
+                }
+            }
         } else {
             CastleMove castleMove = (CastleMove) cm;
             Rook r = (Rook) (newBoard.getChessPiece(castleMove.r.position));
@@ -259,24 +297,20 @@ public class ChessBoard {
                 newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() - 1, r.position.getY()), r);
             }
         }
-
-        //Pawn transforms into Queen
-        if (movedPiece instanceof Pawn) {
-            if (movedPiece.color == ChessColor.WHITE) {
-                if (movedPiece.position.getY() == 0) {
-                    newBoard.WHITE_PIECES.remove(movedPiece);
-                    movedPiece.onBoard = false;
-                    newBoard.WHITE_PIECES.add(new Queen(ChessColor.WHITE, new ChessPosition(movedPiece.position.getX(), 0), newBoard));
-                }
-            } else {
-                if (movedPiece.position.getY() == 7) {
-                    newBoard.BLACK_PIECES.remove(movedPiece);
-                    movedPiece.onBoard = false;
-                    newBoard.BLACK_PIECES.add(new Queen(ChessColor.BLACK, new ChessPosition(movedPiece.position.getX(), 7), newBoard));
-                }
-            }
-        }
         return newBoard;
+    }
+
+    public ChessPiece getPromotionPiece(PromotionMove pm,ChessBoard cb, ChessPosition cp,ChessColor cc) {
+        if(pm.pm==PromotionUnit.QUEEN){
+            return new Queen(cc,cp,cb);
+        }else if(pm.pm==PromotionUnit.BISHOP){
+            return new Bishop(cc,cp,cb);
+        }else if(pm.pm==PromotionUnit.KNIGHT){
+            return new Knight(cc,cp,cb);
+        }else if(pm.pm==PromotionUnit.ROOK){
+            return new Rook(cc,cp,cb);
+        }
+        throw new RuntimeException("Something went terribly wrong!");
     }
 
     public ChessPiece getChessPiece(ChessPosition cpos) {
