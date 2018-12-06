@@ -2,11 +2,14 @@ package gui;
 
 import Chess.*;
 import Chess.pieces.ChessPiece;
+import Chess.pieces.Rook;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GUIBoard extends JPanel {
     private ChessGame game; // auf diesem Brett wird der ganze Verlauf erneut durchsimuliert
@@ -53,7 +56,7 @@ public class GUIBoard extends JPanel {
         // simulated
 
         TimerListener tl = new TimerListener(panel, cb);
-        Timer t = new Timer(50, tl);
+        Timer t = new Timer(2000, tl);
         tl.setTimer(t);
         t.start();
     }
@@ -114,10 +117,20 @@ class TimerListener implements ActionListener {
     private Timer t;
     private GUIBoard panel;
     private ChessGame cg;
+    private int listStep=0;
+    private List<Integer> rookMovesIndex;
 
     public TimerListener(GUIBoard panel, ChessGame cg) {
         this.panel = panel;
         this.cg = cg;
+        rookMovesIndex= new ArrayList<>();
+        for(int i=0;i<cg.moveHistory.size();i++){
+            ChessMove cm= cg.moveHistory.get(i);
+            if(cm.moved instanceof Rook){
+                rookMovesIndex.add(i);
+                rookMovesIndex.add(i+1);
+            }
+        }
     }
 
     public void setTimer(Timer t) {
@@ -126,9 +139,16 @@ class TimerListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        /*
         panel.step++;
         if (panel.step == cg.boardHistory.size()) {
             panel.step -= 1;
+            t.stop();
+        }*/
+        panel.step= this.rookMovesIndex.get(this.listStep);
+        System.out.println(cg.boardHistory.get(panel.step));
+        this.listStep++;
+        if(this.listStep==this.rookMovesIndex.size()){
             t.stop();
         }
         panel.repaint();

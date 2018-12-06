@@ -4,17 +4,33 @@ import Chess.ChessBoard;
 import Chess.ChessColor;
 import Chess.ChessMove;
 import Chess.ChessPosition;
-import Chess.pieces.Bishop;
-import Chess.pieces.DebugFigur;
-import Chess.pieces.Knight;
-import Chess.pieces.Rook;
+import Chess.pieces.*;
 
 
 public class TestPossibleMoves {
     public static void main(String[] args) {
-        PawnTest();
+        RookTest2();
     }
-
+    public static void RookTest2(){
+        ChessBoard cb= new ChessBoard();
+        TestChessMate.clearBoard(cb);
+        cb.WHITE_PIECES.clear();
+        cb.BLACK_PIECES.clear();
+        cb.WHITE_PIECES.add(new Pawn(ChessColor.WHITE,new ChessPosition(0,1),cb));
+        cb.BLACK_PIECES.add(new Pawn(ChessColor.BLACK,new ChessPosition(0,4),cb));
+        cb.BLACK_PIECES.add(new Rook(ChessColor.BLACK,new ChessPosition(1,5),cb));
+        cb.WHITE_PIECES.add(new Pawn(ChessColor.WHITE,new ChessPosition(2,5),cb));
+        cb.WHITE_PIECES.add(new Pawn(ChessColor.WHITE,new ChessPosition(4,4),cb));
+        cb.WHITE_PIECES.add(new Pawn(ChessColor.WHITE, new ChessPosition(5,3),cb));
+        cb.WHITE_KING=new King(ChessColor.WHITE,new ChessPosition(5,6),cb);
+        cb.WHITE_PIECES.add(cb.WHITE_KING);
+        cb.BLACK_KING=new King(ChessColor.BLACK,new ChessPosition(6,4),cb);
+        cb.BLACK_PIECES.add(cb.BLACK_KING);
+        cb.WHITE_PIECES.add(new Rook(ChessColor.WHITE,new ChessPosition(6,7),cb));
+        System.out.println(cb);
+        System.out.println(cb.outOfSync());
+        System.out.println(cb.getChessPiece(new ChessPosition(1,5)).getPossibleMoves(cb,false));
+    }
     public static void KingTest() {
         ChessBoard b = new ChessBoard();
         System.out.println(b.toString());
