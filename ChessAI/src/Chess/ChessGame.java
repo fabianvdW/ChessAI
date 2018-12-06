@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChessGame {
-    
     public ChessBoard currentBoard;
     public ChessColor move;
     public ChessColor winner;
