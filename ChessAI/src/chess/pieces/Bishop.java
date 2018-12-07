@@ -21,6 +21,7 @@ public class Bishop extends ChessPiece {
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessPiece myKing= this.color==ChessColor.WHITE? b.WHITE_KING:b.BLACK_KING;
         //4 Diagonalen
         for (int yIncrementor = -1; yIncrementor <= 1; yIncrementor++) {
             if (yIncrementor == 0) continue;
@@ -41,7 +42,7 @@ public class Bishop extends ChessPiece {
                     if (cPiece != null && cPiece.color != enemyColor) {
                         break;
                     }
-                    if (!pinFlag && ChessLogic.isPinned(cm, b)) {
+                    if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position,cm, b,enemyColor)) {
                         if(cPiece!=null &&cPiece.color==enemyColor){
                             break;
                         }

@@ -17,11 +17,11 @@ public class Rook extends ChessPiece {
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
-        //TODO Pinning
 
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessPiece myKing= this.color==ChessColor.WHITE? b.WHITE_KING:b.BLACK_KING;
         for (int i = 0; i < 4; i++) {
             int xIncrementor = 0;
             int yIncrementor = 0;
@@ -53,7 +53,7 @@ public class Rook extends ChessPiece {
                 if (cPiece != null && cPiece.color != enemyColor) {
                     break;
                 }
-                if (!pinFlag && ChessLogic.isPinned(cm, b)) {
+                if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position,cm, b,enemyColor)) {
                     if(cPiece!=null &&cPiece.color==enemyColor){
                         break;
                     }

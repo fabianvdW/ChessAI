@@ -79,7 +79,13 @@ public class ChessGame {
         }
         this.boardHistory.add(this.currentBoard);
     }
-
+    public void printBoardHistory(){
+        for(ChessBoard cb: this.boardHistory){
+            System.out.println(cb.toString());
+            System.out.println(cb.outOfSync());
+            System.out.println("");
+        }
+    }
     @Override
     public String toString() {
         return this.status + " , Move has Color: " + this.move + " Board: \n" + this.currentBoard.toString();

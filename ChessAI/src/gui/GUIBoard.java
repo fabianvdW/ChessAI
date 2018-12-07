@@ -56,7 +56,7 @@ public class GUIBoard extends JPanel {
         // simulated
 
         TimerListener tl = new TimerListener(panel, cb);
-        Timer t = new Timer(50, tl);
+        Timer t = new Timer(1000, tl);
         tl.setTimer(t);
         t.start();
     }

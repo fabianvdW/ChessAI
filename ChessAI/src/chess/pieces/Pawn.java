@@ -18,10 +18,10 @@ public class Pawn extends ChessPiece {
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
-        //TODO Pinning
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessPiece myKing= this.color==ChessColor.WHITE? b.WHITE_KING:b.BLACK_KING;
         int incrementor = this.color == ChessColor.WHITE ? -1 : 1;
         //2 vorrücken
         for (int i = 0; i < 4; i++) {
@@ -49,7 +49,7 @@ public class Pawn extends ChessPiece {
                 ChessPosition cp = new ChessPosition(newX, newY);
                 ChessPiece cpPiece = b.getChessPiece(cp);
                 ChessMove cm = new ChessMove(this.position.clone(), cp, this, cpPiece);
-                if (!pinFlag && ChessLogic.isPinned(cm, b)) {
+                if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position,cm, b,enemyColor)) {
                     continue;
                 }
                 if (i == 0 || i == 1) {
@@ -60,6 +60,7 @@ public class Pawn extends ChessPiece {
                     if (cpPiece != null && cpPiece.color == enemyColor) {
                         result.add(cm);
                     } else if (cpPiece == null) {
+                        //En Passant
                         int xInc = i == 2 ? 1 : -1;
                         int cp2X = cp.getX();
                         int cp2Y = cp.getY() - incrementor;

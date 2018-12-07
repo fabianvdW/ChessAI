@@ -18,11 +18,10 @@ public class Knight extends ChessPiece {
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
-        //TODO Pinning
-
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         for (int i = 0; i < 8; i++) {
             int xIncrementor = 0;
             int yIncrementor = 0;
@@ -69,12 +68,14 @@ public class Knight extends ChessPiece {
             ChessPosition cp = new ChessPosition(xCoordinate, yCoordinate);
             ChessPiece cPiece = b.getChessPiece(cp);
             ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
-            if (!pinFlag && ChessLogic.isPinned(cm, b)) {
+            if (cPiece != null && cPiece.color != enemyColor) {
                 continue;
             }
-            if (cPiece == null || cPiece.color == enemyColor) {
-                result.add(cm);
+            if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position, cm, b, enemyColor)) {
+                continue;
             }
+            result.add(cm);
+
         }
         return result;
     }
