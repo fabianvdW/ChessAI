@@ -1,10 +1,10 @@
 package tests;
 
-import Chess.ChessGame;
-import Chess.ChessMove;
-import Chess.ChessPosition;
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Pawn;
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.pieces.ChessPiece;
+import chess.pieces.Pawn;
 
 public class TestEnPassant {
 

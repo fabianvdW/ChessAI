@@ -1,8 +1,7 @@
-package Chess;
+package chess;
 
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Pawn;
-import Chess.pieces.Queen;
+import chess.pieces.ChessPiece;
+import chess.pieces.Pawn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ public class ChessGame {
 
     }
 
-    //TODO Stellungswiederholung, Promotion aussuchen, 50Zuege-Regel
+    //TODO Stellungswiederholung
     public void applyChessMove(ChessMove cm) {
         this.moveHistory.add(cm);
         this.fiftyDrawMoves+=1;
@@ -54,7 +53,6 @@ public class ChessGame {
                             fiftyDrawMoves=0;
                         }
                     } else {
-                        //TODO write specific exception
                         throw new RuntimeException("Illegal Move requested: Piece " + movedPiece.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
                     }
                     //StaleMate

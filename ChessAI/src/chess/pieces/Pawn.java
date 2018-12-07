@@ -1,6 +1,6 @@
-package Chess.pieces;
+package chess.pieces;
 
-import Chess.*;
+import chess.*;
 
 
 import java.util.*;

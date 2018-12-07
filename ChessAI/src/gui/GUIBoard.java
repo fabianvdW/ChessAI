@@ -1,8 +1,8 @@
 package gui;
 
-import Chess.*;
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Rook;
+import chess.*;
+import chess.pieces.ChessPiece;
+import chess.pieces.Rook;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +56,7 @@ public class GUIBoard extends JPanel {
         // simulated
 
         TimerListener tl = new TimerListener(panel, cb);
-        Timer t = new Timer(2000, tl);
+        Timer t = new Timer(50, tl);
         tl.setTimer(t);
         t.start();
     }
@@ -139,18 +139,18 @@ class TimerListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        /*
+
         panel.step++;
         if (panel.step == cg.boardHistory.size()) {
             panel.step -= 1;
             t.stop();
-        }*/
-        panel.step= this.rookMovesIndex.get(this.listStep);
+        }
+        /*panel.step= this.rookMovesIndex.get(this.listStep);
         System.out.println(cg.boardHistory.get(panel.step));
         this.listStep++;
         if(this.listStep==this.rookMovesIndex.size()){
             t.stop();
-        }
+        }*/
         panel.repaint();
 
     }

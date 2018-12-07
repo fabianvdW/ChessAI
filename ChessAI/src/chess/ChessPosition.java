@@ -1,4 +1,4 @@
-package Chess;
+package chess;
 
 public class ChessPosition {
     private int x;
@@ -39,7 +39,7 @@ public class ChessPosition {
             ChessPosition cp2 = (ChessPosition) o;
             return cp2.getX() == this.x && cp2.getY() == this.y;
         } else {
-            throw new RuntimeException("Expected Chess Position object!");
+            throw new RuntimeException("Expected chess Position object!");
         }
     }
 

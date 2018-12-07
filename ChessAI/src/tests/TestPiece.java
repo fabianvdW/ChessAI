@@ -1,9 +1,7 @@
 package tests;
 
-import Chess.*;
-import Chess.pieces.Bishop;
-import Chess.pieces.Queen;
-import Chess.pieces.Rook;
+import chess.*;
+import chess.pieces.Bishop;
 
 import java.util.List;
 

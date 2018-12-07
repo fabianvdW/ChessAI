@@ -1,8 +1,7 @@
-package Chess.pieces;
+package chess.pieces;
 
-import Chess.*;
+import chess.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +18,6 @@ public class Bishop extends ChessPiece {
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
-        //TODO Pinning
-
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;

@@ -1,11 +1,10 @@
-package Chess;
+package chess;
 
-import Chess.pieces.*;
+import chess.pieces.*;
 import helpers.StringColor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 
 public class ChessBoard {
 
@@ -31,6 +30,9 @@ public class ChessBoard {
     public List<ChessPiece> BLACK_ROOKS;
     public List<ChessPiece> BLACK_BISHOPS;
     public List<ChessPiece> BLACK_KNIGHTS;
+
+    public List<ChessMove> availableMoves;
+    public List<ChessMove> availableEnemyMoves;
 
     public ChessPiece[][] getBoard() {
         return this.board;

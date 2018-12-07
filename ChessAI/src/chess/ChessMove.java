@@ -1,6 +1,6 @@
-package Chess;
+package chess;
 
-import Chess.pieces.ChessPiece;
+import chess.pieces.ChessPiece;
 
 public class ChessMove {
     public ChessPosition from;

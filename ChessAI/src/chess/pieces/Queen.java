@@ -1,17 +1,17 @@
-package Chess.pieces;
+package chess.pieces;
 
-import Chess.*;
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rook extends ChessPiece {
-    public Rook(ChessColor color, ChessPosition position, ChessBoard board) {
+public class Queen extends ChessPiece {
+    public Queen(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
-            this.representation = "\u2656";
+            this.representation = "\u2655";
         } else {
-            this.representation = "\u265C";
+            this.representation = "\u265B";
         }
     }
 
@@ -22,21 +22,44 @@ public class Rook extends ChessPiece {
         List<ChessMove> result = new ArrayList<>();
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
+            ChessPosition kingPosition = b.WHITE_KING.position;
             int xIncrementor = 0;
             int yIncrementor = 0;
             switch (i) {
                 case 0:
                     xIncrementor = 1;
-                    break;
-                case 1:
-                    xIncrementor = -1;
-                    break;
-                case 2:
                     yIncrementor = 1;
                     break;
-                case 3:
+                case 1:
+                    xIncrementor = 1;
+                    yIncrementor = 0;
+                    break;
+                case 2:
+                    xIncrementor = 1;
                     yIncrementor = -1;
+                    break;
+                case 3:
+                    xIncrementor = 0;
+                    yIncrementor = 1;
+                    break;
+                case 4:
+                    xIncrementor = 0;
+                    yIncrementor = -1;
+                    break;
+                case 5:
+                    xIncrementor = -1;
+                    yIncrementor = 1;
+                    break;
+                case 6:
+                    xIncrementor = -1;
+                    yIncrementor = 0;
+                    break;
+                case 7:
+                    xIncrementor = -1;
+                    yIncrementor = -1;
+                    break;
+
             }
             int xCoordinate = this.position.getX();
             int yCoordinate = this.position.getY();
@@ -73,11 +96,10 @@ public class Rook extends ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Rook) {
-            Rook b = (Rook) o;
+        if (o instanceof Queen) {
+            Queen b = (Queen) o;
             return b.position.equals(this.position);
         }
         return false;
     }
-
 }

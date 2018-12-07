@@ -1,6 +1,6 @@
 package tests;
 
-import Chess.*;
+import chess.*;
 
 import java.util.List;
 

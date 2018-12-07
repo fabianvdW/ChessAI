@@ -1,9 +1,9 @@
-package Chess.pieces;
+package chess.pieces;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessMove;
-import Chess.ChessPosition;
+import chess.ChessBoard;
+import chess.ChessColor;
+import chess.ChessMove;
+import chess.ChessPosition;
 
 import java.util.List;
 
