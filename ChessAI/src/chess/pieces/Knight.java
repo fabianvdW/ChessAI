@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends ChessPiece {
+    public static ChessVector[] minimalUnit = {new ChessVector(2, 1), new ChessVector(-2, 1), new ChessVector(-2, -1), new ChessVector(2, -1), new ChessVector(1, 2), new ChessVector(1, -2), new ChessVector(-1, -2), new ChessVector(-1, 2)};
+
     public Knight(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
@@ -19,53 +21,21 @@ public class Knight extends ChessPiece {
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         List<ChessMove> result = new ArrayList<>();
-
+        if (b.initialized) {
+            if (this.color == ChessColor.WHITE) {
+                return b.WHITE_MOVES.getOrDefault(this, result);
+            } else {
+                return b.BLACK_MOVES.getOrDefault(this, result);
+            }
+        }
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
-        for (int i = 0; i < 8; i++) {
-            int xIncrementor = 0;
-            int yIncrementor = 0;
-            switch (i) {
-                case 0:
-                    xIncrementor = 2;
-                    yIncrementor = 1;
-                    break;
-                case 1:
-                    xIncrementor = 2;
-                    yIncrementor = -1;
-                    break;
-                case 2:
-                    xIncrementor = -2;
-                    yIncrementor = 1;
-                    break;
-                case 3:
-                    xIncrementor = -2;
-                    yIncrementor = -1;
-                    break;
-                case 4:
-                    yIncrementor = 2;
-                    xIncrementor = 1;
-                    break;
-                case 5:
-                    yIncrementor = 2;
-                    xIncrementor = -1;
-                    break;
-                case 6:
-                    yIncrementor = -2;
-                    xIncrementor = 1;
-                    break;
-                case 7:
-                    yIncrementor = -2;
-                    xIncrementor = -1;
-                    break;
-            }
-            int xCoordinate = this.position.getX() + xIncrementor;
-            int yCoordinate = this.position.getY() + yIncrementor;
-            if (!(ChessLogic.isValidX(xCoordinate) && ChessLogic.isValidY(yCoordinate))) {
+        for (int i = 0; i < Knight.minimalUnit.length; i++) {
+            ChessVector cv = Knight.minimalUnit[i];
+            ChessPosition cp = this.position.addChessVector(cv);
+            if (cp == null) {
                 continue;
             }
-
-            ChessPosition cp = new ChessPosition(xCoordinate, yCoordinate);
             ChessPiece cPiece = b.getChessPiece(cp);
             ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
             if (cPiece != null && cPiece.color != enemyColor) {
@@ -75,8 +45,8 @@ public class Knight extends ChessPiece {
                 continue;
             }
             result.add(cm);
-
         }
+
         return result;
     }
 

@@ -35,7 +35,7 @@ public class GUIBoard extends JPanel {
         int moves = 0;
         while (cb.status == ChessGameStatus.INGAME) {
             moves++;
-            java.util.List<ChessMove> availableMoves = ChessLogic.getAllPossibleMoves(cb.currentBoard, cb.move);
+            List<ChessMove> availableMoves = ChessLogic.getAllPossibleMoves(cb.currentBoard, cb.move);
             cb.applyChessMove(availableMoves.get((int) (availableMoves.size() * Math.random())));
             //System.out.println(cb.toString());
         }

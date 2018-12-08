@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends ChessPiece {
+    public static ChessVector[] minimalUnit = {new ChessVector(1, 1), new ChessVector(-1, 1), new ChessVector(1, -1), new ChessVector(-1, -1)};
 
     public Bishop(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
@@ -19,43 +20,24 @@ public class Bishop extends ChessPiece {
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         List<ChessMove> result = new ArrayList<>();
+        if (b.initialized) {
+            if (this.color == ChessColor.WHITE) {
+                return b.WHITE_MOVES.getOrDefault(this, result);
+            } else {
+                return b.BLACK_MOVES.getOrDefault(this, result);
+            }
+        }
 
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-        ChessPiece myKing= this.color==ChessColor.WHITE? b.WHITE_KING:b.BLACK_KING;
+        ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         //4 Diagonalen
-        for (int yIncrementor = -1; yIncrementor <= 1; yIncrementor++) {
-            if (yIncrementor == 0) continue;
-            for (int xIncrementor = -1; xIncrementor <= 1; xIncrementor++) {
-                if (xIncrementor == 0) continue;
-                int xCoordinate = this.position.getX();
-                int yCoordinate = this.position.getY();
-                ChessPosition cp = null;
-                do {
-                    xCoordinate += xIncrementor;
-                    yCoordinate += yIncrementor;
-                    if (!(ChessLogic.isValidX(xCoordinate) && ChessLogic.isValidY(yCoordinate))) {
-                        break;
-                    }
-                    cp = new ChessPosition(xCoordinate, yCoordinate);
-                    ChessPiece cPiece = b.getChessPiece(cp);
-                    ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
-                    if (cPiece != null && cPiece.color != enemyColor) {
-                        break;
-                    }
-                    if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position,cm, b,enemyColor)) {
-                        if(cPiece!=null &&cPiece.color==enemyColor){
-                            break;
-                        }
-                        continue;
-                    }
-                    if (cPiece == null) {
-                        result.add(cm);
-                    } else if (cPiece.color == enemyColor) {
-                        result.add(cm);
-                        break;
-                    }
-                } while (true);
-            }
+        for (
+                int i = 0;
+                i < Bishop.minimalUnit.length; i++)
+
+        {
+            ChessVector cv = Bishop.minimalUnit[i];
+            result.addAll(ChessLogic.cycleThrough(b, this.position, cv, enemyColor, myKing, this, pinFlag));
         }
         return result;
     }

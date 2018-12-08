@@ -6,6 +6,9 @@ import chess.*;
 import java.util.*;
 
 public class Pawn extends ChessPiece {
+    public ChessVector[] minimalUnit;
+    public int incrementor;
+
     public Pawn(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
@@ -13,64 +16,54 @@ public class Pawn extends ChessPiece {
         } else {
             this.representation = "\u265F";
         }
+        incrementor = this.color == ChessColor.WHITE ? -1 : 1;
+        this.minimalUnit = new ChessVector[4];
+        this.minimalUnit[0] = new ChessVector(0, incrementor);
+        this.minimalUnit[1] = new ChessVector(0, 2 * incrementor);
+        this.minimalUnit[2] = new ChessVector(1, incrementor);
+        this.minimalUnit[3] = new ChessVector(-1, incrementor);
     }
 
 
     @Override
     public List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag) {
         List<ChessMove> result = new ArrayList<>();
-
-        ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
-        ChessPiece myKing= this.color==ChessColor.WHITE? b.WHITE_KING:b.BLACK_KING;
-        int incrementor = this.color == ChessColor.WHITE ? -1 : 1;
-        //2 vorrücken
-        for (int i = 0; i < 4; i++) {
-            ChessPosition newPosition = null;
-            int newX = this.position.getX();
-            int newY = this.position.getY();
-            switch (i) {
-                case 0:
-                    newY += incrementor;
-                    break;
-                case 1:
-                    newY += 2 * incrementor;
-                    break;
-                case 2:
-                    //Diagonal schlagen links
-                    newX += 1;
-                    newY += incrementor;
-                    break;
-                case 3:
-                    newX -= 1;
-                    newY += incrementor;
-                    break;
+        if (b.initialized) {
+            if (this.color == ChessColor.WHITE) {
+                return b.WHITE_MOVES.getOrDefault(this, result);
+            } else {
+                return b.BLACK_MOVES.getOrDefault(this, result);
             }
-            if (ChessLogic.isValidX(newX) && ChessLogic.isValidX(newY)) {
-                ChessPosition cp = new ChessPosition(newX, newY);
-                ChessPiece cpPiece = b.getChessPiece(cp);
-                ChessMove cm = new ChessMove(this.position.clone(), cp, this, cpPiece);
-                if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position,cm, b,enemyColor)) {
-                    continue;
+        }
+        ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
+        for (int i = 0; i < this.minimalUnit.length; i++) {
+            ChessVector cv = this.minimalUnit[i];
+            ChessPosition cp = this.position.addChessVector(cv);
+            if (cp == null) {
+                continue;
+            }
+            ChessPiece cpPiece = b.getChessPiece(cp);
+            ChessMove cm = new ChessMove(this.position.clone(), cp, this, cpPiece);
+            if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position, cm, b, enemyColor)) {
+                continue;
+            }
+            if (i == 0) {
+                if (cpPiece == null) {
+                    result.add(cm);
                 }
-                if (i == 0 || i == 1) {
-                    if (cpPiece == null && (i != 1 || b.getChessPiece(new ChessPosition(this.position.getX(), this.color == ChessColor.WHITE ? 5 : 2)) == null && this.position.getY() == (this.color == ChessColor.WHITE ? 6 : 1))) {
+            } else if (i == 1) {
+                if(this.moves==0&&b.getChessPiece(cp)==null&& b.getChessPiece(cp.addChessVector(new ChessVector(0,-this.incrementor)))==null){
+                    result.add(cm);
+                }
+            } else {
+                if (cpPiece != null && cpPiece.color == enemyColor) {
+                    result.add(cm);
+                } else if (cpPiece == null) {
+                    //En Passant
+                    if (ChessLogic.canEnPassant(b, this, cv, enemyColor)) {
+                        cm.old = b.getChessPiece(cp.addChessVector(new ChessVector(0, -this.incrementor)));
                         result.add(cm);
-                    }
-                } else {
-                    if (cpPiece != null && cpPiece.color == enemyColor) {
-                        result.add(cm);
-                    } else if (cpPiece == null) {
-                        //En Passant
-                        int xInc = i == 2 ? 1 : -1;
-                        int cp2X = cp.getX();
-                        int cp2Y = cp.getY() - incrementor;
-                        if (ChessLogic.isValidX(cp.getX() + xInc) && ChessLogic.isValidY(cp2Y)) {
-                            ChessPiece cP2 = b.getChessPiece(new ChessPosition(cp2X, cp2Y));
-                            if (cP2 instanceof Pawn && cP2.color == enemyColor && cP2.moves == 1 && (this.color == ChessColor.WHITE ? this.position.getY() == 3 : this.position.getY() == 4)) {
-                                cm.old = cP2;
-                                result.add(cm);
-                            }
-                        }
                     }
                 }
             }
