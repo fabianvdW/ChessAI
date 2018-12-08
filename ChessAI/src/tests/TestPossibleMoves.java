@@ -1,10 +1,10 @@
 package tests;
 
-import Chess.ChessBoard;
-import Chess.ChessColor;
-import Chess.ChessMove;
-import Chess.ChessPosition;
-import Chess.pieces.*;
+import chess.ChessBoard;
+import chess.ChessColor;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.pieces.*;
 
 
 public class TestPossibleMoves {

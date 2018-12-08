@@ -1,10 +1,10 @@
-### Chess AI
+### chess AI
 
 ## Usage
 ```
 java -jar xD.jar
 ```
-## Chess
+## chess
 Our own chess framework is implemented.
 ## AI
 Alpha-Beta pruning with Move ordering

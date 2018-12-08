@@ -1,7 +1,7 @@
-package Chess;
+package chess;
 
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Rook;
+import chess.pieces.ChessPiece;
+import chess.pieces.Rook;
 
 public class CastleMove extends ChessMove {
     Rook r;

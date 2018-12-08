@@ -1,12 +1,12 @@
 package tests;
 
-import Chess.CastleMove;
-import Chess.ChessGame;
-import Chess.ChessMove;
-import Chess.ChessPosition;
-import Chess.pieces.ChessPiece;
-import Chess.pieces.King;
-import Chess.pieces.Rook;
+import chess.CastleMove;
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.pieces.ChessPiece;
+import chess.pieces.King;
+import chess.pieces.Rook;
 
 public class TestCastle {
     public static void main(String[] args) {

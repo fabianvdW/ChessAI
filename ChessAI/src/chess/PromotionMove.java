@@ -1,6 +1,6 @@
-package Chess;
+package chess;
 
-import Chess.pieces.ChessPiece;
+import chess.pieces.ChessPiece;
 
 public class PromotionMove extends ChessMove {
     PromotionUnit pm;

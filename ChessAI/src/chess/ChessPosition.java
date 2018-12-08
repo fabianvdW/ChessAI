@@ -1,4 +1,4 @@
-package Chess;
+package chess;
 
 public class ChessPosition {
     private int x;
@@ -9,6 +9,17 @@ public class ChessPosition {
         setY(y);
     }
 
+    public ChessPosition addChessVector(ChessVector cp) {
+        int newX = (int) (this.x + cp.x);
+        int newY = (int) (this.y + cp.y);
+        if (ChessLogic.isValidX(newX) && ChessLogic.isValidY(newY)) {
+            return new ChessPosition(newX, newY);
+        }
+        return null;
+    }
+    public ChessVector toChessVector(){
+        return new ChessVector(this.x,this.y);
+    }
     public int getX() {
         return x;
     }
@@ -38,9 +49,10 @@ public class ChessPosition {
         if (o instanceof ChessPosition) {
             ChessPosition cp2 = (ChessPosition) o;
             return cp2.getX() == this.x && cp2.getY() == this.y;
-        } else {
-            throw new RuntimeException("Expected Chess Position object!");
+        } else if(o!=null) {
+            throw new RuntimeException("Expected chess Position object!");
         }
+        return false;
     }
 
     @Override

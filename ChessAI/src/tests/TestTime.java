@@ -1,9 +1,9 @@
 package tests;
 
-import Chess.ChessGame;
-import Chess.ChessGameStatus;
-import Chess.ChessLogic;
-import Chess.ChessMove;
+import chess.ChessGame;
+import chess.ChessGameStatus;
+import chess.ChessLogic;
+import chess.ChessMove;
 
 import java.util.HashMap;
 import java.util.List;

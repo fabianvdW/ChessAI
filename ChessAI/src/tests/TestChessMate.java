@@ -1,8 +1,7 @@
 package tests;
 
-import Chess.*;
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Pawn;
+import chess.*;
+import chess.pieces.ChessPiece;
 
 public class TestChessMate {
 

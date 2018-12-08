@@ -1,11 +1,12 @@
-package Chess;
+package chess;
 
-import Chess.pieces.*;
+import chess.pieces.*;
 import helpers.StringColor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
+import java.util.Map;
 
 public class ChessBoard {
 
@@ -31,6 +32,11 @@ public class ChessBoard {
     public List<ChessPiece> BLACK_ROOKS;
     public List<ChessPiece> BLACK_BISHOPS;
     public List<ChessPiece> BLACK_KNIGHTS;
+
+    public Map<ChessPiece, List<ChessMove>> WHITE_MOVES;
+    public Map<ChessPiece, List<ChessMove>> BLACK_MOVES;
+    public boolean initialized;
+    //Note that the List with the Moves of the enemy color does not contain Moves of the enemy King
 
     public ChessPiece[][] getBoard() {
         return this.board;
@@ -78,6 +84,9 @@ public class ChessBoard {
 
     public ChessBoard() {
         board = new ChessPiece[8][8];
+        this.WHITE_MOVES= new HashMap<>();
+        this.BLACK_MOVES= new HashMap<>();
+        this.initialized=false;
         WHITE_KING = new King(ChessColor.WHITE, new ChessPosition(4, 7), this);
         WHITE_QUEENS = new ArrayList<>();
         Queen WHITE_QUEEN = new Queen(ChessColor.WHITE, new ChessPosition(3, 7), this);
@@ -143,10 +152,14 @@ public class ChessBoard {
             BLACK_PIECES.addAll(BLACK_BISHOPS);
             BLACK_PIECES.addAll(BLACK_KNIGHTS);
         }
+        initMoves(ChessColor.WHITE);
     }
 
     public ChessBoard(ChessBoard cb) {
         this.board = new ChessPiece[8][8];
+        this.WHITE_MOVES= new HashMap<>();
+        this.BLACK_MOVES= new HashMap<>();
+        this.initialized=false;
         this.WHITE_PAWNS = new ArrayList<>();
         this.WHITE_QUEENS = new ArrayList<>();
         this.WHITE_ROOKS = new ArrayList<>();
@@ -232,6 +245,38 @@ public class ChessBoard {
         }
 
     }
+    public void initMoves(ChessColor move){
+        List<ChessPiece> movePieces= move==ChessColor.WHITE?this.WHITE_PIECES:this.BLACK_PIECES;
+        List<ChessPiece> enemyPieces= (move==ChessColor.WHITE?this.BLACK_PIECES:this.WHITE_PIECES);
+        for(ChessPiece cp: enemyPieces){
+            if(cp instanceof  King){
+                continue;
+            }
+            List<ChessMove> moves= cp.getPossibleMoves(this,true);
+            if(moves.isEmpty()){
+                continue;
+            }
+            if(move==ChessColor.WHITE){
+                this.BLACK_MOVES.put(cp,moves);
+            }else{
+                this.WHITE_MOVES.put(cp,moves);
+            }
+        }
+        //System.out.println(this.BLACK_MOVES);
+        for(ChessPiece cp: movePieces){
+            List<ChessMove> moves= cp.getPossibleMoves(this,false);
+            if(moves.isEmpty()){
+                continue;
+            }
+            if(move==ChessColor.WHITE){
+                this.WHITE_MOVES.put(cp,moves);
+            }else{
+                this.BLACK_MOVES.put(cp,moves);
+            }
+        }
+        //System.out.println(this.WHITE_MOVES);
+        this.initialized=true;
+    }
 
     public ChessBoard applyChessMove(ChessMove cm, ChessColor move) {
         ChessBoard newBoard = new ChessBoard(this);
@@ -297,6 +342,7 @@ public class ChessBoard {
                 newBoard.setChessPiece(new ChessPosition(movedPiece.position.getX() - 1, r.position.getY()), r);
             }
         }
+        newBoard.initMoves(move);
         return newBoard;
     }
 

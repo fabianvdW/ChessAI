@@ -1,8 +1,7 @@
-package Chess;
+package chess;
 
-import Chess.pieces.ChessPiece;
-import Chess.pieces.Pawn;
-import Chess.pieces.Queen;
+import chess.pieces.ChessPiece;
+import chess.pieces.Pawn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ public class ChessGame {
 
     }
 
-    //TODO Stellungswiederholung, Promotion aussuchen, 50Zuege-Regel
+    //TODO Stellungswiederholung
     public void applyChessMove(ChessMove cm) {
         this.moveHistory.add(cm);
         this.fiftyDrawMoves+=1;
@@ -54,7 +53,6 @@ public class ChessGame {
                             fiftyDrawMoves=0;
                         }
                     } else {
-                        //TODO write specific exception
                         throw new RuntimeException("Illegal Move requested: Piece " + movedPiece.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
                     }
                     //StaleMate
@@ -81,7 +79,13 @@ public class ChessGame {
         }
         this.boardHistory.add(this.currentBoard);
     }
-
+    public void printBoardHistory(){
+        for(ChessBoard cb: this.boardHistory){
+            System.out.println(cb.toString());
+            System.out.println(cb.outOfSync());
+            System.out.println("");
+        }
+    }
     @Override
     public String toString() {
         return this.status + " , Move has Color: " + this.move + " Board: \n" + this.currentBoard.toString();
