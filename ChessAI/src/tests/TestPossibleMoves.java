@@ -3,7 +3,6 @@ package tests;
 import chess.ChessBoard;
 import chess.ChessColor;
 import chess.ChessMove;
-import chess.ChessPosition;
 import chess.pieces.*;
 
 

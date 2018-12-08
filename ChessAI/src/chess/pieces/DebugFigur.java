@@ -3,7 +3,6 @@ package chess.pieces;
 import chess.ChessBoard;
 import chess.ChessColor;
 import chess.ChessMove;
-import chess.ChessPosition;
 
 import java.util.List;
 

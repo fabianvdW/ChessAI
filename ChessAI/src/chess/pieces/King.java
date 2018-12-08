@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class King extends ChessPiece {
-    public static ChessVector[] minimalUnit = {new ChessVector(0, 1), new ChessVector(1, 1), new ChessVector(1, 0), new ChessVector(1, -1), new ChessVector(0, -1), new ChessVector(-1, -1), new ChessVector(-1, 0), new ChessVector(-1, 1)};
+    public static int[] minimalUnit = {9, 8, 7, 1, -1, -7, -8, -9};
 
-    public King(ChessColor color, ChessPosition position, ChessBoard board) {
+    public King(ChessColor color, int position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2654";
@@ -32,21 +32,22 @@ public class King extends ChessPiece {
         if (this.moves == 0 && !ChessLogic.isPositionThreatened(this.position, null, b, enemyColor)) {
             for (int i = 0; i < 2; i++) {
                 ChessPiece x = null;
+                int thisY=(this.position-this.position%8);
                 if (i == 0) {
-                    x = b.getChessPiece(new ChessPosition(0, this.position.getY()));
+                    x = b.getChessPiece(thisY);
                 } else {
-                    x = b.getChessPiece(new ChessPosition(7, this.position.getY()));
+                    x = b.getChessPiece(thisY);
                 }
                 if (x instanceof Rook) {
                     Rook r = (Rook) x;
                     if (r.moves == 0) {
                         int xIncrementor = i == 0 ? -1 : 1;
-                        ChessPosition pos1 = new ChessPosition(this.position.getX() + xIncrementor, this.position.getY());
-                        ChessPosition pos2 = new ChessPosition(this.position.getX() + 2 * xIncrementor, this.position.getY());
+                        int pos1 = this.position+xIncrementor;
+                        int pos2 = this.position+2*xIncrementor;
                         //Fields free
                         if (b.getChessPiece(pos1) == null && b.getChessPiece(pos2) == null) {
                             if (!ChessLogic.isPositionThreatened(pos1, null, b, enemyColor) && !ChessLogic.isPositionThreatened(pos2, null, b, enemyColor)) {
-                                result.add(new CastleMove(this.position.clone(), pos2, this, null, r));
+                                result.add(new CastleMove(this.position, pos2, this, null, r));
                             }
                         }
                     }
@@ -55,13 +56,13 @@ public class King extends ChessPiece {
         }
         //Check normal Moves
         for (int i = 0; i < King.minimalUnit.length; i++) {
-            ChessVector cv = King.minimalUnit[i];
-            ChessPosition cp = this.position.addChessVector(cv);
-            if (cp == null) {
+            int cv = King.minimalUnit[i];
+            int cp = this.position+cv;
+            if (!ChessLogic.isValidPosition(cp)) {
                 continue;
             }
             ChessPiece cPiece = b.getChessPiece(cp);
-            ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
+            ChessMove cm = new ChessMove(this.position, cp, this, cPiece);
             if (cPiece != null && cPiece.color != enemyColor) {
                 continue;
             }
@@ -79,7 +80,7 @@ public class King extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof King) {
             King b = (King) o;
-            return b.position.equals(this.position);
+            return b.position==this.position;
         }
         return false;
     }

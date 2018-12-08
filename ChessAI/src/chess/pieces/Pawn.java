@@ -6,10 +6,10 @@ import chess.*;
 import java.util.*;
 
 public class Pawn extends ChessPiece {
-    public ChessVector[] minimalUnit;
+    public int[] minimalUnit;
     public int incrementor;
 
-    public Pawn(ChessColor color, ChessPosition position, ChessBoard board) {
+    public Pawn(ChessColor color, int position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2659";
@@ -17,11 +17,11 @@ public class Pawn extends ChessPiece {
             this.representation = "\u265F";
         }
         incrementor = this.color == ChessColor.WHITE ? -1 : 1;
-        this.minimalUnit = new ChessVector[4];
-        this.minimalUnit[0] = new ChessVector(0, incrementor);
-        this.minimalUnit[1] = new ChessVector(0, 2 * incrementor);
-        this.minimalUnit[2] = new ChessVector(1, incrementor);
-        this.minimalUnit[3] = new ChessVector(-1, incrementor);
+        this.minimalUnit = new int[4];
+        this.minimalUnit[0] = incrementor*8;
+        this.minimalUnit[1] = 2*incrementor*8;
+        this.minimalUnit[2] = incrementor*8+1;
+        this.minimalUnit[3] = incrementor*8-1;
     }
 
 
@@ -38,13 +38,13 @@ public class Pawn extends ChessPiece {
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         for (int i = 0; i < this.minimalUnit.length; i++) {
-            ChessVector cv = this.minimalUnit[i];
-            ChessPosition cp = this.position.addChessVector(cv);
-            if (cp == null) {
+            int cv = this.minimalUnit[i];
+            int cp = this.position+(cv);
+            if (!ChessLogic.isValidPosition(cp)) {
                 continue;
             }
             ChessPiece cpPiece = b.getChessPiece(cp);
-            ChessMove cm = new ChessMove(this.position.clone(), cp, this, cpPiece);
+            ChessMove cm = new ChessMove(this.position, cp, this, cpPiece);
             if (!pinFlag && ChessLogic.isPositionThreatened(myKing.position, cm, b, enemyColor)) {
                 continue;
             }
@@ -53,7 +53,7 @@ public class Pawn extends ChessPiece {
                     result.add(cm);
                 }
             } else if (i == 1) {
-                if(this.moves==0&&b.getChessPiece(cp)==null&& b.getChessPiece(cp.addChessVector(new ChessVector(0,-this.incrementor)))==null){
+                if(this.moves==0&&b.getChessPiece(cp)==null&& b.getChessPiece(cp-8*this.incrementor)==null){
                     result.add(cm);
                 }
             } else {
@@ -62,7 +62,7 @@ public class Pawn extends ChessPiece {
                 } else if (cpPiece == null) {
                     //En Passant
                     if (ChessLogic.canEnPassant(b, this, cv, enemyColor)) {
-                        cm.old = b.getChessPiece(cp.addChessVector(new ChessVector(0, -this.incrementor)));
+                        cm.old = b.getChessPiece(cp-8*this.incrementor);
                         result.add(cm);
                     }
                 }
@@ -75,7 +75,7 @@ public class Pawn extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof Pawn) {
             Pawn b = (Pawn) o;
-            return b.position.equals(this.position);
+            return b.position==this.position;
         }
         return false;
     }

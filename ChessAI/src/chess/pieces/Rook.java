@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rook extends ChessPiece {
-    public static ChessVector[] minimalUnit = {new ChessVector(1, 0), new ChessVector(-1, 0), new ChessVector(0, -1), new ChessVector(0, 1)};
+    public static int[] minimalUnit = {8,1,-1,-8};
 
-    public Rook(ChessColor color, ChessPosition position, ChessBoard board) {
+    public Rook(ChessColor color, int position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2656";
@@ -30,7 +30,7 @@ public class Rook extends ChessPiece {
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         for (int i = 0; i < Rook.minimalUnit.length; i++) {
-            ChessVector cv = Rook.minimalUnit[i];
+            int cv = Rook.minimalUnit[i];
             result.addAll(ChessLogic.cycleThrough(b, this.position, cv, enemyColor, myKing, this, pinFlag));
         }
         return result;
@@ -40,7 +40,7 @@ public class Rook extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof Rook) {
             Rook b = (Rook) o;
-            return b.position.equals(this.position);
+            return b.position==this.position;
         }
         return false;
     }

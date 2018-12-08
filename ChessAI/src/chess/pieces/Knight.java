@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends ChessPiece {
-    public static ChessVector[] minimalUnit = {new ChessVector(2, 1), new ChessVector(-2, 1), new ChessVector(-2, -1), new ChessVector(2, -1), new ChessVector(1, 2), new ChessVector(1, -2), new ChessVector(-1, -2), new ChessVector(-1, 2)};
+    public static int[] minimalUnit = {17,15,10,6,-6,-10,-15,-17};
 
-    public Knight(ChessColor color, ChessPosition position, ChessBoard board) {
+    public Knight(ChessColor color, int position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2658";
@@ -31,13 +31,13 @@ public class Knight extends ChessPiece {
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         for (int i = 0; i < Knight.minimalUnit.length; i++) {
-            ChessVector cv = Knight.minimalUnit[i];
-            ChessPosition cp = this.position.addChessVector(cv);
-            if (cp == null) {
+            int cv = Knight.minimalUnit[i];
+            int cp = this.position+cv;
+            if (!ChessLogic.isValidPosition(cp)) {
                 continue;
             }
             ChessPiece cPiece = b.getChessPiece(cp);
-            ChessMove cm = new ChessMove(this.position.clone(), cp, this, cPiece);
+            ChessMove cm = new ChessMove(this.position, cp, this, cPiece);
             if (cPiece != null && cPiece.color != enemyColor) {
                 continue;
             }
@@ -54,7 +54,7 @@ public class Knight extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof Knight) {
             Knight b = (Knight) o;
-            return b.position.equals(this.position);
+            return b.position==this.position;
         }
         return false;
     }

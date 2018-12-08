@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends ChessPiece {
-    public static ChessVector[] minimalUnit = {new ChessVector(1, 1), new ChessVector(-1, 1), new ChessVector(1, -1), new ChessVector(-1, -1)};
+    public static int[] minimalUnit = {9, 7, -7, -9};
 
-    public Bishop(ChessColor color, ChessPosition position, ChessBoard board) {
+    public Bishop(ChessColor color, int position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2657";
@@ -31,12 +31,8 @@ public class Bishop extends ChessPiece {
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         //4 Diagonalen
-        for (
-                int i = 0;
-                i < Bishop.minimalUnit.length; i++)
-
-        {
-            ChessVector cv = Bishop.minimalUnit[i];
+        for (int i = 0; i < Bishop.minimalUnit.length; i++) {
+            int cv = Bishop.minimalUnit[i];
             result.addAll(ChessLogic.cycleThrough(b, this.position, cv, enemyColor, myKing, this, pinFlag));
         }
         return result;
@@ -46,7 +42,7 @@ public class Bishop extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof Bishop) {
             Bishop b = (Bishop) o;
-            return b.position.equals(this.position);
+            return b.position==this.position;
         }
         return false;
     }
