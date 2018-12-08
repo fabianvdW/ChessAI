@@ -246,27 +246,7 @@ public class ChessLogic {
         ChessColor enemyColor = (k.color == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
         List<ChessPiece> threatsToKing = getThreats(k.position, cb, enemyColor, false);
         if (!threatsToKing.isEmpty()) {
-            if (k.getPossibleMoves(cb, false).isEmpty()) {
-                for (ChessMove cm : getAllPossibleMoves(cb, move)) {
-                    if (cm.moved.equals(k)) {
-                        assert (false);
-                        continue;
-                    }
-                    applyChessMoveToBoardWithoutLogic(cm, cb);
-                    boolean noThreats = true;
-                    for (ChessPiece cp : threatsToKing) {
-                        if (cp.onBoard) {
-                            if (threatensPosition(cp, cb, k.position)) {
-                                noThreats = false;
-                                break;
-                            }
-                        }
-                    }
-                    reverseChessMoveToBoardWithoutLogic(cm, cb);
-                    if (noThreats) {
-                        return false;
-                    }
-                }
+            if(getAllPossibleMoves(cb,move).isEmpty()){
                 return true;
             }
         }
