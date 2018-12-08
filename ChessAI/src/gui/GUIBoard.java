@@ -89,14 +89,14 @@ public class GUIBoard extends JPanel {
                 }
                 if (i < 8 && n < 8) {
                     g.setFont(new Font("TimesRoman", Font.PLAIN, (xScale + yScale) / 2));
-                    ChessPiece p = this.game.boardHistory.get(this.step).getBoard()[i*8+n];
+                    ChessPiece p = this.game.boardHistory.get(this.step).getBoard()[i][n];
                     if (p != null) {
                         if (p.color == ChessColor.WHITE) {
                             g.setColor(new Color(255, 187, 25));
                         } else {
                             g.setColor(Color.BLACK);
                         }
-                        g.drawString(p.representation, (int) (p.position%8 * xScale + 0.05 * xScale), (int) (p.position/8 * yScale + 0.90 * yScale));
+                        g.drawString(p.representation, (int) (p.position.getX() * xScale + 0.05 * xScale), (int) (p.position.getY() * yScale + 0.90 * yScale));
                     }
                 }
             }
@@ -104,11 +104,11 @@ public class GUIBoard extends JPanel {
         }
         if (this.step > 0) {
             ChessMove currMove = this.game.moveHistory.get(this.step - 1);
-            int start = currMove.from;
+            ChessPosition start = currMove.from;
             g.setColor(Color.GREEN);
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(10));
-            g.drawLine((int) (start%8 * xScale + xScale / 2), (int) ((start/8)* yScale + yScale / 2), (int) (currMove.to%8 * xScale + xScale / 2), (int) (currMove.to/8 * yScale + yScale / 2));
+            g.drawLine((int) (start.getX() * xScale + xScale / 2), (int) (start.getY() * yScale + yScale / 2), (int) (currMove.to.getX() * xScale + xScale / 2), (int) (currMove.to.getY() * yScale + yScale / 2));
         }
     }
 }

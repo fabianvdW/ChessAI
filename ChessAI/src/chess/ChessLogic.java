@@ -8,21 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 public class ChessLogic {
-    public static boolean isValidPosition(int cpos){
-        return cpos>=0&& cpos<64;
+    public static boolean isValidX(int x) {
+        return x >= 0 && x < 8;
     }
 
-    public static List<ChessPiece> getThreats(int cpos, ChessBoard cb, ChessColor enemyColor, boolean stopAtOne) {
+    public static boolean isValidY(int y) {
+        return y >= 0 && y < 8;
+    }
+
+    public static List<ChessPiece> getThreats(ChessPosition cpos, ChessBoard cb, ChessColor enemyColor, boolean stopAtOne) {
         ArrayList<ChessPiece> result = new ArrayList<>();
         List<ChessPiece> enemyPieces = (enemyColor == ChessColor.WHITE) ? cb.WHITE_PIECES : cb.BLACK_PIECES;
         for (ChessPiece cPiece : enemyPieces) {
             if (cPiece instanceof King) {
-                //Work out x and y parts
-                int cPieceX= cPiece.position%8;
-                int cPosX= cpos%8;
-                int cPieceY= (cPiece.position-cPieceX)/8;
-                int cPosY= (cpos-cPosX)/8;
-                if (Math.abs(cPieceX-cPosX) <= 1 && Math.abs(cPieceY-cPosY) <= 1) {
+                if (Math.abs(cPiece.position.getX() - cpos.getX()) <= 1 && Math.abs(cPiece.position.getY() - cpos.getY()) <= 1) {
                     result.add(cPiece);
                     if (stopAtOne) {
                         return result;
@@ -38,10 +37,10 @@ public class ChessLogic {
         return result;
     }
 
-    public static boolean threatensPosition(ChessPiece cPiece, ChessBoard cb, int cpos) {
+    public static boolean threatensPosition(ChessPiece cPiece, ChessBoard cb, ChessPosition cpos) {
         for (ChessMove cMove : cPiece.getPossibleMoves(cb, true)) {
-            int cPos = cMove.to;
-            if (cPos==cpos) {
+            ChessPosition cPos = cMove.to;
+            if (cPos.equals(cpos)) {
                 return true;
             }
         }
@@ -84,8 +83,8 @@ public class ChessLogic {
             return newMoves;
         }
         List<ChessPiece> enemyPieces = enemyColor == ChessColor.WHITE ? cb.WHITE_PIECES : cb.BLACK_PIECES;
-        int freePosition = cm.from;
-        int newPosition = cm.to;
+        ChessPosition freePosition = cm.from;
+        ChessPosition newPosition = cm.to;
         for (ChessPiece cp : enemyPieces) {
             if (cp instanceof King || cp instanceof Knight) {
                 continue;
@@ -93,48 +92,48 @@ public class ChessLogic {
                 //Free position can be in front of pawn, Pawn might be able to move forward once or twice now!
                 List<ChessMove> newM = new ArrayList<>();
                 Pawn p = (Pawn) cp;
-                int p0 = p.position+p.minimalUnit[0];
-                int p1 = p.position+p.minimalUnit[1];
-                int p2 = p.position+p.minimalUnit[2];
-                int p3 = p.position+p.minimalUnit[3];
-                if (freePosition==p0) {
+                ChessPosition p0 = p.position.addChessVector(p.minimalUnit[0]);
+                ChessPosition p1 = p.position.addChessVector(p.minimalUnit[1]);
+                ChessPosition p2 = p.position.addChessVector(p.minimalUnit[2]);
+                ChessPosition p3 = p.position.addChessVector(p.minimalUnit[3]);
+                if (freePosition.equals(p0)) {
                     //One move is definitly new!
-                    newM.add(new ChessMove(p.position, p0, p, null));
+                    newM.add(new ChessMove(p.position.clone(), p0, p, null));
 
                     //2 moves if in starting position and other field also free
                     if (p.moves == 0 && cb.getChessPiece(p1) == null) {
-                        newM.add(new ChessMove(p.position, p1, p, null));
+                        newM.add(new ChessMove(p.position.clone(), p1, p, null));
                     }
 
-                } else if (freePosition==p1) {
+                } else if (freePosition.equals(p1)) {
                     if (p.moves == 0 && cb.getChessPiece(p1) == null) {
-                        newM.add(new ChessMove(p.position, p1, p, null));
+                        newM.add(new ChessMove(p.position.clone(), p1, p, null));
                     }
                 }
-                if (freePosition==p2) {
+                if (freePosition.equals(p2)) {
                     //Check en passant
                     if (canEnPassant(cb, p, p.minimalUnit[2], enemyColor)) {
-                        newM.add(new ChessMove(p.position, p2, p, cb.getChessPiece(p2-8*p.incrementor)));
+                        newM.add(new ChessMove(p.position.clone(), p2, p, cb.getChessPiece(p2.addChessVector(new ChessVector(0, -p.incrementor)))));
                     }
-                } else if (newPosition==p2) {
+                } else if (newPosition.equals(p2)) {
                     //Can capture
-                    newM.add(new ChessMove(p.position, p2, cp, cm.moved));
+                    newM.add(new ChessMove(p.position.clone(), p2, cp, cm.moved));
                 }
-                if (freePosition==p3) {
+                if (freePosition.equals(p3)) {
                     //Check en passant
                     if (canEnPassant(cb, p, p.minimalUnit[3], enemyColor)) {
-                        newM.add(new ChessMove(p.position, p3, p, cb.getChessPiece(p3-8*p.incrementor)));
+                        newM.add(new ChessMove(p.position.clone(), p3, p, cb.getChessPiece(p3.addChessVector(new ChessVector(0, -p.incrementor)))));
                     }
-                } else if (newPosition==p3) {
+                } else if (newPosition.equals(p3)) {
                     //Can capture
-                    newM.add(new ChessMove(p.position, p3, cp, cm.moved));
+                    newM.add(new ChessMove(p.position.clone(), p3, cp, cm.moved));
                 }
 
                 newMoves.put(cp, newM);
             } else if (cp instanceof Rook || cp instanceof Queen || cp instanceof Bishop) {
-                int cV = getValidMultiplier(cp, freePosition-cp.position);
-                if (cV != Integer.MAX_VALUE) {
-                    newMoves.put(cp, cycleThrough(cb, freePosition-cV, cV, enemyColor, null, cp, true));
+                ChessVector cV = getValidMultiplier(cp, freePosition.addChessVector(new ChessVector(-cp.position.getX(), -cp.position.getY())));
+                if (cV != null) {
+                    newMoves.put(cp, cycleThrough(cb, new ChessPosition((int) (freePosition.getX() - cV.x), (int) (freePosition.getY() - cV.y)), cV, enemyColor, null, cp, true));
                 }
             } else {
                 assert (false);
@@ -144,18 +143,18 @@ public class ChessLogic {
         return newMoves;
     }
 
-    public static List<ChessMove> cycleThrough(ChessBoard b, int startingPosition, int cv, ChessColor enemyColor, ChessPiece myKing, ChessPiece me, boolean pinFlag) {
+    public static List<ChessMove> cycleThrough(ChessBoard b, ChessPosition startingPosition, ChessVector cv, ChessColor enemyColor, ChessPiece myKing, ChessPiece me, boolean pinFlag) {
         List<ChessMove> result = new ArrayList<>();
-        int cp = 0;
+        ChessPosition cp = null;
         int multiplier = 0;
         do {
             multiplier++;
-            cp = startingPosition+cv*multiplier;
-            if (!ChessLogic.isValidPosition(cp)) {
+            cp = startingPosition.addChessVector(cv.times(multiplier));
+            if (cp == null) {
                 break;
             }
             ChessPiece cPiece = b.getChessPiece(cp);
-            ChessMove cm = new ChessMove(startingPosition, cp, me, cPiece);
+            ChessMove cm = new ChessMove(startingPosition.clone(), cp, me, cPiece);
             if (cPiece != null && cPiece.color != enemyColor) {
                 break;
             }
@@ -176,35 +175,36 @@ public class ChessLogic {
 
     }
 
-    public static int getValidMultiplier(ChessPiece cp, int cpos) {
-        if (!ChessLogic.isValidPosition(cpos)) {
-            return Integer.MAX_VALUE;
+    public static ChessVector getValidMultiplier(ChessPiece cp, ChessPosition cpos) {
+        if (cpos == null) {
+            return null;
         }
+        ChessVector cv = cpos.toChessVector();
         if (cp instanceof Rook) {
             for (int i = 0; i < Rook.minimalUnit.length; i++) {
-                int mU = Rook.minimalUnit[i];
-                if (cpos%mU==0) {
+                ChessVector mU = Rook.minimalUnit[i];
+                if (cv.isMultiplierOf(mU)) {
                     return mU;
                 }
             }
         } else if (cp instanceof Bishop) {
             for (int i = 0; i < Bishop.minimalUnit.length; i++) {
-                int mU = Bishop.minimalUnit[i];
-                if (cpos%mU==0) {
+                ChessVector mU = Bishop.minimalUnit[i];
+                if (cv.isMultiplierOf(mU)) {
                     return mU;
                 }
             }
         } else if (cp instanceof Queen) {
             for (int i = 0; i < Queen.minimalUnit.length; i++) {
-                int mU = Queen.minimalUnit[i];
-                if (cpos%mU==0) {
+                ChessVector mU = Queen.minimalUnit[i];
+                if (cv.isMultiplierOf(mU)) {
                     return mU;
                 }
             }
         } else {
             assert (false);
         }
-        return Integer.MAX_VALUE;
+        return null;
     }
 
     public static void augmentMoveList(ChessBoard cb, Map<ChessPiece, List<ChessMove>> newMoves, ChessColor enemyColor) {
@@ -230,7 +230,7 @@ public class ChessLogic {
         }
     }
 
-    public static boolean isPositionThreatened(int cp, ChessMove cm, ChessBoard cb, ChessColor enemyColor) {
+    public static boolean isPositionThreatened(ChessPosition cp, ChessMove cm, ChessBoard cb, ChessColor enemyColor) {
         applyChessMoveToBoardWithoutLogic(cm, cb);
         //Augment enemy Move List
         Map<ChessPiece, List<ChessMove>> newMoves = getNewMoves(cm, cb, enemyColor);
@@ -273,20 +273,15 @@ public class ChessLogic {
         return false;
     }
 
-    public static boolean canEnPassant(ChessBoard b, Pawn p, int cv, ChessColor enemyColor) {
-        int newPawnPosition = p.position+cv;
-        int enPassantPosition = newPawnPosition-8*p.incrementor;
+    public static boolean canEnPassant(ChessBoard b, Pawn p, ChessVector cv, ChessColor enemyColor) {
+        ChessPosition newPawnPosition = p.position.addChessVector(cv);
+        ChessPosition enPassantPosition = newPawnPosition.addChessVector(new ChessVector(0, -p.incrementor));
         ChessPiece cP2 = b.getChessPiece(enPassantPosition);
-        if (cP2 instanceof Pawn && cP2.color == enemyColor && cP2.moves == 1 && (p.color == ChessColor.WHITE ? p.position-p.position%8 == 24 : p.position-p.position%8 == 32)) {
+        if (cP2 instanceof Pawn && cP2.color == enemyColor && cP2.moves == 1 && (p.color == ChessColor.WHITE ? p.position.getY() == 3 : p.position.getY() == 4)) {
             return true;
         }
 
 
         return false;
-    }
-    public static String toStringPosition(int position){
-        int xPart= position%8;
-        int yPart= (position-xPart) /8;
-        return "("+xPart+","+yPart+")";
     }
 }

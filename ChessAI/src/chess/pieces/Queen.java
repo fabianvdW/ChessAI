@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends ChessPiece {
-    public static int[] minimalUnit = {9,8,7,1,-1,-7,-8,-9};
+    public static ChessVector[] minimalUnit = {new ChessVector(0, 1), new ChessVector(1, 1), new ChessVector(1, 0), new ChessVector(1, -1), new ChessVector(0, -1), new ChessVector(-1, -1), new ChessVector(-1, 0), new ChessVector(-1, 1)};
 
-    public Queen(ChessColor color, int position, ChessBoard board) {
+    public Queen(ChessColor color, ChessPosition position, ChessBoard board) {
         super(color, position, board);
         if (this.color == ChessColor.WHITE) {
             this.representation = "\u2655";
@@ -30,7 +30,7 @@ public class Queen extends ChessPiece {
         ChessColor enemyColor = this.color == ChessColor.BLACK ? ChessColor.WHITE : ChessColor.BLACK;
         ChessPiece myKing = this.color == ChessColor.WHITE ? b.WHITE_KING : b.BLACK_KING;
         for (int i = 0; i < Queen.minimalUnit.length; i++) {
-            int cv = Queen.minimalUnit[i];
+            ChessVector cv = Queen.minimalUnit[i];
             result.addAll(ChessLogic.cycleThrough(b, this.position, cv, enemyColor, myKing, this, pinFlag));
         }
         return result;
@@ -40,7 +40,7 @@ public class Queen extends ChessPiece {
     public boolean equals(Object o) {
         if (o instanceof Queen) {
             Queen b = (Queen) o;
-            return b.position==this.position;
+            return b.position.equals(this.position);
         }
         return false;
     }

@@ -53,7 +53,7 @@ public class ChessGame {
                             fiftyDrawMoves=0;
                         }
                     } else {
-                        throw new RuntimeException("Illegal Move requested: Piece " + movedPiece.representation + " wants to move to " + ChessLogic.toStringPosition(cm.to) + " from " + ChessLogic.toStringPosition(cm.from));
+                        throw new RuntimeException("Illegal Move requested: Piece " + movedPiece.representation + " wants to move to " + cm.to.toString() + " from " + cm.from.toString());
                     }
                     //StaleMate
                     if (ChessLogic.getAllPossibleMoves(this.currentBoard, this.move).isEmpty()) {

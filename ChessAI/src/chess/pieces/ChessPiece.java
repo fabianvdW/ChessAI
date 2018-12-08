@@ -3,17 +3,18 @@ package chess.pieces;
 import chess.ChessBoard;
 import chess.ChessColor;
 import chess.ChessMove;
+import chess.ChessPosition;
 
 import java.util.List;
 
 public abstract class ChessPiece {
     public ChessColor color;
-    public int position;
+    public ChessPosition position;
     public String representation;
     public boolean onBoard;
     public int moves;
 
-    public ChessPiece(ChessColor color, int position, ChessBoard board) {
+    public ChessPiece(ChessColor color, ChessPosition position, ChessBoard board) {
         this.color = color;
         this.position = position;
         this.onBoard = true;

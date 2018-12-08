@@ -2,6 +2,7 @@ package tests;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.pieces.ChessPiece;
 import chess.pieces.Pawn;
 

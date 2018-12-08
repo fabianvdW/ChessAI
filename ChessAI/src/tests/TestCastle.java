@@ -3,6 +3,7 @@ package tests;
 import chess.CastleMove;
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.pieces.ChessPiece;
 import chess.pieces.King;
 import chess.pieces.Rook;
@@ -21,61 +22,61 @@ public class TestCastle {
 
     public static boolean castleShortWhite() {
         ChessGame cg = new ChessGame(null, null);
-        int g2 = 6 + 8 * 6;
-        cg.applyChessMove(new ChessMove(g2, 46, cg.currentBoard.getChessPiece(g2), null));
+        ChessPosition g2 = new ChessPosition(6, 6);
+        cg.applyChessMove(new ChessMove(g2, new ChessPosition(6, 5), cg.currentBoard.getChessPiece(g2), null));
         //Black
-        int a7 = 8;
-        cg.applyChessMove(new ChessMove(a7, 16, cg.currentBoard.getChessPiece(a7), null));
+        ChessPosition a7 = new ChessPosition(0, 1);
+        cg.applyChessMove(new ChessMove(a7, new ChessPosition(0, 2), cg.currentBoard.getChessPiece(a7), null));
         //White
-        int f1 = 8 * 7 + 5;
-        cg.applyChessMove(new ChessMove(f1, 54, cg.currentBoard.getChessPiece(f1), null));
+        ChessPosition f1 = new ChessPosition(5, 7);
+        cg.applyChessMove(new ChessMove(f1, new ChessPosition(6, 6), cg.currentBoard.getChessPiece(f1), null));
         //Black
-        int a6 = 16;
-        cg.applyChessMove(new ChessMove(a6, 24, cg.currentBoard.getChessPiece(a6), null));
+        ChessPosition a6 = new ChessPosition(0, 2);
+        cg.applyChessMove(new ChessMove(a6, new ChessPosition(0, 3), cg.currentBoard.getChessPiece(a6), null));
         //White
-        int g1 = 7 * 8 + 6;
-        cg.applyChessMove(new ChessMove(g1, 47, cg.currentBoard.getChessPiece(g1), null));
+        ChessPosition g1 = new ChessPosition(6, 7);
+        cg.applyChessMove(new ChessMove(g1, new ChessPosition(7, 5), cg.currentBoard.getChessPiece(g1), null));
         //Black
-        int a5 = 24;
-        cg.applyChessMove(new ChessMove(a5, 32, cg.currentBoard.getChessPiece(a5), null));
+        ChessPosition a5 = new ChessPosition(0, 3);
+        cg.applyChessMove(new ChessMove(a5, new ChessPosition(0, 4), cg.currentBoard.getChessPiece(a5), null));
         //System.out.println(cg.currentBoard.WHITE_KING.getPossibleMoves(cg.currentBoard,false));
         if (cg.currentBoard.WHITE_KING.getPossibleMoves(cg.currentBoard, false).size() != 2) {
             return false;
         }
-        ChessPiece cRook = cg.currentBoard.getChessPiece(63);
+        ChessPiece cRook = cg.currentBoard.getChessPiece(new ChessPosition(7, 7));
         if (cRook instanceof Rook) {
-            CastleMove cm = new CastleMove(61, 63, cg.currentBoard.getChessPiece(61), null, (Rook) cRook);
+            CastleMove cm = new CastleMove(new ChessPosition(4, 7), new ChessPosition(6, 7), cg.currentBoard.getChessPiece(new ChessPosition(4, 7)), null, (Rook) cRook);
             cg.applyChessMove(cm);
-            return cg.currentBoard.getBoard()[63] instanceof King && cg.currentBoard.getBoard()[62] instanceof Rook;
+            return cg.currentBoard.getBoard()[6][7] instanceof King && cg.currentBoard.getBoard()[5][7] instanceof Rook;
         }
         return false;
     }
 
     public static boolean castleShortWhiteFalse() {
         ChessGame cg = new ChessGame(null, null);
-        int g2 = 53;
-        cg.applyChessMove(new ChessMove(g2, 37,cg.currentBoard.getChessPiece(g2), null));
+        ChessPosition g2 = new ChessPosition(5, 6);
+        cg.applyChessMove(new ChessMove(g2, new ChessPosition(5, 4), cg.currentBoard.getChessPiece(g2), null));
         //Black
-        int a7 = 12;
-        cg.applyChessMove(new ChessMove(a7, 20,cg.currentBoard.getChessPiece(a7), null));
+        ChessPosition a7 = new ChessPosition(4, 1);
+        cg.applyChessMove(new ChessMove(a7, new ChessPosition(4, 2), cg.currentBoard.getChessPiece(a7), null));
         //White
-        int f1 = 54;
-        cg.applyChessMove(new ChessMove(f1, 46,cg.currentBoard.getChessPiece(f1), null));
+        ChessPosition f1 = new ChessPosition(6, 6);
+        cg.applyChessMove(new ChessMove(f1, new ChessPosition(6, 5), cg.currentBoard.getChessPiece(f1), null));
         //Black
-        int a6 = 5;
-        cg.applyChessMove(new ChessMove(a6, 26,cg.currentBoard.getChessPiece(a6), null));
+        ChessPosition a6 = new ChessPosition(5, 0);
+        cg.applyChessMove(new ChessMove(a6, new ChessPosition(2, 3), cg.currentBoard.getChessPiece(a6), null));
         //White
-        int g1 = 61;
-        cg.applyChessMove(new ChessMove(g1, 54,cg.currentBoard.getChessPiece(g1), null));
+        ChessPosition g1 = new ChessPosition(5, 7);
+        cg.applyChessMove(new ChessMove(g1, new ChessPosition(6, 6), cg.currentBoard.getChessPiece(g1), null));
         //Black
-        int a5 = 8;
-        cg.applyChessMove(new ChessMove(a5, 16,cg.currentBoard.getChessPiece(a5), null));
+        ChessPosition a5 = new ChessPosition(0, 1);
+        cg.applyChessMove(new ChessMove(a5, new ChessPosition(0, 2), cg.currentBoard.getChessPiece(a5), null));
         //White
-        int b1 = 63;
-        cg.applyChessMove(new ChessMove(b1, 47,cg.currentBoard.getChessPiece(b1), null));
+        ChessPosition b1 = new ChessPosition(6, 7);
+        cg.applyChessMove(new ChessMove(b1, new ChessPosition(7, 5), cg.currentBoard.getChessPiece(b1), null));
         //Black
-        int a4 = 16;
-        cg.applyChessMove(new ChessMove(a4, 24,cg.currentBoard.getChessPiece(a4), null));
+        ChessPosition a4 = new ChessPosition(0, 2);
+        cg.applyChessMove(new ChessMove(a4, new ChessPosition(0, 3), cg.currentBoard.getChessPiece(a4), null));
         //System.out.println(cg.currentBoard.WHITE_KING.getPossibleMoves(cg.currentBoard,false));
         return cg.currentBoard.WHITE_KING.getPossibleMoves(cg.currentBoard, false).size() == 1;
     }
@@ -83,22 +84,22 @@ public class TestCastle {
     public static boolean casteLongBlack() {
         ChessGame cg = new ChessGame(null, null);
         //White
-        int h2 = new int (7, 6);
-        int h3 = new int (7, 5);
-        int h4 = new int (7, 4);
-        int h5 = new int (7, 3);
-        int h6 = new int (7, 2);
-        int g7 = new int (6, 1);
+        ChessPosition h2 = new ChessPosition(7, 6);
+        ChessPosition h3 = new ChessPosition(7, 5);
+        ChessPosition h4 = new ChessPosition(7, 4);
+        ChessPosition h5 = new ChessPosition(7, 3);
+        ChessPosition h6 = new ChessPosition(7, 2);
+        ChessPosition g7 = new ChessPosition(6, 1);
         cg.applyChessMove(new ChessMove(h2, h3, cg.currentBoard.getChessPiece(h2), null));
 
         //Black
-        int d8 = new int (3, 0);
-        int d7 = new int (3, 1);
-        int d6 = new int (3, 2);
-        int d5 = new int (3, 3);
-        int c8 = new int (2, 0);
-        int b8 = new int (1, 0);
-        int a6 = new int (0, 2);
+        ChessPosition d8 = new ChessPosition(3, 0);
+        ChessPosition d7 = new ChessPosition(3, 1);
+        ChessPosition d6 = new ChessPosition(3, 2);
+        ChessPosition d5 = new ChessPosition(3, 3);
+        ChessPosition c8 = new ChessPosition(2, 0);
+        ChessPosition b8 = new ChessPosition(1, 0);
+        ChessPosition a6 = new ChessPosition(0, 2);
         cg.applyChessMove(new ChessMove(d7, d5, cg.currentBoard.getChessPiece(d7), null));
 
         //White
@@ -125,10 +126,9 @@ public class TestCastle {
         if (cg.currentBoard.BLACK_KING.getPossibleMoves(cg.currentBoard, false).size() != 2) {
             return false;
         }
-        ChessPiece cRook = cg.currentBoard.getChessPiece(new int (0, 0));
+        ChessPiece cRook = cg.currentBoard.getChessPiece(new ChessPosition(0, 0));
         if (cRook instanceof Rook) {
-            CastleMove cm = new CastleMove(new int (4, 0),new int (2, 0),cg.currentBoard.getChessPiece(new int (4, 0)),
-            null, (Rook) cRook);
+            CastleMove cm = new CastleMove(new ChessPosition(4, 0), new ChessPosition(2, 0), cg.currentBoard.getChessPiece(new ChessPosition(4, 0)), null, (Rook) cRook);
             cg.applyChessMove(cm);
             return cg.currentBoard.getBoard()[2][0] instanceof King && cg.currentBoard.getBoard()[3][0] instanceof Rook;
         }
@@ -138,27 +138,27 @@ public class TestCastle {
     public static boolean casteLongBlackFalse() {
         ChessGame cg = new ChessGame(null, null);
         //White
-        int g5 = new int (6, 3);
-        int c1 = new int (2, 7);
-        int d2 = new int (3, 6);
-        int d3 = new int (3, 5);
-        int h2 = new int (7, 6);
-        int h3 = new int (7, 5);
-        int h4 = new int (7, 4);
-        int h5 = new int (7, 3);
-        int h6 = new int (7, 2);
+        ChessPosition g5 = new ChessPosition(6, 3);
+        ChessPosition c1 = new ChessPosition(2, 7);
+        ChessPosition d2 = new ChessPosition(3, 6);
+        ChessPosition d3 = new ChessPosition(3, 5);
+        ChessPosition h2 = new ChessPosition(7, 6);
+        ChessPosition h3 = new ChessPosition(7, 5);
+        ChessPosition h4 = new ChessPosition(7, 4);
+        ChessPosition h5 = new ChessPosition(7, 3);
+        ChessPosition h6 = new ChessPosition(7, 2);
         cg.applyChessMove(new ChessMove(h2, h3, cg.currentBoard.getChessPiece(h2), null));
 
         //Black
-        int d8 = new int (3, 0);
-        int d7 = new int (3, 1);
-        int d6 = new int (3, 2);
-        int d5 = new int (3, 3);
-        int c8 = new int (2, 0);
-        int b8 = new int (1, 0);
-        int a6 = new int (0, 2);
-        int e7 = new int (4, 1);
-        int e6 = new int (4, 2);
+        ChessPosition d8 = new ChessPosition(3, 0);
+        ChessPosition d7 = new ChessPosition(3, 1);
+        ChessPosition d6 = new ChessPosition(3, 2);
+        ChessPosition d5 = new ChessPosition(3, 3);
+        ChessPosition c8 = new ChessPosition(2, 0);
+        ChessPosition b8 = new ChessPosition(1, 0);
+        ChessPosition a6 = new ChessPosition(0, 2);
+        ChessPosition e7 = new ChessPosition(4, 1);
+        ChessPosition e6 = new ChessPosition(4, 2);
         cg.applyChessMove(new ChessMove(d7, d5, cg.currentBoard.getChessPiece(d7), null));
 
         //White
