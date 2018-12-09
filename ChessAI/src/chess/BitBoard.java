@@ -35,10 +35,10 @@ public class BitBoard {
         this.blackRooks = 0x8100000000000000L;
         this.blackQueens = 0x1000000000000000L;
         this.moveHistory = "";
-        move=true;
+        move = true;
     }
 
-    public BitBoard(ChessPiece[][] arr,boolean move) {
+    public BitBoard(ChessPiece[][] arr, boolean move) {
         for (int i = 0; i < 64; i++) {
             whitePawns <<= 1;
             whiteKnights <<= 1;
@@ -93,24 +93,57 @@ public class BitBoard {
             }
         }
         this.moveHistory = "";
-        this.move=move;
+        this.move = move;
     }
 
-    public BitBoard(ChessPiece[][] arr, String moveHistory,boolean move) {
-        this(arr,move);
+    public BitBoard(ChessPiece[][] arr, String moveHistory, boolean move) {
+        this(arr, move);
         this.moveHistory = moveHistory;
     }
 
     public void initBoard() {
-        this.bm = new BitBoardMoves(this,move);
+        this.bm = new BitBoardMoves(this, move);
     }
 
     public static void main(String[] args) {
-        ChessBoard cb = new ChessBoard();
+        timeTest();
+        /*String chessBoard[][] = {
+                {"r", "n", "b", "q", "k", "b", "n", "r"},
+                {"p", "p", "p", "p", "p", "p", "p", "p"},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", "p", "P", "p", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {"R", "N", "B", "Q", "K", "B", "N", "R"}};
+        BitBoard bb = BitBoard.toBitBoard(chessBoard, true);
+        bb.moveHistory = "4143";
+        bb.initBoard();
+        System.out.println(bb.bm.possibleMoves);*/
+        //System.out.println(bb.toString());
+        //ChessBoard cb = new ChessBoard();
         //System.out.println(cb.toString());
-        BitBoard bb = new BitBoard(cb.getBoard(),true);
+        //BitBoard bb = new BitBoard(cb.getBoard(), true);
+        /*
+        bb= new BitBoard();
+        bb.initBoard();
         System.out.println(bb.toString());
+
+        System.out.println(bb.bm.possibleMoves);
+        */
+        //System.out.println(BitBoard.getOneBitBoardString(bb.blackBishops));
         //System.out.println(bb.getBitBoardString());
+    }
+
+    public static void timeTest() {
+        int times = 1000000;
+        long t0 = System.currentTimeMillis();
+        for (int i = 0; i < times; i++) {
+            BitBoard bb = new BitBoard();
+            bb.initBoard();
+        }
+        long t1 = System.currentTimeMillis();
+        System.out.println("Time: " + (t1 - t0));
     }
 
     @Override
@@ -197,6 +230,72 @@ public class BitBoard {
         sb.append("\nblackQueens Long: " + String.format("0x%016X", blackQueens));
         return sb.toString();
     }
+
+    public static String getOneBitBoardString(long bb) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            sb.append("|");
+            for (int j = 0; j < 8; j++) {
+                int shift = 63 - (j + i * 8);
+                sb.append("\t");
+                if (((bb >>> shift) & 1) == 1) {
+                    sb.append("X");
+                }
+                sb.append("\t");
+                if (j != 7) {
+                    sb.append("|");
+                }
+            }
+            sb.append("|\n");
+        }
+        return sb.toString();
+    }
+
+    public static BitBoard toBitBoard(String[][] board, boolean move) {
+        ChessPiece[][] arr = new ChessPiece[8][8];
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                String s = board[y][x];
+                if (s.equals("r")) {
+                    arr[x][y] = new Rook(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("n")) {
+                    arr[x][y] = new Knight(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("b")) {
+                    arr[x][y] = new Bishop(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("q")) {
+                    arr[x][y] = new Queen(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("k")) {
+                    arr[x][y] = new King(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("p")) {
+                    arr[x][y] = new Pawn(ChessColor.BLACK, null, null);
+                }
+                if (s.equals("R")) {
+                    arr[x][y] = new Rook(ChessColor.WHITE, null, null);
+                }
+                if (s.equals("N")) {
+                    arr[x][y] = new Knight(ChessColor.WHITE, null, null);
+                }
+                if (s.equals("B")) {
+                    arr[x][y] = new Bishop(ChessColor.WHITE, null, null);
+                }
+                if (s.equals("Q")) {
+                    arr[x][y] = new Queen(ChessColor.WHITE, null, null);
+                }
+                if (s.equals("K")) {
+                    arr[x][y] = new King(ChessColor.WHITE, null, null);
+                }
+                if (s.equals("P")) {
+                    arr[x][y] = new Pawn(ChessColor.WHITE, null, null);
+                }
+            }
+        }
+        return new BitBoard(arr, move);
+    }
 }
 
 class BitBoardMoves {
@@ -210,16 +309,17 @@ class BitBoardMoves {
     public final static int FILE_G = 6;
     public final static int FILE_H = 7;
     public final static long[] RANKS = {0xFF00000000000000L, 0x00FF000000000000L, 0x0000FF0000000000L, 0x000000FF00000000L, 0x00000000FF000000L, 0x0000000000FF0000L, 0x000000000000FF00L, 0x00000000000000FFL};
-    public final static int RANK_1 = 0;
-    public final static int RANK_2 = 1;
-    public final static int RANK_3 = 2;
-    public final static int RANK_4 = 3;
-    public final static int RANK_5 = 4;
-    public final static int RANK_6 = 5;
-    public final static int RANK_7 = 6;
-    public final static int RANK_8 = 7;
+    public final static int RANK_1 = 7;
+    public final static int RANK_2 = 6;
+    public final static int RANK_3 = 5;
+    public final static int RANK_4 = 4;
+    public final static int RANK_5 = 3;
+    public final static int RANK_6 = 2;
+    public final static int RANK_7 = 1;
+    public final static int RANK_8 = 0;
 
     //Generated at runtime
+    public BitBoard bb;
     //Black Pieces
     public long blackPieces;
     public long blackCantCapture;
@@ -230,19 +330,23 @@ class BitBoardMoves {
     public long emptySquares;
 
     boolean move;
+    //X1 is in File
+    //Y1 is in Rank
+    //Moves are of type x1,y1,x2,y2 if they are not a) Castles, b) En passants x1x2 Space E, c) Promotion Moves: x1x2 and then Q,R,B,N and then P
     String possibleMoves;
 
-    public BitBoardMoves(BitBoard bb,boolean move) {
-        this.move=move;
-        this.emptySquares=~(bb.whiteKing|bb.whiteQueens|bb.whiteRooks|bb.whiteBishops|bb.whiteKnights|bb.whitePawns|bb.blackKing|bb.blackQueens|bb.blackRooks|bb.blackBishops|bb.blackKnights|bb.blackPawns);
-        if(move){
+    public BitBoardMoves(BitBoard bb, boolean move) {
+        this.bb = bb;
+        this.move = move;
+        this.emptySquares = ~(bb.whiteKing | bb.whiteQueens | bb.whiteRooks | bb.whiteBishops | bb.whiteKnights | bb.whitePawns | bb.blackKing | bb.blackQueens | bb.blackRooks | bb.blackBishops | bb.blackKnights | bb.blackPawns);
+        if (move) {
             //White cant capture those figures, Black King is in there to prevent illegal moves!
-            whiteCantCapture=~(bb.whitePawns|bb.whiteKnights|bb.whiteBishops|bb.whiteRooks|bb.whiteQueens|bb.whiteKing|bb.blackKing);
-            blackPieces=bb.blackBishops|bb.blackQueens|bb.blackRooks|bb.blackKnights|bb.blackKing|bb.blackPawns;
-        }else{
+            whiteCantCapture = ~(bb.whitePawns | bb.whiteKnights | bb.whiteBishops | bb.whiteRooks | bb.whiteQueens | bb.whiteKing | bb.blackKing);
+            blackPieces = bb.blackBishops | bb.blackQueens | bb.blackRooks | bb.blackKnights | bb.blackPawns;//No Black King in there since it should not be captured
+        } else {
             //Black cant capture those figures, White King is in there to prevent illegal moves!
-            blackCantCapture=~(bb.blackPawns|bb.blackKnights|bb.blackBishops|bb.blackRooks|bb.blackQueens|bb.blackKing|bb.whiteKing);
-            whitePieces=bb.whiteBishops|bb.whiteQueens|bb.whiteRooks|bb.whiteKnights|bb.whiteKing|bb.whitePawns;
+            blackCantCapture = ~(bb.blackPawns | bb.blackKnights | bb.blackBishops | bb.blackRooks | bb.blackQueens | bb.blackKing | bb.whiteKing);
+            whitePieces = bb.whiteBishops | bb.whiteQueens | bb.whiteRooks | bb.whiteKnights | bb.whitePawns;//No white King in there since it should not be captured
         }
         possibleMoves = possiblePawnMoves()
                 + possibleKnightMoves()
@@ -254,7 +358,142 @@ class BitBoardMoves {
     }
 
     public String possiblePawnMoves() {
-        return "";
+        StringBuilder sb = new StringBuilder();
+        if (move) {
+            //Capture right BitBoard
+            //Make sure there is a Black Piece on the field and we do not capture to the right on the A Destination File
+            long moves = (bb.whitePawns << 7) & this.blackPieces & ~RANKS[RANK_8] & ~FILES[FILE_A];
+            long firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                sb.append("" + (j % 8 - 1) + (j / 8 + 1) + (j % 8) + (j / 8));
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+            //Capture Left
+            //Make sure there is a Black Piece on the field and we do not capture to the left on the H Destination File
+
+            moves = (bb.whitePawns << 9) & this.blackPieces & ~RANKS[RANK_8] & ~FILES[FILE_H];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                sb.append("" + (j % 8 + 1) + (j / 8 + 1) + (j % 8) + (j / 8));
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            //Move one forward
+            //Make sure the square is empty
+            moves = (bb.whitePawns << 8) & emptySquares & ~RANKS[RANK_8];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                sb.append("" + (j % 8) + (j / 8 + 1) + (j % 8) + (j / 8));
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            //Move two forward
+            //Make sure the square is empty and the square on the rank below is empty aswell
+            moves = (bb.whitePawns << 16) & emptySquares & (emptySquares << 8) & RANKS[RANK_4];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                sb.append("" + (j % 8) + (j / 8 + 2) + (j % 8) + (j / 8));
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            //PromotionMove, PromotionType
+            //Pawn promotion by capture right
+            moves = ((bb.whitePawns << 7)) & blackPieces & RANKS[RANK_8] & ~FILES[FILE_A];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                String pos = "" + (j % 8 - 1) + (j % 8);
+                sb.append(pos + "QP");
+                sb.append(pos + "RP");
+                sb.append(pos + "BP");
+                sb.append(pos + "NP");
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            //Pawn promotion by capture left
+            moves = (bb.whitePawns << 9) & blackPieces & RANKS[RANK_8] & ~FILES[FILE_H];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                String pos = "" + (j % 8 + 1) + (j % 8);
+                sb.append(pos + "QP");
+                sb.append(pos + "RP");
+                sb.append(pos + "BP");
+                sb.append(pos + "NP");
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            moves = (bb.whitePawns << 8) & emptySquares & RANKS[RANK_8];
+            firstPawn = moves & ~(moves - 1);
+            while (firstPawn != 0) {
+                int leadingZeros = Long.numberOfTrailingZeros(moves);
+                int j = 63 - leadingZeros;
+                String pos = "" + (j % 8) + (j % 8);
+                sb.append(pos + "QP");
+                sb.append(pos + "RP");
+                sb.append(pos + "BP");
+                sb.append(pos + "NP");
+                moves &= ~firstPawn;
+                firstPawn = moves & ~(moves - 1);
+            }
+
+            //System.out.println(BitBoard.getOneBitBoardString(moves));
+            //System.out.println("SB: "+sb.toString());
+
+            //En passants
+            //Check if last move was pawn move with two forward
+            if (bb.moveHistory.length() >= 4 && bb.moveHistory.charAt(bb.moveHistory.length() - 2) == bb.moveHistory.charAt(bb.moveHistory.length() - 4) && Math.abs(bb.moveHistory.charAt(bb.moveHistory.length() - 3) - bb.moveHistory.charAt(bb.moveHistory.length() - 1)) == 2) {
+                int enPassantFile = (bb.moveHistory.charAt(bb.moveHistory.length() - 2)) - '0';
+                //en passant right
+                long deletedPawn = (bb.whitePawns >> 1) & bb.blackPawns & RANKS[RANK_5] & ~FILES[FILE_A] & FILES[enPassantFile];//Position of deleted Pawn
+                if (deletedPawn != 0) {
+                    int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+                    int j = 63 - leadingZeros;
+                    sb.append(""+(j % 8 - 1) + (j % 8) + " E");
+                }
+                //en passant left
+                deletedPawn = (bb.whitePawns << 1) & bb.blackPawns & RANKS[RANK_5] & ~FILES[FILE_H] & FILES[enPassantFile];//Position of deleted Pawn
+                if (deletedPawn != 0) {
+                    int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+                    int j = 63 - leadingZeros;
+                    sb.append(""+(j % 8 + 1) + (j % 8) + " E");
+                }
+            }
+        } else {
+
+        }
+        return sb.toString();
     }
 
     public String possibleKnightMoves() {
