@@ -18,7 +18,9 @@ public abstract class ChessPiece {
         this.color = color;
         this.position = position;
         this.onBoard = true;
-        board.setChessPiece(this.position, this);
+        if(board!=null) {
+            board.setChessPiece(this.position, this);
+        }
     }
 
     public abstract List<ChessMove> getPossibleMoves(ChessBoard b, boolean pinFlag);
