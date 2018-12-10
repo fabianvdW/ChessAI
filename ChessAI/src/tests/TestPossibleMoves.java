@@ -1,9 +1,6 @@
 package tests;
 
-import chess.ChessBoard;
-import chess.ChessColor;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import chess.pieces.*;
 
 
@@ -13,7 +10,7 @@ public class TestPossibleMoves {
     }
     public static void RookTest2(){
         ChessBoard cb= new ChessBoard();
-        TestChessMate.clearBoard(cb);
+        ChessLogic.clearBoard(cb);
         cb.WHITE_PIECES.clear();
         cb.BLACK_PIECES.clear();
         cb.WHITE_PIECES.add(new Pawn(ChessColor.WHITE,new ChessPosition(0,1),cb));
