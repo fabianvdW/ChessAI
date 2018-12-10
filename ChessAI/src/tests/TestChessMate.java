@@ -1,7 +1,6 @@
 package tests;
 
 import chess.*;
-import chess.pieces.ChessPiece;
 
 public class TestChessMate {
 
@@ -23,7 +22,7 @@ public class TestChessMate {
     public static boolean scenario5() {
         ChessGame cg = new ChessGame(null, null);
         ChessBoard cb = cg.currentBoard;
-        clearBoard(cb);
+        ChessLogic.clearBoard(cb);
         cb.setChessPiece(new ChessPosition(4, 0), cb.BLACK_KING);
         cb.setChessPiece(new ChessPosition(3, 1), cb.WHITE_PAWNS.get(0));
         cb.setChessPiece(new ChessPosition(4, 1), cb.WHITE_PAWNS.get(1));
@@ -39,7 +38,7 @@ public class TestChessMate {
     public static boolean scenario6() {
         ChessGame cg = new ChessGame(null, null);
         ChessBoard cb = cg.currentBoard;
-        clearBoard(cb);
+        ChessLogic.clearBoard(cb);
         cg.move = ChessColor.BLACK;
         cb.setChessPiece(new ChessPosition(6, 0), cb.BLACK_KING);
         cb.setChessPiece(new ChessPosition(5, 1), cb.BLACK_PAWNS.get(0));
@@ -55,7 +54,7 @@ public class TestChessMate {
     public static boolean scenario4() {
         ChessGame cg = new ChessGame(null, null);
         ChessBoard cb = cg.currentBoard;
-        clearBoard(cb);
+        ChessLogic.clearBoard(cb);
         cb.setChessPiece(new ChessPosition(7, 0), cb.WHITE_KING);
         cb.setChessPiece(new ChessPosition(1, 0), cb.BLACK_ROOKS.get(0));
         cb.setChessPiece(new ChessPosition(1, 1), cb.BLACK_ROOKS.get(1));
@@ -63,17 +62,6 @@ public class TestChessMate {
         boolean mate = ChessLogic.isCheckMate(cb, cg.move);
         //System.out.println("Mate: " + mate);
         return mate;
-    }
-
-    public static void clearBoard(ChessBoard cb) {
-        for (ChessPiece cp : cb.WHITE_PIECES) {
-            cp.onBoard = false;
-            cb.setChessPiece(cp.position, null);
-        }
-        for (ChessPiece cp : cb.BLACK_PIECES) {
-            cp.onBoard = false;
-            cb.setChessPiece(cp.position, null);
-        }
     }
 
     public static boolean scenario3() {

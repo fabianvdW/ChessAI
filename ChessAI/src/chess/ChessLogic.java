@@ -264,4 +264,15 @@ public class ChessLogic {
 
         return false;
     }
+
+    public static void clearBoard(ChessBoard cb) {
+        for (ChessPiece cp : cb.WHITE_PIECES) {
+            cp.onBoard = false;
+            cb.setChessPiece(cp.position, null);
+        }
+        for (ChessPiece cp : cb.BLACK_PIECES) {
+            cp.onBoard = false;
+            cb.setChessPiece(cp.position, null);
+        }
+    }
 }
