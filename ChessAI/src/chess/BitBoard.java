@@ -4,109 +4,209 @@ import chess.pieces.*;
 import helpers.Constants;
 import helpers.StringColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BitBoard {
-    public long whitePawns;
-    public long whiteKing;
-    public long whiteKnights;
-    public long whiteBishops;
-    public long whiteRooks;
-    public long whiteQueens;
-    public long blackPawns;
-    public long blackKing;
-    public long blackKnights;
-    public long blackBishops;
-    public long blackRooks;
-    public long blackQueens;
-    public String moveHistory;
+    public long[] whitePieces;
+    public final static int WHITE_PAWNS = 0;
+    public final static int WHITE_KING = 1;
+    public final static int WHITE_KNIGHTS = 2;
+    public final static int WHITE_BISHOPS = 3;
+    public final static int WHITE_ROOKS = 4;
+    public final static int WHITE_QUEENS = 5;
+
+    public long[] blackPieces;
+    public final static int BLACK_PAWNS = 0;
+    public final static int BLACK_KING = 1;
+    public final static int BLACK_KNIGHTS = 2;
+    public final static int BLACK_BISHOPS = 3;
+    public final static int BLACK_ROOKS = 4;
+    public final static int BLACK_QUEENS = 5;
+
+    public long enPassant;
+
+    public boolean castleWK;
+    public boolean castleWQ;
+    public boolean castleBK;
+    public boolean castleBQ;
+    public List<BitBoardMove> moveHistory;
     public BitBoardMoves bm;
     public boolean move;
 
     public BitBoard() {
-        this.whitePawns = 0x000000000000FF00L;
-        this.whiteKing = 0x0000000000000008L;
-        this.whiteKnights = 0x0000000000000042L;
-        this.whiteBishops = 0x0000000000000024L;
-        this.whiteRooks = 0x0000000000000081L;
-        this.whiteQueens = 0x0000000000000010L;
-        this.blackPawns = 0x00FF000000000000L;
-        this.blackKing = 0x0800000000000000L;
-        this.blackKnights = 0x4200000000000000L;
-        this.blackBishops = 0x2400000000000000L;
-        this.blackRooks = 0x8100000000000000L;
-        this.blackQueens = 0x1000000000000000L;
-        this.moveHistory = "";
+        this.whitePieces = new long[6];
+        this.whitePieces[WHITE_PAWNS] = 0x000000000000FF00L;
+        this.whitePieces[WHITE_KING] = 0x0000000000000008L;
+        this.whitePieces[WHITE_KNIGHTS] = 0x0000000000000042L;
+        this.whitePieces[WHITE_BISHOPS] = 0x0000000000000024L;
+        this.whitePieces[WHITE_ROOKS] = 0x0000000000000081L;
+        this.whitePieces[WHITE_QUEENS] = 0x0000000000000010L;
+        this.blackPieces[BLACK_PAWNS] = 0x00FF000000000000L;
+        this.blackPieces[BLACK_KING] = 0x0800000000000000L;
+        this.blackPieces[BLACK_KNIGHTS] = 0x4200000000000000L;
+        this.blackPieces[BLACK_BISHOPS] = 0x2400000000000000L;
+        this.blackPieces[BLACK_ROOKS] = 0x8100000000000000L;
+        this.blackPieces[BLACK_QUEENS] = 0x1000000000000000L;
+        this.enPassant = 0L;
+        this.castleBK = true;
+        this.castleBQ = true;
+        this.castleWK = true;
+        this.castleWQ = true;
+        this.moveHistory = new ArrayList<>();
         move = true;
     }
 
     public BitBoard(ChessPiece[][] arr, boolean move) {
+        whitePieces = new long[6];
         for (int i = 0; i < 64; i++) {
-            whitePawns <<= 1;
-            whiteKnights <<= 1;
-            whiteBishops <<= 1;
-            whiteKing <<= 1;
-            whiteRooks <<= 1;
-            whiteQueens <<= 1;
+            whitePieces[WHITE_PAWNS] <<= 1;
+            whitePieces[WHITE_KNIGHTS] <<= 1;
+            whitePieces[WHITE_BISHOPS] <<= 1;
+            whitePieces[WHITE_KING] <<= 1;
+            whitePieces[WHITE_ROOKS] <<= 1;
+            whitePieces[WHITE_QUEENS] <<= 1;
 
-            blackPawns <<= 1;
-            blackKnights <<= 1;
-            blackBishops <<= 1;
-            blackKing <<= 1;
-            blackRooks <<= 1;
-            blackQueens <<= 1;
+            blackPieces[BLACK_PAWNS] <<= 1;
+            blackPieces[BLACK_KNIGHTS] <<= 1;
+            blackPieces[BLACK_BISHOPS] <<= 1;
+            blackPieces[BLACK_KING] <<= 1;
+            blackPieces[BLACK_ROOKS] <<= 1;
+            blackPieces[BLACK_QUEENS] <<= 1;
             ChessPiece cp = arr[i % 8][i / 8];
             if (cp instanceof Rook) {
                 if (cp.color == ChessColor.WHITE) {
-                    whiteRooks += 1L;
+                    whitePieces[WHITE_ROOKS] += 1L;
                 } else {
-                    blackRooks += 1L;
+                    blackPieces[BLACK_ROOKS] += 1L;
                 }
             } else if (cp instanceof Bishop) {
                 if (cp.color == ChessColor.WHITE) {
-                    whiteBishops += 1L;
+                    whitePieces[WHITE_BISHOPS] += 1L;
                 } else {
-                    blackBishops += 1L;
+                    blackPieces[BLACK_BISHOPS] += 1L;
                 }
             } else if (cp instanceof King) {
                 if (cp.color == ChessColor.WHITE) {
-                    whiteKing += 1L;
+                    whitePieces[WHITE_KING] += 1L;
                 } else {
-                    blackKing += 1L;
+                    blackPieces[BLACK_KING] += 1L;
                 }
             } else if (cp instanceof Knight) {
                 if (cp.color == ChessColor.WHITE) {
-                    whiteKnights += 1L;
+                    whitePieces[WHITE_KNIGHTS] += 1L;
                 } else {
-                    blackKnights += 1L;
+                    blackPieces[BLACK_KING] += 1L;
                 }
             } else if (cp instanceof Pawn) {
                 if (cp.color == ChessColor.WHITE) {
-                    whitePawns += 1L;
+                    whitePieces[WHITE_PAWNS] += 1L;
                 } else {
-                    blackPawns += 1L;
+                    blackPieces[BLACK_PAWNS] += 1L;
                 }
             } else if (cp instanceof Queen) {
                 if (cp.color == ChessColor.WHITE) {
-                    whiteQueens += 1L;
+                    whitePieces[WHITE_QUEENS] += 1L;
                 } else {
-                    blackQueens += 1L;
+                    blackPieces[BLACK_QUEENS] += 1L;
                 }
             }
         }
-        this.moveHistory = "";
+        this.enPassant = 0L;
+        this.castleWK = true;
+        this.castleWQ = true;
+        this.castleBQ = true;
+        this.castleBK = true;
+        this.moveHistory = new ArrayList<>();
         this.move = move;
     }
 
-    public BitBoard(ChessPiece[][] arr, String moveHistory, boolean move) {
+    public BitBoard(ChessPiece[][] arr, List<BitBoardMove> moveHistory, boolean move) {
         this(arr, move);
         this.moveHistory = moveHistory;
+        if (this.moveHistory.size() >= 1) {
+            BitBoardMove bbm = this.moveHistory.get(this.moveHistory.size() - 1);
+            if (bbm.x1 == bbm.x2 && Math.abs(bbm.y1 - bbm.y2) == 2) {
+                this.enPassant = BitBoardMoves.FILES[bbm.x1];
+            }
+        }
+    }
+
+    public BitBoard(long[] whitePieces, long[] blackPieces, long enPassant, boolean castleWK, boolean castleWQ, boolean castleBK, boolean castleBQ, List<BitBoardMove> moveHistory, boolean move) {
+        this.whitePieces = whitePieces;
+        this.blackPieces = blackPieces;
+        if (whitePieces.length != 6 || blackPieces.length != 6) {
+            throw new RuntimeException("Wrong format!");
+        }
+
+        this.enPassant = enPassant;
+        this.castleWK = castleWK;
+        this.castleWQ = castleWQ;
+        this.castleBK = castleBK;
+        this.castleBQ = castleBQ;
+        this.moveHistory = moveHistory;
+        this.move = move;
+    }
+
+    public BitBoard makeMove(BitBoardMove move) {
+        long[] whitePiecesCopy = whitePieces.clone();
+        long[] blackPiecesCopy = blackPieces.clone();
+        List<BitBoardMove> moveHistoryClone = new ArrayList<>(moveHistory);
+        moveHistoryClone.add(move);
+        if (move.desc == ' ') {
+            //Regular move
+            int start = move.x1 + move.y1 * 8;
+            int end = move.x2 + move.y2 * 8;
+            long[] myPieces;
+            long[] enemyPieces;
+            if (move.color) {
+                myPieces = whitePieces;
+                enemyPieces= blackPieces;
+            } else {
+                myPieces = blackPieces;
+                enemyPieces=whitePieces;
+            }
+            for(long l: myPieces){
+                if(((l>>>start)&1)==1){
+
+                }
+            }
+
+        } else if (move.desc == 'E') {
+            //En passant
+        } else if (move.desc == 'C') {
+            //Castle
+        } else if (move.desc == 'Q') {
+
+        } else if (move.desc == 'R') {
+
+        } else if (move.desc == 'B') {
+
+        } else if (move.desc == 'N') {
+
+        } else {
+            System.out.println("Wrong move!");
+            System.exit(-1);
+        }
+        //Check if castling rights are revoked!
+        boolean castleWKCopy = castleWK;
+        boolean castleWQCopy = castleWQ;
+        boolean castleBKCopy = castleBK;
+        boolean castleBQCopy = castleBQ;
+
+        //Check if an enpassant possibility was created!
+        long enPassantCopy = 0L;
+
+        return new BitBoard(whitePiecesCopy,blackPiecesCopy,enPassantCopy,castleWKCopy,castleWQCopy,castleBKCopy,castleBQCopy,moveHistoryClone,!this.move);
     }
 
     public void initBoard() {
         this.bm = new BitBoardMoves(this, move);
     }
 
+
     public static void main(String[] args) {
-        //timeTest();
+        timeTest();
         String chessBoard[][] = {
                 {"r", "n", "b", "q", "k", "b", "n", "r"},
                 {"p", "p", "p", "p", "p", "p", "p", "p"},
@@ -119,21 +219,6 @@ public class BitBoard {
         BitBoard bb = BitBoard.toBitBoard(chessBoard, true);
         bb.initBoard();
         //System.out.println(bb.bm.possibleMoves);
-        //System.out.println(BitBoard.getOneBitBoardString(bb.bm.horizontalAndVerticalMoves(36)));
-        System.out.println(bb.bm.possibleMoves);
-        //System.out.println(bb.toString());
-        //ChessBoard cb = new ChessBoard();
-        //System.out.println(cb.toString());
-        //BitBoard bb = new BitBoard(cb.getBoard(), true);
-        /*
-        bb= new BitBoard();
-        bb.initBoard();
-        System.out.println(bb.toString());
-
-        System.out.println(bb.bm.possibleMoves);
-        */
-        //System.out.println(BitBoard.getOneBitBoardString(bb.blackBishops));
-        //System.out.println(bb.getBitBoardString());
     }
 
     public static void timeTest() {
@@ -155,51 +240,51 @@ public class BitBoard {
             for (int j = 0; j < 8; j++) {
                 int shift = 63 - (j + i * 8);
                 sb.append("\t");
-                if (((this.whitePawns >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_PAWNS] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.PAWN_REPRESENTATION_WHITE);
                 }
-                if (((this.blackPawns >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_PAWNS] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.PAWN_REPRESENTATION_BLACK);
                 }
-                if (((this.whiteBishops >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_BISHOPS] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.BISHOP_REPRESENTATION_WHITE);
                 }
-                if (((this.blackBishops >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_BISHOPS] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.BISHOP_REPRESENTATION_BLACK);
                 }
-                if (((this.whiteKnights >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_KNIGHTS] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.KNIGHT_REPRESENTATION_WHITE);
                 }
-                if (((this.blackKnights >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_KNIGHTS] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.KNIGHT_REPRESENTATION_BLACK);
                 }
-                if (((this.whiteKing >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_KING] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.KING_REPRESENTATION_WHITE);
                 }
-                if (((this.blackKing >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_KING] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.KING_REPRESENTATION_BLACK);
                 }
-                if (((this.whiteRooks >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_ROOKS] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.ROOK_REPRESENTATION_WHITE);
                 }
-                if (((this.blackRooks >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_ROOKS] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.ROOK_REPRESENTATION_BLACK);
                 }
-                if (((this.whiteQueens >> shift) & 1) == 1) {
+                if (((this.whitePieces[WHITE_QUEENS] >> shift) & 1) == 1) {
                     sb.append(StringColor.BLACK);
                     sb.append(Constants.QUEEN_REPRESENTATION_WHITE);
                 }
-                if (((this.blackQueens >> shift) & 1) == 1) {
+                if (((this.blackPieces[BLACK_QUEENS] >> shift) & 1) == 1) {
                     sb.append(StringColor.YELLOW);
                     sb.append(Constants.QUEEN_REPRESENTATION_BLACK);
                 }
@@ -216,19 +301,19 @@ public class BitBoard {
 
     public String getBitBoardString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("whitePawns Long: " + String.format("0x%016X", whitePawns));
-        sb.append("\nwhiteKing Long: " + String.format("0x%016X", whiteKing));
-        sb.append("\nwhiteKnights Long: " + String.format("0x%016X", whiteKnights));
-        sb.append("\nwhiteBishops Long: " + String.format("0x%016X", whiteBishops));
-        sb.append("\nwhiteRooks Long: " + String.format("0x%016X", whiteRooks));
-        sb.append("\nwhiteQueens Long: " + String.format("0x%016X", whiteQueens));
+        sb.append("whitePawns Long: " + String.format("0x%016X", whitePieces[WHITE_PAWNS]));
+        sb.append("\nwhiteKing Long: " + String.format("0x%016X", whitePieces[WHITE_KING]));
+        sb.append("\nwhiteKnights Long: " + String.format("0x%016X", whitePieces[WHITE_KNIGHTS]));
+        sb.append("\nwhiteBishops Long: " + String.format("0x%016X", whitePieces[WHITE_BISHOPS]));
+        sb.append("\nwhiteRooks Long: " + String.format("0x%016X", whitePieces[WHITE_ROOKS]));
+        sb.append("\nwhiteQueens Long: " + String.format("0x%016X", whitePieces[WHITE_QUEENS]));
 
-        sb.append("\nblackPawns Long: " + String.format("0x%016X", blackPawns));
-        sb.append("\nblackKing Long: " + String.format("0x%016X", blackKing));
-        sb.append("\nblackKnights Long: " + String.format("0x%016X", blackKnights));
-        sb.append("\nblackBishops Long: " + String.format("0x%016X", blackBishops));
-        sb.append("\nblackRooks Long: " + String.format("0x%016X", blackRooks));
-        sb.append("\nblackQueens Long: " + String.format("0x%016X", blackQueens));
+        sb.append("\nblackPawns Long: " + String.format("0x%016X", blackPieces[BLACK_PAWNS]));
+        sb.append("\nblackKing Long: " + String.format("0x%016X", blackPieces[BLACK_KING]));
+        sb.append("\nblackKnights Long: " + String.format("0x%016X", blackPieces[BLACK_KNIGHTS]));
+        sb.append("\nblackBishops Long: " + String.format("0x%016X", blackPieces[BLACK_BISHOPS]));
+        sb.append("\nblackRooks Long: " + String.format("0x%016X", blackPieces[BLACK_ROOKS]));
+        sb.append("\nblackQueens Long: " + String.format("0x%016X", blackPieces[BLACK_QUEENS]));
         return sb.toString();
     }
 
@@ -337,41 +422,56 @@ class BitBoardMoves {
     public long occupiedSquares;
 
     public boolean move;
+
+    public boolean kingIsThreatend;
     //X1 is in File
     //Y1 is in Rank
     //Moves are of type x1,y1,x2,y2 if they are not a) Castles, b) En passants x1x2 Space E, c) Promotion Moves: x1x2 and then Q,R,B,N and then P
-    String possibleMoves;
+    List<BitBoardMove> possibleMoves;
 
     public BitBoardMoves(BitBoard bb, boolean move) {
         this.bb = bb;
         this.move = move;
-        this.emptySquares = ~(bb.whiteKing | bb.whiteQueens | bb.whiteRooks | bb.whiteBishops | bb.whiteKnights | bb.whitePawns | bb.blackKing | bb.blackQueens | bb.blackRooks | bb.blackBishops | bb.blackKnights | bb.blackPawns);
+        this.emptySquares = ~(bb.whitePieces[BitBoard.WHITE_KING] | bb.whitePieces[BitBoard.WHITE_QUEENS] | bb.whitePieces[BitBoard.WHITE_ROOKS] | bb.whitePieces[BitBoard.WHITE_BISHOPS] | bb.whitePieces[BitBoard.WHITE_KNIGHTS] | bb.whitePieces[BitBoard.WHITE_PAWNS] | bb.blackPieces[BitBoard.BLACK_KING] | bb.blackPieces[BitBoard.BLACK_QUEENS] | bb.blackPieces[BitBoard.BLACK_ROOKS] | bb.blackPieces[BitBoard.BLACK_BISHOPS] | bb.blackPieces[BitBoard.BLACK_KNIGHTS] | bb.blackPieces[BitBoard.BLACK_PAWNS]);
         occupiedSquares = ~emptySquares;
+        //White cant capture those figures, Black King is in there to prevent illegal moves!
         if (move) {
-            //White cant capture those figures, Black King is in there to prevent illegal moves!
-            whiteCantCapture = ~(bb.whitePawns | bb.whiteKnights | bb.whiteBishops | bb.whiteRooks | bb.whiteQueens | bb.whiteKing | bb.blackKing);
-            blackPieces = bb.blackBishops | bb.blackQueens | bb.blackRooks | bb.blackKnights | bb.blackPawns;//No Black King in there since it should not be captured
+            whiteCantCapture = ~(bb.whitePieces[BitBoard.WHITE_PAWNS] | bb.whitePieces[BitBoard.WHITE_KNIGHTS] | bb.whitePieces[BitBoard.WHITE_BISHOPS] | bb.whitePieces[BitBoard.WHITE_ROOKS] | bb.whitePieces[BitBoard.WHITE_QUEENS] | bb.whitePieces[BitBoard.WHITE_KING] | bb.blackPieces[BitBoard.BLACK_KING]);
+            blackPieces = bb.blackPieces[BitBoard.BLACK_BISHOPS] | bb.blackPieces[BitBoard.BLACK_QUEENS] | bb.blackPieces[BitBoard.BLACK_ROOKS] | bb.blackPieces[BitBoard.BLACK_KNIGHTS] | bb.blackPieces[BitBoard.BLACK_PAWNS];//No Black King in there since it should not be captured
         } else {
             //Black cant capture those figures, White King is in there to prevent illegal moves!
-            blackCantCapture = ~(bb.blackPawns | bb.blackKnights | bb.blackBishops | bb.blackRooks | bb.blackQueens | bb.blackKing | bb.whiteKing);
-            whitePieces = bb.whiteBishops | bb.whiteQueens | bb.whiteRooks | bb.whiteKnights | bb.whitePawns;//No white King in there since it should not be captured
-        }
-        if (move) {
-            possibleMoves = possiblePawnMovesWhite(bb.whitePawns, bb.blackPawns, blackPieces)
-                    + possibleKnightMoves(bb.whiteKnights, whiteCantCapture)
-                    + possibleBishopMoves(bb.whiteBishops, whiteCantCapture)
-                    + possibleRookMoves(bb.whiteRooks, whiteCantCapture)
-                    + possibleQueenMoves(bb.whiteQueens, whiteCantCapture)
-                    + possibleKingMoves(bb.whiteKing, whiteCantCapture);
-        } else {
-            possibleMoves = possiblePawnMovesBlack(bb.blackPawns, bb.whitePawns, whitePieces)
-                    + possibleKnightMoves(bb.blackKnights, blackCantCapture)
-                    + possibleBishopMoves(bb.blackBishops, blackCantCapture)
-                    + possibleRookMoves(bb.blackRooks, blackCantCapture)
-                    + possibleQueenMoves(bb.blackQueens, blackCantCapture)
-                    + possibleKingMoves(bb.blackKing, blackCantCapture);
+            blackCantCapture = ~(bb.blackPieces[BitBoard.BLACK_PAWNS] | bb.blackPieces[BitBoard.BLACK_KNIGHTS] | bb.blackPieces[BitBoard.BLACK_BISHOPS] | bb.blackPieces[BitBoard.BLACK_ROOKS] | bb.blackPieces[BitBoard.BLACK_QUEENS] | bb.blackPieces[BitBoard.BLACK_KING] | bb.whitePieces[BitBoard.WHITE_KING]);
+            whitePieces = bb.whitePieces[BitBoard.WHITE_BISHOPS] | bb.whitePieces[BitBoard.WHITE_QUEENS] | bb.whitePieces[BitBoard.WHITE_ROOKS] | bb.whitePieces[BitBoard.WHITE_KNIGHTS] | bb.whitePieces[BitBoard.WHITE_PAWNS];//No white King in there since it should not be captured
         }
 
+        //Wenn König gerade Bedroht ist, alle Pieces auf Pin überprüfen
+        //Sonst, nur König überprüfen
+        if (move) {
+            possibleMoves = new ArrayList<>(100);
+            possibleMoves.addAll(possiblePawnMovesWhite(bb.whitePieces[BitBoard.WHITE_PAWNS], bb.blackPieces[BitBoard.BLACK_PAWNS], blackPieces));
+            possibleMoves.addAll(possibleKnightMoves(bb.whitePieces[BitBoard.WHITE_KNIGHTS], whiteCantCapture, move));
+            possibleMoves.addAll(possibleBishopMoves(bb.whitePieces[BitBoard.WHITE_BISHOPS], whiteCantCapture, move));
+            possibleMoves.addAll(possibleRookMoves(bb.whitePieces[BitBoard.WHITE_ROOKS], whiteCantCapture, move));
+            possibleMoves.addAll(possibleQueenMoves(bb.whitePieces[BitBoard.WHITE_QUEENS], whiteCantCapture, move));
+            possibleMoves.addAll(possibleKingMoves(bb.whitePieces[BitBoard.WHITE_KING], whiteCantCapture, move));
+        } else {
+            possibleMoves = new ArrayList<>(100);
+            possibleMoves.addAll(possiblePawnMovesBlack(bb.blackPieces[BitBoard.BLACK_PAWNS], bb.whitePieces[BitBoard.WHITE_PAWNS], whitePieces));
+            possibleMoves.addAll(possibleKnightMoves(bb.blackPieces[BitBoard.BLACK_KNIGHTS], blackCantCapture, move));
+            possibleMoves.addAll(possibleBishopMoves(bb.blackPieces[BitBoard.BLACK_BISHOPS], blackCantCapture, move));
+            possibleMoves.addAll(possibleRookMoves(bb.blackPieces[BitBoard.BLACK_ROOKS], blackCantCapture, move));
+            possibleMoves.addAll(possibleQueenMoves(bb.blackPieces[BitBoard.BLACK_QUEENS], blackCantCapture, move));
+            possibleMoves.addAll(possibleKingMoves(bb.blackPieces[BitBoard.BLACK_KING], blackCantCapture, move));
+        }
+
+    }
+
+    public long unsafeForWhite() {
+        return unsafeForColor(true, bb.blackPieces[BitBoard.BLACK_PAWNS], bb.blackPieces[BitBoard.BLACK_KNIGHTS], bb.blackPieces[BitBoard.BLACK_QUEENS], bb.blackPieces[BitBoard.BLACK_BISHOPS], bb.blackPieces[BitBoard.BLACK_ROOKS], bb.blackPieces[BitBoard.BLACK_KING]);
+    }
+
+    public long unsafeForBlack() {
+        return unsafeForColor(false, bb.whitePieces[BitBoard.WHITE_PAWNS], bb.whitePieces[BitBoard.WHITE_KNIGHTS], bb.whitePieces[BitBoard.WHITE_QUEENS], bb.whitePieces[BitBoard.WHITE_BISHOPS], bb.whitePieces[BitBoard.WHITE_ROOKS], bb.whitePieces[BitBoard.WHITE_KING]);
     }
 
     public long horizontalAndVerticalMoves(int index) {
@@ -406,8 +506,27 @@ class BitBoardMoves {
         return (possibilitiesDiagonal & DIAGONAL_MASK[index / 8 + index % 8]) | possibilitiesAntiDiagonal & ANTIDIAGONAL_MASK[index / 8 + 7 - index % 8];
     }
 
-    public String possiblePawnMovesBlack(long blackPawns, long whitePawns, long whitePieces) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleCastle(boolean move, long myKing, long myRooks, boolean castleK, boolean castleQ) {
+        List<BitBoardMove> res = new ArrayList<>(2);
+        if (castleK) {
+            if (move) {
+                res.add(new BitBoardMove(4, 6, true, 'C'));
+            } else {
+                res.add(new BitBoardMove(4, 6, false, 'C'));
+            }
+        }
+        if (castleQ) {
+            if (move) {
+                res.add(new BitBoardMove(4, 2, true, 'C'));
+            } else {
+                res.add(new BitBoardMove(4, 2, false, 'C'));
+            }
+        }
+        return res;
+    }
+
+    public List<BitBoardMove> possiblePawnMovesBlack(long blackPawns, long whitePawns, long whitePieces) {
+        List<BitBoardMove> res = new ArrayList<>(16);
         //Capture right BitBoard
         //Make sure there is a Black Piece on the field and we do not capture to the right on the A Destination File
         long moves;
@@ -416,7 +535,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8 + 1) + (j / 8 - 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8 + 1, j / 8 - 1, j % 8, j / 8, false));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -429,7 +548,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8 - 1) + (j / 8 - 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8 - 1, j / 8 - 1, j % 8, j / 8, false));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -444,7 +563,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8) + (j / 8 - 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8, j / 8 - 1, j % 8, j / 8, false));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -459,7 +578,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8) + (j / 8 - 2) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8, j / 8 - 2, j % 8, j / 8, false));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -473,11 +592,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8 + 1) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8 + 1;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, false, 'Q'));
+            res.add(new BitBoardMove(x1, x2, false, 'R'));
+            res.add(new BitBoardMove(x1, x2, false, 'B'));
+            res.add(new BitBoardMove(x1, x2, false, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -490,11 +610,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8 - 1) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8 - 1;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, false, 'Q'));
+            res.add(new BitBoardMove(x1, x2, false, 'R'));
+            res.add(new BitBoardMove(x1, x2, false, 'B'));
+            res.add(new BitBoardMove(x1, x2, false, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -507,11 +628,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, false, 'Q'));
+            res.add(new BitBoardMove(x1, x2, false, 'R'));
+            res.add(new BitBoardMove(x1, x2, false, 'B'));
+            res.add(new BitBoardMove(x1, x2, false, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -521,29 +643,26 @@ class BitBoardMoves {
 
         //En passants
         //Check if last move was pawn move with two forward
-        if (bb.moveHistory.length() >= 4 && bb.moveHistory.charAt(bb.moveHistory.length() - 2) == bb.moveHistory.charAt(bb.moveHistory.length() - 4) && Math.abs(bb.moveHistory.charAt(bb.moveHistory.length() - 3) - bb.moveHistory.charAt(bb.moveHistory.length() - 1)) == 2) {
-            int enPassantFile = (bb.moveHistory.charAt(bb.moveHistory.length() - 2)) - '0';
-            //en passant right
-            long deletedPawn = (blackPawns << 1) & whitePawns & RANKS[RANK_4] & ~FILES[FILE_H] & FILES[enPassantFile];//Position of deleted Pawn
-            if (deletedPawn != 0) {
-                int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
-                int j = 63 - leadingZeros;
-                sb.append("" + (j % 8 + 1) + (j % 8) + " E");
-            }
-            //en passant left
-            deletedPawn = (blackPawns >>> 1) & whitePawns & RANKS[RANK_4] & ~FILES[FILE_A] & FILES[enPassantFile];//Position of deleted Pawn
-            if (deletedPawn != 0) {
-                int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
-                int j = 63 - leadingZeros;
-                sb.append("" + (j % 8 - 1) + (j % 8) + " E");
-            }
+        //en passant right
+        long deletedPawn = (blackPawns << 1) & whitePawns & RANKS[RANK_4] & ~FILES[FILE_H] & bb.enPassant;//Position of deleted Pawn
+        if (deletedPawn != 0) {
+            int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+            int j = 63 - leadingZeros;
+            res.add(new BitBoardMove(j % 8 + 1, j % 8, false, 'E'));
+        }
+        //en passant left
+        deletedPawn = (blackPawns >>> 1) & whitePawns & RANKS[RANK_4] & ~FILES[FILE_A] & bb.enPassant;//Position of deleted Pawn
+        if (deletedPawn != 0) {
+            int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+            int j = 63 - leadingZeros;
+            res.add(new BitBoardMove(j % 8 - 1, j % 8, false, 'E'));
         }
 
-        return sb.toString();
+        return res;
     }
 
-    public String possiblePawnMovesWhite(long whitePawns, long blackPawns, long blackPieces) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possiblePawnMovesWhite(long whitePawns, long blackPawns, long blackPieces) {
+        List<BitBoardMove> res = new ArrayList<>(16);
         //Capture right BitBoard
         //Make sure there is a Black Piece on the field and we do not capture to the right on the A Destination File
         long moves;
@@ -552,7 +671,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8 - 1) + (j / 8 + 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8 - 1, j / 8 + 1, j % 8, j / 8, true));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -565,7 +684,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8 + 1) + (j / 8 + 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8 + 1, j / 8 + 1, j % 8, j / 8, true));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -580,7 +699,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8) + (j / 8 + 1) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8, j / 8 + 1, j % 8, j / 8, true));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -595,7 +714,7 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            sb.append("" + (j % 8) + (j / 8 + 2) + (j % 8) + (j / 8));
+            res.add(new BitBoardMove(j % 8, j / 8 + 2, j % 8, j / 8, true));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -609,11 +728,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8 - 1) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8 - 1;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, true, 'Q'));
+            res.add(new BitBoardMove(x1, x2, true, 'R'));
+            res.add(new BitBoardMove(x1, x2, true, 'B'));
+            res.add(new BitBoardMove(x1, x2, true, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -626,11 +746,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8 + 1) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8 + 1;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, true, 'Q'));
+            res.add(new BitBoardMove(x1, x2, true, 'R'));
+            res.add(new BitBoardMove(x1, x2, true, 'B'));
+            res.add(new BitBoardMove(x1, x2, true, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -643,11 +764,12 @@ class BitBoardMoves {
         while (firstPawn != 0) {
             int leadingZeros = Long.numberOfTrailingZeros(moves);
             int j = 63 - leadingZeros;
-            String pos = "" + (j % 8) + (j % 8);
-            sb.append(pos + "QP");
-            sb.append(pos + "RP");
-            sb.append(pos + "BP");
-            sb.append(pos + "NP");
+            int x1 = j % 8;
+            int x2 = j % 8;
+            res.add(new BitBoardMove(x1, x2, true, 'Q'));
+            res.add(new BitBoardMove(x1, x2, true, 'R'));
+            res.add(new BitBoardMove(x1, x2, true, 'B'));
+            res.add(new BitBoardMove(x1, x2, true, 'N'));
             moves &= ~firstPawn;
             firstPawn = moves & ~(moves - 1);
         }
@@ -657,29 +779,26 @@ class BitBoardMoves {
 
         //En passants
         //Check if last move was pawn move with two forward
-        if (bb.moveHistory.length() >= 4 && bb.moveHistory.charAt(bb.moveHistory.length() - 2) == bb.moveHistory.charAt(bb.moveHistory.length() - 4) && Math.abs(bb.moveHistory.charAt(bb.moveHistory.length() - 3) - bb.moveHistory.charAt(bb.moveHistory.length() - 1)) == 2) {
-            int enPassantFile = (bb.moveHistory.charAt(bb.moveHistory.length() - 2)) - '0';
-            //en passant right
-            long deletedPawn = (whitePawns >> 1) & blackPawns & RANKS[RANK_5] & ~FILES[FILE_A] & FILES[enPassantFile];//Position of deleted Pawn
-            if (deletedPawn != 0) {
-                int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
-                int j = 63 - leadingZeros;
-                sb.append("" + (j % 8 - 1) + (j % 8) + " E");
-            }
-            //en passant left
-            deletedPawn = (whitePawns << 1) & blackPawns & RANKS[RANK_5] & ~FILES[FILE_H] & FILES[enPassantFile];//Position of deleted Pawn
-            if (deletedPawn != 0) {
-                int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
-                int j = 63 - leadingZeros;
-                sb.append("" + (j % 8 + 1) + (j % 8) + " E");
-            }
+        //en passant right
+        long deletedPawn = (whitePawns >> 1) & blackPawns & RANKS[RANK_5] & ~FILES[FILE_A] & bb.enPassant;//Position of deleted Pawn
+        if (deletedPawn != 0) {
+            int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+            int j = 63 - leadingZeros;
+            res.add(new BitBoardMove(j % 8 - 1, j % 8, true, 'E'));
+        }
+        //en passant left
+        deletedPawn = (whitePawns << 1) & blackPawns & RANKS[RANK_5] & ~FILES[FILE_H] & bb.enPassant;//Position of deleted Pawn
+        if (deletedPawn != 0) {
+            int leadingZeros = Long.numberOfTrailingZeros(deletedPawn);
+            int j = 63 - leadingZeros;
+            res.add(new BitBoardMove(j % 8 + 1, j % 8, true, 'E'));
         }
 
-        return sb.toString();
+        return res;
     }
 
-    public String possibleKnightMoves(long knights, long cantCapture) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleKnightMoves(long knights, long cantCapture, boolean color) {
+        List<BitBoardMove> res = new ArrayList<>(16);
         long knightPossibility = knights & ~(knights - 1);
         long possibility;
         //Iterate through every Knight
@@ -691,18 +810,18 @@ class BitBoardMoves {
             long knightDestinationBB = possibility & ~(possibility - 1);
             while (knightDestinationBB != 0) {
                 int knightDestination = 63 - Long.numberOfTrailingZeros(knightDestinationBB);
-                sb.append("" + (knightLocation % 8) + (knightLocation / 8) + (knightDestination % 8) + (knightDestination / 8));
+                res.add(new BitBoardMove(knightLocation % 8, knightLocation / 8, knightDestination % 8, knightDestination / 8, color));
                 possibility &= ~knightDestinationBB;
                 knightDestinationBB = possibility & ~(possibility - 1);
             }
             knights &= ~knightPossibility;
             knightPossibility = knights & ~(knights - 1);
         }
-        return sb.toString();
+        return res;
     }
 
-    public String possibleBishopMoves(long bishops, long cantCapture) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleBishopMoves(long bishops, long cantCapture, boolean color) {
+        List<BitBoardMove> res = new ArrayList<>(30);
         long wBClone = bishops;
         long bishop = bishops & ~(bishops - 1);
         long possibilityOfMoving;
@@ -715,7 +834,7 @@ class BitBoardMoves {
             while (position != 0) {
                 int index = Long.numberOfTrailingZeros(position);
                 int j = 63 - index;
-                sb.append("" + (bishopLocation % 8) + (bishopLocation / 8) + (j % 8) + (j / 8));
+                res.add(new BitBoardMove(bishopLocation % 8, bishopLocation / 8, j % 8, j / 8, color));
                 possibilityOfMoving &= ~position;
                 position = possibilityOfMoving & ~(possibilityOfMoving - 1);
             }
@@ -723,11 +842,11 @@ class BitBoardMoves {
             bishop = wBClone & ~(wBClone - 1);
         }
 
-        return sb.toString();
+        return res;
     }
 
-    public String possibleRookMoves(long rooks, long cantCapture) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleRookMoves(long rooks, long cantCapture, boolean color) {
+        List<BitBoardMove> res = new ArrayList<>(30);
         long wBClone = rooks;
         long rook = rooks & ~(rooks - 1);
         long possibilityOfMoving;
@@ -740,7 +859,7 @@ class BitBoardMoves {
             while (position != 0) {
                 int index = Long.numberOfTrailingZeros(position);
                 int j = 63 - index;
-                sb.append("" + (rookLocation % 8) + (rookLocation / 8) + (j % 8) + (j / 8));
+                res.add(new BitBoardMove(rookLocation % 8, rookLocation / 8, j % 8, j / 8, color));
                 possibilityOfMoving &= ~position;
                 position = possibilityOfMoving & ~(possibilityOfMoving - 1);
             }
@@ -748,11 +867,11 @@ class BitBoardMoves {
             rook = wBClone & ~(wBClone - 1);
         }
 
-        return sb.toString();
+        return res;
     }
 
-    public String possibleQueenMoves(long queens, long cantCapture) {
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleQueenMoves(long queens, long cantCapture, boolean color) {
+        List<BitBoardMove> res = new ArrayList<>(31);
         long wBClone = queens;
         long queen = queens & ~(queens - 1);
         long possibilityOfMoving;
@@ -765,20 +884,18 @@ class BitBoardMoves {
             while (position != 0) {
                 int index = Long.numberOfTrailingZeros(position);
                 int j = 63 - index;
-                sb.append("" + (queenLocation % 8) + (queenLocation / 8) + (j % 8) + (j / 8));
+                res.add(new BitBoardMove(queenLocation % 8, queenLocation / 8, j % 8, j / 8, color));
                 possibilityOfMoving &= ~position;
                 position = possibilityOfMoving & ~(possibilityOfMoving - 1);
             }
             wBClone &= ~queen;
             queen = wBClone & ~(wBClone - 1);
         }
-        return sb.toString();
+        return res;
     }
 
-    public String possibleKingMoves(long king, long cantCapture) {
-
-
-        StringBuilder sb = new StringBuilder();
+    public List<BitBoardMove> possibleKingMoves(long king, long cantCapture, boolean color) {
+        List<BitBoardMove> res = new ArrayList<>(8);
         int kingLocation = 63 - Long.numberOfTrailingZeros(king);
         //Use the pre initialized array and get the possible moves for the king location
         long possibility = KING_MOVES[kingLocation] & cantCapture;
@@ -786,26 +903,87 @@ class BitBoardMoves {
         long kingDestinationBB = possibility & ~(possibility - 1);
         while (kingDestinationBB != 0) {
             int kingDestination = 63 - Long.numberOfTrailingZeros(kingDestinationBB);
-            sb.append("" + (kingLocation % 8) + (kingLocation / 8) + (kingDestination % 8) + (kingDestination / 8));
+            res.add(new BitBoardMove(kingLocation % 8, kingLocation / 8, kingDestination % 8, kingDestination / 8, color));
             possibility &= ~kingDestinationBB;
             kingDestinationBB = possibility & ~(possibility - 1);
         }
-        return sb.toString();
+        return res;
     }
 
-    public long unsafeForColor(long WP, long WN, long WB, long WR, long WQ, long WK, long BP, long BN, long BB, long BR, long BQ, long BK, boolean color) {
+    public long unsafeForColor(boolean color, long enemyPawns, long enemyKnights, long enemyQueen, long enemyBishop, long enemyRook, long enemyKing) {
         long unsafe;
-        if (color) {
+        if (!color) {
             //White to the right
-            unsafe = ((WP << 7)) & ~FILES[FILE_A];
+            unsafe = ((enemyPawns << 7)) & ~FILES[FILE_A];
             //White to the left
-            unsafe |= ((WP << 9)) & ~FILES[FILE_H];
+            unsafe |= ((enemyPawns << 9)) & ~FILES[FILE_H];
         } else {
-            unsafe = ((BP >>> 7)) & ~FILES[FILE_H];
-            unsafe |= ((BP >>> 9)) & ~FILES[FILE_A];
+            unsafe = ((enemyPawns >>> 7)) & ~FILES[FILE_H];
+            unsafe |= ((enemyPawns >>> 9)) & ~FILES[FILE_A];
         }
+        long i = enemyKnights & ~(enemyKnights - 1);
+        //Go through every knight
+        while (i != 0) {
+            int knightLocation = 63 - Long.numberOfTrailingZeros(i);
+            unsafe |= KNIGHT_MOVES[knightLocation];
+            enemyKnights &= ~i;
+            i = enemyKnights & ~(enemyKnights - 1);
+        }
+
+        //Diagonal pieces
+        long QB = enemyQueen | enemyBishop;
+        i = QB & ~(QB - 1);
+        //Go through every diagonal piece
+        while (i != 0) {
+            int location = 63 - Long.numberOfTrailingZeros(i);
+            unsafe |= diagonalAndAntiDiagonalMoves(location);
+            QB &= ~i;
+            i = QB & ~(QB - 1);
+        }
+
+        //Vertical Horizontal Pieces
+        long QR = enemyQueen | enemyRook;
+        i = QR & ~(QR - 1);
+        //Go through every horizontal piece
+        while (i != 0) {
+            int location = 63 - Long.numberOfTrailingZeros(i);
+            unsafe |= horizontalAndVerticalMoves(location);
+            QR &= ~i;
+            i = QR & ~(QR - 1);
+        }
+        //Enemy king
+        int kingLocation = 63 - Long.numberOfTrailingZeros(enemyKing);
+        unsafe |= KING_MOVES[kingLocation];
+
         return unsafe;
     }
 
 
+}
+
+class BitBoardMove {
+
+    public int x1;
+    public int y1;
+    public int x2;
+    public int y2;
+
+    public boolean color;
+    public char desc;
+
+    public BitBoardMove(int x1, int y1, int x2, int y2, boolean color) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+        this.desc = ' ';
+        this.color = color;
+    }
+
+    public BitBoardMove(int x1, int x2, boolean color, char desc) {
+        this.x1 = x1;
+        this.x2 = x2;
+        this.color = color;
+        this.desc = desc;
+    }
 }
