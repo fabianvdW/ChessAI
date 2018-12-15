@@ -1,7 +1,9 @@
 package chess.bitboards;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BitBoardMoves {
     public final static long[] FILES = {0x8080808080808080L, 0x4040404040404040L, 0x2020202020202020L, 0x1010101010101010L, 0x0808080808080808L, 0x0404040404040404L, 0x0202020202020202L, 0x0101010101010101L};
@@ -49,7 +51,7 @@ public class BitBoardMoves {
     //Moves are of type x1,y1,x2,y2 if they are not a) Castles, b) En passants x1x2 Space E, c) Promotion Moves: x1x2 and then Q,R,B,N and then P
     List<BitBoardMove> possibleMoves;
     public List<BitBoardMove> legalMoves;
-    public List<BitBoard> legalFollowingGameStates;
+    public Map<BitBoardMove,BitBoard> legalFollowingGameStates;
 
     public BitBoardMoves(BitBoard bb, boolean move) {
         this.bb = bb;
@@ -61,16 +63,16 @@ public class BitBoardMoves {
         possibleMoves = new ArrayList<>(100);
         //White cant capture those figures, Black King is in there to prevent illegal moves!
         if (move) {
+            unsafeForMoveKing = unsafeForWhite(bb, occupiedSquares);
+            kingIsThreatend = (unsafeForMoveKing & bb.whitePieces[BitBoard.KING]) != 0;
             if (bb.castleWK || bb.castleWQ) {
-                unsafeForMoveKing = unsafeForWhite(bb, occupiedSquares);
-                kingIsThreatend = (unsafeForMoveKing & bb.whitePieces[BitBoard.KING]) != 0;
                 possibleMoves.addAll(possibleCastle(move, kingIsThreatend, occupiedSquares, unsafeForMoveKing, bb.castleWK, bb.castleWQ));
             }
             whiteCantCapture = ~(bb.whitePieces[BitBoard.PAWNS] | bb.whitePieces[BitBoard.KNIGHTS] | bb.whitePieces[BitBoard.BISHOPS] | bb.whitePieces[BitBoard.ROOKS] | bb.whitePieces[BitBoard.QUEENS] | bb.whitePieces[BitBoard.KING] | bb.blackPieces[BitBoard.KING]);
         } else {
+            unsafeForMoveKing = unsafeForBlack(bb, occupiedSquares);
+            kingIsThreatend = (unsafeForMoveKing & bb.blackPieces[BitBoard.KING]) != 0;
             if (bb.castleBK || bb.castleBQ) {
-                unsafeForMoveKing = unsafeForBlack(bb, occupiedSquares);
-                kingIsThreatend = (unsafeForMoveKing & bb.blackPieces[BitBoard.KING]) != 0;
                 possibleMoves.addAll(possibleCastle(move, kingIsThreatend, occupiedSquares, unsafeForMoveKing, bb.castleBK, bb.castleBQ));
             }
             //Black cant capture those figures, White King is in there to prevent illegal moves!
@@ -95,20 +97,20 @@ public class BitBoardMoves {
         //Calculate legal moves and following gamestates
         //Mask gamestate of board
         legalMoves = new ArrayList<>(possibleMoves.size());
-        legalFollowingGameStates = new ArrayList<>(possibleMoves.size());
+        legalFollowingGameStates = new HashMap<>(possibleMoves.size());
         for (BitBoardMove bm : this.possibleMoves) {
             BitBoard res = BitBoardMoves.makeMove(this.bb, bm);
             if (this.move) {
                 if ((BitBoardMoves.unsafeForWhite(res, res.getOccupiedSquares()) & res.whitePieces[BitBoard.KING]) == 0) {
                     //Then king is in check
                     legalMoves.add(bm);
-                    legalFollowingGameStates.add(res);
+                    legalFollowingGameStates.put(bm,res);
                 }
             } else {
                 if ((BitBoardMoves.unsafeForBlack(res, res.getOccupiedSquares()) & res.blackPieces[BitBoard.KING]) == 0) {
                     //Then king is in check
                     legalMoves.add(bm);
-                    legalFollowingGameStates.add(res);
+                    legalFollowingGameStates.put(bm,res);
                 }
             }
         }

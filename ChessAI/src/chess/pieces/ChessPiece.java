@@ -28,4 +28,8 @@ public abstract class ChessPiece {
     @Override
     public abstract boolean equals(Object o);
 
+    @Override
+    public abstract int hashCode();
+
+
 }

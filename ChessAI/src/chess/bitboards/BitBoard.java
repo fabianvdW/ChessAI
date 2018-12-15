@@ -1,13 +1,17 @@
 package chess.bitboards;
 
 import chess.ChessColor;
+import chess.ChessGameStatus;
+import chess.ChessPosition;
 import chess.pieces.*;
 import helpers.Constants;
 import helpers.FENLoader;
 import helpers.StringColor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BitBoard {
     public long[] whitePieces;
@@ -29,6 +33,7 @@ public class BitBoard {
     public List<BitBoardMove> moveHistory;
     public BitBoardMoves bm;
     public boolean move;
+    public ChessGameStatus status;
 
     public BitBoard() {
         this.whitePieces = new long[6];
@@ -52,6 +57,7 @@ public class BitBoard {
         this.castleWQ = true;
         this.moveHistory = new ArrayList<>();
         move = true;
+        this.status = ChessGameStatus.INGAME;
     }
 
     public BitBoard(ChessPiece[][] arr, boolean move) {
@@ -144,47 +150,123 @@ public class BitBoard {
         this.castleBQ = castleBQ;
         this.moveHistory = moveHistory;
         this.move = move;
+        this.status = ChessGameStatus.INGAME;
     }
 
 
     public void initBoard() {
         this.bm = new BitBoardMoves(this, move);
-    }
+        //Check status
+        if (this.whitePieces[BitBoard.PAWNS] == 0 && this.whitePieces[BitBoard.ROOKS] == 0 && this.whitePieces[BitBoard.KNIGHTS] == 0 && this.whitePieces[BitBoard.BISHOPS] == 0 && this.whitePieces[BitBoard.QUEENS] == 0
+                && this.blackPieces[BitBoard.PAWNS] == 0 && this.blackPieces[BitBoard.ROOKS] == 0 && this.blackPieces[BitBoard.KNIGHTS] == 0 && this.blackPieces[BitBoard.BISHOPS] == 0 && this.blackPieces[BitBoard.QUEENS] == 0) {
+            //Lack of material draw
+            this.status = ChessGameStatus.DRAW;
+            return;
+        }
 
-    public long getOccupiedSquares(){
-        return (this.whitePieces[BitBoard.KING] | this.whitePieces[BitBoard.QUEENS] | this.whitePieces[BitBoard.ROOKS] | this.whitePieces[BitBoard.BISHOPS] | this.whitePieces[BitBoard.KNIGHTS] | this.whitePieces[BitBoard.PAWNS] | this.blackPieces[BitBoard.KING] | this.blackPieces[BitBoard.QUEENS] | this.blackPieces[BitBoard.ROOKS] | this.blackPieces[BitBoard.BISHOPS] | this.blackPieces[BitBoard.KNIGHTS] | this.blackPieces[BitBoard.PAWNS]);
-
-    }
-
-    public static void main(String[] args) {
-        //timeTest();
-        BitBoard bb=FENLoader.getBitBoardFromFen("r3k2r/Pppp1ppp/1b3nbN/nPP5/BB2P3/q4N2/Pp1P2PP/R2Q1RK1 b kq - 0 1");
-        //BitBoard bb = BitBoard.toBitBoard(Constants.STANDARD_CHESS_BOARD, true);
-        bb.initBoard();
-        System.out.println(bb.toString());
-        for(BitBoardMove bm:bb.bm.legalMoves){
-            if(bm.desc=='Q'){
-                if(bm.x2==0&&bm.y2==7) {
-                    System.out.println(bm);
-                    System.out.println("-------------------------");
-                    BitBoard next = BitBoardMoves.makeMove(bb,bm);
-                    System.out.println(next);
+        if (this.bm.legalMoves.size() == 0) {
+            //Either Stalemate or Checkmate
+            if (this.bm.kingIsThreatend) {
+                if (this.move) {
+                    this.status = ChessGameStatus.BLACKWIN;
+                } else {
+                    this.status = ChessGameStatus.WHITEWIN;
                 }
+            } else {
+                this.status = ChessGameStatus.DRAW;
             }
         }
-        //System.out.println(FENLoader.getBitBoardFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - "));
-        //System.out.println(bb.bm.possibleMoves);
     }
-
-    public static void timeTest() {
-        int times = 1000000;
-        long t0 = System.currentTimeMillis();
-        for (int i = 0; i < times; i++) {
-            BitBoard bb = new BitBoard();
+    public static Map<ChessPiece,List<BitBoardMove>> mapLegalMovesToPieces(BitBoard bb){
+        if(bb.bm==null){
             bb.initBoard();
         }
-        long t1 = System.currentTimeMillis();
-        System.out.println("Time: " + (t1 - t0));
+        Map<ChessPiece,List<BitBoardMove>> res = new HashMap<>();
+        for(BitBoardMove bm: bb.bm.legalMoves){
+            ChessPiece cp= BitBoard.getChessPiece(bb,bm.x1,bm.y1);
+            if(res.containsKey(cp)){
+                res.get(cp).add(bm);
+            }else{
+                List<BitBoardMove> list= new ArrayList<>();
+                list.add(bm);
+                res.put(cp,list);
+            }
+        }
+        return res;
+    }
+    public static ChessPiece getChessPiece(BitBoard bb,int x,int y){
+        int shift=63-x-8*y;
+        if(((bb.whitePieces[BitBoard.KING]>>>shift)&1)!=0){
+            return new King(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        if(((bb.whitePieces[BitBoard.PAWNS]>>>shift)&1)!=0){
+            return new Pawn(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        if(((bb.whitePieces[BitBoard.BISHOPS]>>>shift)&1)!=0){
+            return new Bishop(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        if(((bb.whitePieces[BitBoard.KNIGHTS]>>>shift)&1)!=0){
+            return new Knight(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        if(((bb.whitePieces[BitBoard.ROOKS]>>>shift)&1)!=0){
+            return new Rook(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        if(((bb.whitePieces[BitBoard.QUEENS]>>>shift)&1)!=0){
+            return new Queen(ChessColor.WHITE,new ChessPosition(x,y),null);
+        }
+        
+        if(((bb.blackPieces[BitBoard.KING]>>>shift)&1)!=0){
+            return new King(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        if(((bb.blackPieces[BitBoard.PAWNS]>>>shift)&1)!=0){
+            return new Pawn(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        if(((bb.blackPieces[BitBoard.BISHOPS]>>>shift)&1)!=0){
+            return new Bishop(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        if(((bb.blackPieces[BitBoard.KNIGHTS]>>>shift)&1)!=0){
+            return new Knight(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        if(((bb.blackPieces[BitBoard.ROOKS]>>>shift)&1)!=0){
+            return new Rook(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        if(((bb.blackPieces[BitBoard.QUEENS]>>>shift)&1)!=0){
+            return new Queen(ChessColor.BLACK,new ChessPosition(x,y),null);
+        }
+        return null;
+    }
+    public static List<BitBoard> playGame(BitBoard start) {
+        List<BitBoard> boardHistory = new ArrayList<>();
+        boardHistory.add(start);
+        start.initBoard();
+        do {
+            start = start.makeLegalMove(start.bm.legalMoves.get((int) (start.bm.legalMoves.size() * Math.random())));
+            boardHistory.add(start);
+        } while (start.status == ChessGameStatus.INGAME);
+        return boardHistory;
+    }
+
+    public BitBoard makeLegalMove(BitBoardMove bm) {
+        if (this.bm == null) {
+            this.initBoard();
+        }
+        if (this.status != ChessGameStatus.INGAME) {
+            throw new RuntimeException("Game is already in end state!");
+        }
+
+        if (this.bm.legalMoves.contains(bm)) {
+            //Move is legal
+            BitBoard bb = this.bm.legalFollowingGameStates.get(bm);
+            bb.initBoard();
+            return bb;
+        } else {
+            throw new RuntimeException("Illegal move!");
+        }
+    }
+
+    public long getOccupiedSquares() {
+        return (this.whitePieces[BitBoard.KING] | this.whitePieces[BitBoard.QUEENS] | this.whitePieces[BitBoard.ROOKS] | this.whitePieces[BitBoard.BISHOPS] | this.whitePieces[BitBoard.KNIGHTS] | this.whitePieces[BitBoard.PAWNS] | this.blackPieces[BitBoard.KING] | this.blackPieces[BitBoard.QUEENS] | this.blackPieces[BitBoard.ROOKS] | this.blackPieces[BitBoard.BISHOPS] | this.blackPieces[BitBoard.KNIGHTS] | this.blackPieces[BitBoard.PAWNS]);
+
     }
 
     @Override

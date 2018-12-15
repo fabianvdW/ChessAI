@@ -44,4 +44,8 @@ public class Queen extends ChessPiece {
         }
         return false;
     }
+    @Override
+    public int hashCode() {
+        return (this.position.getX()+this.position.getY()*8)*(this.color==ChessColor.WHITE?2:1);
+    }
 }
