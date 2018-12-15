@@ -27,7 +27,7 @@ public class BitBoardGenerator {
                 cb2.setChessPiece(cm.to, new Knight(ChessColor.WHITE, cm.to, cb2));
             }
             //System.out.println(cb2);
-            sb.append(String.format("0x%016x", new BitBoard(cb2.getBoard(), true).whiteKnights) + "L,");
+            sb.append(String.format("0x%016x", new BitBoard(cb2.getBoard(), true).whitePieces[BitBoard.KNIGHTS]) + "L,");
         }
         sb.append("};");
         return sb.toString();
@@ -49,7 +49,7 @@ public class BitBoardGenerator {
                 cb2.setChessPiece(cm.to, new Knight(ChessColor.WHITE, cm.to, cb2));
             }
             //System.out.println(cb2);
-            sb.append(String.format("0x%016x", new BitBoard(cb2.getBoard(), true).whiteKnights) + "L,");
+            sb.append(String.format("0x%016x", new BitBoard(cb2.getBoard(), true).whitePieces[BitBoard.KNIGHTS]) + "L,");
         }
         sb.append("};");
         return sb.toString();

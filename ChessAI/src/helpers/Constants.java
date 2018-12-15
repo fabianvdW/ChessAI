@@ -19,4 +19,14 @@ public class Constants {
     public final static String PAWN_REPRESENTATION_WHITE="\u2659";
     public final static String PAWN_REPRESENTATION_BLACK="\u265F";
 
+    public final static String STANDARD_CHESS_BOARD[][] = {
+            {"r", "n", "b", "q", "k", "b", "n", "r"},
+            {"p", "p", "p", "p", "p", "p", "p", "p"},
+            {" ", " ", " ", " ", " ", " ", " ", " "},
+            {" ", " ", " ", " ", " ", " ", " ", " "},
+            {" ", " ", " ", " ", " ", " ", " ", " "},
+            {" ", " ", " ", " ", " ", " ", " ", " "},
+            {"P", "P", "P", "P", "P", "P", "P", "P"},
+            {"R", "N", "B", "Q", "K", "B", "N", "R"}};
+
 }
