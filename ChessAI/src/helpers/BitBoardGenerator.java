@@ -1,10 +1,10 @@
 package helpers;
 
 import chess.*;
+import chess.bitboards.BitBoard;
 import chess.pieces.King;
 import chess.pieces.Knight;
 
-import java.awt.*;
 import java.util.List;
 
 public class BitBoardGenerator {

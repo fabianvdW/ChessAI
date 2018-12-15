@@ -1,6 +1,6 @@
 package helpers;
 
-import chess.BitBoard;
+import chess.bitboards.BitBoard;
 
 import java.util.ArrayList;
 
