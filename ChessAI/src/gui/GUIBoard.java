@@ -1,6 +1,8 @@
 package gui;
 
 import chess.*;
+import chess.bitboards.BitBoard;
+import chess.bitboards.BitBoardMove;
 import chess.pieces.ChessPiece;
 import chess.pieces.Rook;
 
@@ -13,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class GUIBoard extends JPanel {
-    private ChessGame game; // auf diesem Brett wird der ganze Verlauf erneut durchsimuliert
+    // auf diesem Brett wird der ganze Verlauf erneut durchsimuliert
+    List<BitBoard> boardHistory;
     protected int step;
     private Dimension size;
     boolean pause;
@@ -27,31 +30,25 @@ public class GUIBoard extends JPanel {
         GUIBoard.draw();
     }
 
-    public GUIBoard(ChessGame game, Dimension size/*, JTextArea tOutput, boolean loop*/) {
+    public GUIBoard(List<BitBoard> boardHistory,Dimension size/*, JTextArea tOutput, boolean loop*/) {
+        this.boardHistory=boardHistory;
         this.size = size;
-        this.game = game;
         this.step = 0;
     }
 
     public static void draw() {
         long t0 = System.currentTimeMillis();
-        ChessGame cb = new ChessGame(null, null);
-        int moves = 0;
-        while (cb.status == ChessGameStatus.INGAME) {
-            moves++;
-            List<ChessMove> availableMoves = ChessLogic.getAllPossibleMoves(cb.currentBoard, cb.move);
-            cb.applyChessMove(availableMoves.get((int) (availableMoves.size() * Math.random())));
-            //System.out.println(cb.toString());
-        }
+        BitBoard bb = new BitBoard();
+        List<BitBoard> boardHistory= BitBoard.playGame(bb);
         System.out.println("Time: " + (System.currentTimeMillis() - t0));
-        System.out.println(cb.toString());
-        System.out.println("Moves: " + moves);
+        System.out.println(boardHistory.get(boardHistory.size()-1));
+        System.out.println("Moves: " + boardHistory.size());
 
         Dimension size = new Dimension(1080, 1080);
-        GUIBoard panel = new GUIBoard(cb, size);
+        GUIBoard panel = new GUIBoard(boardHistory,size);
         panel.setLayout(null);
-        panel.addKeyListener(new GUIKeyListener(panel,cb));
-        panel.addMouseListener(new GUIMouseListener(panel,cb));
+        panel.addKeyListener(new GUIKeyListener(panel,boardHistory));
+        panel.addMouseListener(new GUIMouseListener(panel,boardHistory));
         panel.setFocusable(true);
         panel.requestFocusInWindow();
         JFrame frame = new JFrame();
@@ -63,24 +60,25 @@ public class GUIBoard extends JPanel {
 
         // simulated
 
-        TimerListener tl = new TimerListener(panel, cb);
-        Timer t = new Timer(1000, tl);
+        TimerListener tl = new TimerListener(panel,boardHistory);
+        Timer t = new Timer(10, tl);
         tl.setTimer(t);
         t.start();
     }
 
-    public void drawChessMove(Graphics g,ChessMove cm){
+    public void drawChessMove(Graphics g,BitBoardMove cm){
         Graphics2D g2= (Graphics2D)g;
         g2.setStroke(new BasicStroke(10));
-        g.drawLine((int) (cm.from.getX() * xScale + xScale / 2), (int) (cm.from.getY() * yScale + yScale / 2), (int) (cm.to.getX() * xScale + xScale / 2), (int) (cm.to.getY() * yScale + yScale / 2));
+        g.drawLine((int) (cm.x1 * xScale + xScale / 2), (int) (cm.y1 * yScale + yScale / 2), (int) (cm.x2 * xScale + xScale / 2), (int) (cm.y2 * yScale + yScale / 2));
         g2.setStroke(new BasicStroke(5));
-        g.drawOval(cm.to.getX() * xScale,(cm.to.getY() * yScale ),xScale-3,yScale-3);
+        g.drawOval(cm.x2 * xScale,(cm.y2 * yScale ),xScale-3,yScale-3);
     }
     @Override
     public void paintComponent(Graphics g) {
         xScale = (int) ((this.size.width) / 9.0 - 2);
         yScale = (int) ((this.size.height - 21) / 9.0 - 2);
         Graphics2D g2 = (Graphics2D) g;
+        BitBoard bb= boardHistory.get(this.step);
         boolean color = true;
         for (int i = 0; i < 9; i++) {
             for (int n = 0; n < 9; n++) {
@@ -105,7 +103,7 @@ public class GUIBoard extends JPanel {
                 }
                 if (i < 8 && n < 8) {
                     g.setFont(new Font("TimesRoman", Font.PLAIN, (xScale + yScale) / 2));
-                    ChessPiece p = this.game.boardHistory.get(this.step).getBoard()[i][n];
+                    ChessPiece p=BitBoard.getChessPiece(bb,i,n);
                     if (p != null) {
                         if (p.color == ChessColor.WHITE) {
                             g.setColor(new Color(255, 187, 25));
@@ -119,13 +117,12 @@ public class GUIBoard extends JPanel {
             color = !color;
         }
         if (this.step > 0) {
-            ChessMove currMove = this.game.moveHistory.get(this.step - 1);
+            BitBoardMove currMove = bb.moveHistory.get(bb.moveHistory.size()-1);
             g.setColor(Color.GREEN);
             drawChessMove(g,currMove);
         }
         if (this.showMoves) {
-            ChessBoard curr = this.game.boardHistory.get(this.step);
-            Map<ChessPiece, List<ChessMove>> moves = step % 2 == 0 ? curr.WHITE_MOVES : curr.BLACK_MOVES;
+            Map<ChessPiece, List<BitBoardMove>> moves = BitBoard.mapLegalMovesToPieces(bb);
             g.setColor(Color.BLUE);
             g2.setStroke(new BasicStroke(5));
             for (ChessPiece cp : moves.keySet()) {
@@ -133,10 +130,9 @@ public class GUIBoard extends JPanel {
             }
         }
         if(this.showMoveOfFigure){
-            ChessBoard curr = this.game.boardHistory.get(this.step);
-            Map<ChessPiece, List<ChessMove>> moves = step % 2 == 0 ? curr.WHITE_MOVES : curr.BLACK_MOVES;
+            Map<ChessPiece, List<BitBoardMove>> moves = BitBoard.mapLegalMovesToPieces(bb);
             g.setColor(Color.RED);
-            for(ChessMove cm: moves.getOrDefault(this.show,new ArrayList<>())){
+            for(BitBoardMove cm: moves.getOrDefault(this.show,new ArrayList<>())){
                 drawChessMove(g,cm);
             }
         }
@@ -144,10 +140,10 @@ public class GUIBoard extends JPanel {
 }
 class GUIMouseListener implements MouseListener{
     GUIBoard panel;
-    ChessGame cg;
-    public GUIMouseListener(GUIBoard panel, ChessGame cg){
+    List<BitBoard> boardHistory;
+    public GUIMouseListener(GUIBoard panel,List<BitBoard> boardHistory  ){
         this.panel=panel;
-        this.cg=cg;
+        this.boardHistory=boardHistory;
     }
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -157,9 +153,9 @@ class GUIMouseListener implements MouseListener{
             int y = e.getY();
             int xBoard = x / panel.xScale;
             int yBoard = y / panel.yScale;
-            ChessBoard current = cg.boardHistory.get(panel.step);
+            BitBoard current = boardHistory.get(panel.step);
             if(xBoard<8&&yBoard<8) {
-                ChessPiece cp = current.getChessPiece(new ChessPosition(xBoard, yBoard));
+                ChessPiece cp= BitBoard.getChessPiece(current,xBoard,yBoard);
                 if (cp !=null &&cp.color==(panel.step%2==0?ChessColor.WHITE:ChessColor.BLACK)){
                     panel.show=cp;
                     panel.repaint();
@@ -191,10 +187,10 @@ class GUIMouseListener implements MouseListener{
 }
 class GUIKeyListener implements KeyListener {
     GUIBoard panel;
-    ChessGame cb;
-    public GUIKeyListener(GUIBoard panel,ChessGame cb){
+    List<BitBoard> boardHistory;
+    public GUIKeyListener(GUIBoard panel ,List<BitBoard> boardHistory){
         this.panel=panel;
-        this.cb=cb;
+        this.boardHistory=boardHistory;
     }
     @Override
     public void keyTyped(KeyEvent e) {
@@ -221,7 +217,7 @@ class GUIKeyListener implements KeyListener {
             }
             panel.repaint();
         } else if (e.getKeyCode() == 39) {
-            if (panel.step < cb.boardHistory.size() - 1) {
+            if (panel.step < boardHistory.size() - 1) {
                 panel.step += 1;
             }
             panel.repaint();
@@ -235,21 +231,13 @@ class GUIKeyListener implements KeyListener {
 class TimerListener implements ActionListener {
     private Timer t;
     private GUIBoard panel;
-    private ChessGame cg;
+    private List<BitBoard> boardHistory;
     private int listStep = 0;
     private List<Integer> rookMovesIndex;
 
-    public TimerListener(GUIBoard panel, ChessGame cg) {
+    public TimerListener(GUIBoard panel, List<BitBoard> boardHistory) {
         this.panel = panel;
-        this.cg = cg;
-        rookMovesIndex = new ArrayList<>();
-        for (int i = 0; i < cg.moveHistory.size(); i++) {
-            ChessMove cm = cg.moveHistory.get(i);
-            if (cm.moved instanceof Rook) {
-                rookMovesIndex.add(i);
-                rookMovesIndex.add(i + 1);
-            }
-        }
+        this.boardHistory=boardHistory;
     }
 
     public void setTimer(Timer t) {
@@ -261,7 +249,7 @@ class TimerListener implements ActionListener {
         if (!this.panel.pause) {
             panel.step++;
         }
-        if (panel.step == cg.boardHistory.size()) {
+        if (panel.step == this.boardHistory.size()) {
             panel.step -= 1;
             t.stop();
         }
