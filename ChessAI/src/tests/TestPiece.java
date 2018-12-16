@@ -9,7 +9,7 @@ public class TestPiece {
     public static void main(String[] args) {
         boolean end = true;
         while (end) {
-            ChessGame cg = new ChessGame(null, null);
+            ChessGame cg = new ChessGame();
             while (cg.status == ChessGameStatus.INGAME) {
                 List<ChessMove> availableMoves = ChessLogic.getAllPossibleMoves(cg.currentBoard, cg.move);
                 ChessMove cm = availableMoves.get((int) (availableMoves.size() * Math.random()));

@@ -8,7 +8,7 @@ public class TestApplyMoves {
 
     public static void main(String[] args) {
         long t0 = System.currentTimeMillis();
-        ChessGame cb = new ChessGame(null, null);
+        ChessGame cb = new ChessGame();
         int moves = 0;
         while (cb.status == ChessGameStatus.INGAME) {
             moves++;
