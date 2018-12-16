@@ -16,7 +16,7 @@ public class TestEnPassant {
     }
 
     public static void enPassantWhite1() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         cg.applyChessMove(new ChessMove(new ChessPosition(5, 6), new ChessPosition(5, 4), cg.currentBoard.getChessPiece(new ChessPosition(5, 6)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 3), cg.currentBoard.getChessPiece(new ChessPosition(1, 1)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(5, 4), new ChessPosition(5, 3), cg.currentBoard.getChessPiece(new ChessPosition(5, 4)), null));
@@ -32,7 +32,7 @@ public class TestEnPassant {
     }
 
     public static void enPassantBlack1() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         cg.applyChessMove(new ChessMove(new ChessPosition(5, 6), new ChessPosition(5, 5), cg.currentBoard.getChessPiece(new ChessPosition(5, 6)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 3), cg.currentBoard.getChessPiece(new ChessPosition(1, 1)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(2, 4), cg.currentBoard.getChessPiece(new ChessPosition(2, 6)), null));
@@ -47,7 +47,7 @@ public class TestEnPassant {
     }
 
     public static void enPassantWhite2() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         cg.applyChessMove(new ChessMove(new ChessPosition(5, 6), new ChessPosition(5, 4), cg.currentBoard.getChessPiece(new ChessPosition(5, 6)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(4, 1), new ChessPosition(4, 2), cg.currentBoard.getChessPiece(new ChessPosition(4, 1)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(5, 4), new ChessPosition(5, 3), cg.currentBoard.getChessPiece(new ChessPosition(5, 4)), null));
@@ -59,7 +59,7 @@ public class TestEnPassant {
     }
 
     public static void enPassantBlack2() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         cg.applyChessMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(2, 5), cg.currentBoard.getChessPiece(new ChessPosition(2, 6)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(1, 1), new ChessPosition(1, 3), cg.currentBoard.getChessPiece(new ChessPosition(1, 1)), null));
         cg.applyChessMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(2, 4), cg.currentBoard.getChessPiece(new ChessPosition(2, 5)), null));

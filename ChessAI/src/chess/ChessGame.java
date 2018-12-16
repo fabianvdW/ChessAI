@@ -13,25 +13,18 @@ public class ChessGame {
     public ChessGameStatus status;
     public List<ChessMove> moveHistory;
     public List<ChessBoard> boardHistory;
-    public ChessPlayer player1;
-    public ChessPlayer player2;
     public int fiftyDrawMoves;
 
-    public ChessGame(ChessPlayer player1, ChessPlayer player2) {
+    public ChessGame() {
         this.moveHistory = new ArrayList<>();
         this.boardHistory = new ArrayList<>();
         this.move = ChessColor.WHITE;
         this.status = ChessGameStatus.INGAME;
         this.currentBoard = new ChessBoard();
         this.boardHistory.add(this.currentBoard);
-        this.player1 = player1;
-        this.player2 = player2;
         this.fiftyDrawMoves=0;
     }
 
-    public void playGame() {
-
-    }
 
     //TODO Stellungswiederholung
     public void applyChessMove(ChessMove cm) {

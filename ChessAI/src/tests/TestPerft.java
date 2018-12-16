@@ -137,5 +137,11 @@ public class TestPerft {
         bb = FENLoader.getBitBoardFromFen("3k4/3p4/8/K1P4r/8/8/8/8 b - - 0 1");
         assert (PerftDebugging.perft(bb, 6) == 1134888);
         System.out.println("Test 44 passed!");
+
+        bb = FENLoader.getBitBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
+        long t0=System.currentTimeMillis();
+        assert(PerftDebugging.perftRoot(bb,6)==119060324);
+        long t1=System.currentTimeMillis();
+        System.out.println("NPS: "+119060324/((t1-t0)/1000.0));
     }
 }

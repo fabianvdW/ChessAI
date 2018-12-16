@@ -9,8 +9,10 @@ public class PerftDebugging {
         bb.initBoard();
         int count=0;
         for(BitBoard next: bb.bm.legalFollowingGameStates.values()){
-            int res= perft(next,depth-1);
-            System.out.println(next.moveHistory.get(next.moveHistory.size()-1)+" : "+res);
+            System.gc();
+            BitBoard next2=  new BitBoard(next.whitePieces,next.blackPieces,next.enPassant,next.castleWK,next.castleWQ,next.castleBK,next.castleBQ,next.moveHistory,next.move);
+            int res= perft(next2,depth-1);
+            System.out.println(next2.moveHistory.get(next2.moveHistory.size()-1)+" : "+res);
             count+=res;
         }
         return count;

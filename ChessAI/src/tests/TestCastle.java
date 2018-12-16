@@ -21,7 +21,7 @@ public class TestCastle {
     }
 
     public static boolean castleShortWhite() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessPosition g2 = new ChessPosition(6, 6);
         cg.applyChessMove(new ChessMove(g2, new ChessPosition(6, 5), cg.currentBoard.getChessPiece(g2), null));
         //Black
@@ -53,7 +53,7 @@ public class TestCastle {
     }
 
     public static boolean castleShortWhiteFalse() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessPosition g2 = new ChessPosition(5, 6);
         cg.applyChessMove(new ChessMove(g2, new ChessPosition(5, 4), cg.currentBoard.getChessPiece(g2), null));
         //Black
@@ -82,7 +82,7 @@ public class TestCastle {
     }
 
     public static boolean casteLongBlack() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         //White
         ChessPosition h2 = new ChessPosition(7, 6);
         ChessPosition h3 = new ChessPosition(7, 5);
@@ -136,7 +136,7 @@ public class TestCastle {
     }
 
     public static boolean casteLongBlackFalse() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         //White
         ChessPosition g5 = new ChessPosition(6, 3);
         ChessPosition c1 = new ChessPosition(2, 7);

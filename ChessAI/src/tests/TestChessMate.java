@@ -20,7 +20,7 @@ public class TestChessMate {
     }
 
     public static boolean scenario5() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         ChessLogic.clearBoard(cb);
         cb.setChessPiece(new ChessPosition(4, 0), cb.BLACK_KING);
@@ -36,7 +36,7 @@ public class TestChessMate {
 
     //Back rank checkmate
     public static boolean scenario6() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         ChessLogic.clearBoard(cb);
         cg.move = ChessColor.BLACK;
@@ -52,7 +52,7 @@ public class TestChessMate {
     }
 
     public static boolean scenario4() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         ChessLogic.clearBoard(cb);
         cb.setChessPiece(new ChessPosition(7, 0), cb.WHITE_KING);
@@ -65,7 +65,7 @@ public class TestChessMate {
     }
 
     public static boolean scenario3() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         cb.setChessPiece(new ChessPosition(4, 4), cb.WHITE_PAWNS.get(4));
         cb.setChessPiece(new ChessPosition(4, 6), null);
@@ -83,7 +83,7 @@ public class TestChessMate {
     }
 
     public static boolean scenario2() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         cb.setChessPiece(new ChessPosition(1, 3), cb.BLACK_QUEENS.get(0));
         cb.setChessPiece(new ChessPosition(3, 0), null);
@@ -97,7 +97,7 @@ public class TestChessMate {
     }
 
     public static boolean scenario1() {
-        ChessGame cg = new ChessGame(null, null);
+        ChessGame cg = new ChessGame();
         ChessBoard cb = cg.currentBoard;
         //System.out.println(cb.toString());
         boolean mate = ChessLogic.isCheckMate(cg.currentBoard, cg.move);

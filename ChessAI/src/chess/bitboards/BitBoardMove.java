@@ -34,7 +34,11 @@ public class BitBoardMove {
 
     @Override
     public String toString() {
-        return "(" +(char)( 'H'-7+x1 )+ "," + (8-y1) + ") -> (" + (char)('H'-7+x2) + "," + (8-y2) + "): " + this.desc + " Color: " + this.color;
+        if(this.desc==' ') {
+            return "" + (char) ('h' - 7 + x1) + "" + (8 - y1) + "" + (char) ('h' - 7 + x2) + "" + (8 - y2);
+        }else{
+            return "" + (char) ('h' - 7 + x1) + "" + (8 - y1) + "" + (char) ('h' - 7 + x2) + "" + (8 - y2) + "" + this.desc;
+        }
     }
 
     @Override

@@ -17,7 +17,7 @@ public class TestTime {
         int moves = 0;
         long t0 = System.currentTimeMillis();
         for (int i = 0; i < games; i++) {
-            ChessGame cg = new ChessGame(null, null);
+            ChessGame cg = new ChessGame();
             while (cg.status == ChessGameStatus.INGAME) {
                 moves++;
                 List<ChessMove> availableMoves = ChessLogic.getAllPossibleMoves(cg.currentBoard, cg.move);
