@@ -134,6 +134,8 @@ public abstract class UCIPlayer extends Thread {
     public final void stopGoInstance() {
         if (this.goInstance != null && this.goInstance.isAlive()) {
             goInstance.stop();
+        }
+        if(this.goInstance!=null) {
             System.out.println("bestmove " + goInstance.bestMove);
         }
 

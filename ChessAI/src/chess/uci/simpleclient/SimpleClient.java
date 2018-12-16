@@ -20,7 +20,7 @@ public class SimpleClient extends UCIPlayer {
 
     @Override
     public void setupgo(int wtime, int btime, int winc, int binc) {
-        this.goInstance= new SimpleClientGoInstance(this.position);
+        this.goInstance= new SimpleClientGoInstance(this.position,wtime,btime,winc,binc);
     }
 
     @Override

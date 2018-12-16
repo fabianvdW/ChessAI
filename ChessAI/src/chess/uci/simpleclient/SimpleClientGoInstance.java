@@ -24,8 +24,9 @@ public class SimpleClientGoInstance extends UCIGoInstance {
                         public void run() {
                             // your code here
                             t.stop();
+                            System.out.println("bestmove "+((SimpleClientGoInstance) t).bestMove);
                         }
-                    },(int)(this.wtime/30.0*1000)
+                    },(int)(10)
             );
 
         }
