@@ -46,15 +46,15 @@ public class BoardRating {
     public final static int QUEEN_FACTOR=900;
     public final static double KING_CLOSENESS_MULTIPLIER=2;
     public final static double KING_TROPISM_MULTIPLIER=2;
-    public static double getBoardRating(BitBoard bb){
+    public static double getBoardRating(BitBoard bb,int depth){
         //1 for pawn, 3 for bishop knight, 5 for rook, 9 for queen -
         if(bb.status!=ChessGameStatus.INGAME){
             if(bb.status==ChessGameStatus.DRAW){
                 return 0;
             }else if(bb.status==ChessGameStatus.BLACKWIN){
-                return -300;
+                return -300-depth;
             }else{
-                return 300;
+                return 300+depth;
             }
         }
         //https://www.redhotpawn.com/rival/programming/evaluation.php
