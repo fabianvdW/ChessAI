@@ -3,6 +3,7 @@ package chess.uci.advancedclient;
 import chess.ChessGameStatus;
 import chess.bitboards.BitBoard;
 import chess.bitboards.BitBoardMoves;
+import helpers.Constants;
 
 public class BoardRating {
 
@@ -12,8 +13,18 @@ public class BoardRating {
     public final static int DOUBLE_PAWN_MINUS=-7;
     public final static double[] PASSED_PAWN_NOT_BLOCKED_BONUS={0,50,100,200,300,400,500,0};
     public final static double[] PASSED_PAWN_BLOCKED_BONUS={0,20,40,80,120,160,200,0};
-    public final static double[] ADVANCEMENT_MULTIPLIER_FILE={0,1,2,3,3,2,1,0};
-    public final static double[] ADVANCEMENT_MULTIPLIER_RANK={0,0,3,5,7,9,11,0};
+    //public final static double[] ADVANCEMENT_MULTIPLIER_FILE={0,1,2,3,3,2,1,0};
+    //public final static double[] ADVANCEMENT_MULTIPLIER_RANK={0,0,3,5,7,9,11,0};
+    public final static double[][] ADVANCEMENT_SCORE={
+            {  0,  0,  0,  0,  0,  0,  0,  0},
+            {  0, 30, 32, 34, 34, 32, 30,  0},
+            {  0, 23, 25, 27, 27, 25, 23,  0},
+            {  0, 16, 18, 20, 20, 18, 16,  0},
+            {  0,  9, 11, 13, 13, 11,  9,  0},
+            {  0,  3,4.5,  6,  6,4.5,  3,  0},
+            {  0,  0,  0,  0,  0,  0,  0,  0},
+            {  0,  0,  0,  0,  0,  0,  0,  0}
+    };
 
     //Bishop constants
     public final static int BISHOP_FACTOR=340;
@@ -32,20 +43,29 @@ public class BoardRating {
     public final static int KNIGHT_FACTOR=325;
     public final static double[][] CENTRE_CLOSENESS={
             {-14,-11, -8, -5, -5, -8,-11,-14},
-            {-11,-11, -5, -1, -1, -5,-11,-11},
-            { -8, -5, -1,  3,  3, -1, -5, -8},
+            {-11, -7, -5, -1, -1, -5, -7,-11},
+            { -8, -5,  0,  3,  3,  0, -5, -8},
             { -5, -1,  3,  7,  7,  3, -1, -5},
             { -5, -1,  3,  7,  7,  3, -1, -5},
-            { -8, -5, -1,  3,  3, -1, -5, -8},
-            {-11,-11, -5, -1, -1, -5,-11,-11},
+            { -8, -5,  0,  3,  3,  0, -5, -8},
+            {-11,- 7, -5, -1, -1, -5, -7,-11},
             {-14,-11, -8, -5, -5, -8,-11,-14}
     };
     public final static double[] KING_CLOSENESS={0,10.5,10.5,20,10.5,10.5,5,5,5,0,0,0,-7,-7,-7};
 
     //Queen constants
     public final static int QUEEN_FACTOR=900;
-    public final static double KING_CLOSENESS_MULTIPLIER=2;
-    public final static double KING_TROPISM_MULTIPLIER=2;
+    public final static double KING_CLOSENESS_MULTIPLIER=0.5;
+    public final static double KING_TROPISM_MULTIPLIER=0.5;
+
+    //King constants
+    public final static int CASTLING_NOT_POSSIBLE_ANYMORE=-15;
+    public final static int CASTLING_KING_SIDE_NOT_POSSIBLE=-12;
+    public final static int CASTLING_QUEEN_SIDE_NOT_POSSIBLE =-8;
+    //King safety
+    public final static int QUADRANT_PIECE_DIFFERENCE_MULTIPLIER=-5;
+    public final static int QUADRANT_PIECE_QUEEN_MULTIPLIER=3;
+
     public static double getBoardRating(BitBoard bb,int depth){
         //1 for pawn, 3 for bishop knight, 5 for rook, 9 for queen -
         if(bb.status!=ChessGameStatus.INGAME){
@@ -80,21 +100,43 @@ public class BoardRating {
         double whiteRookScore=rookScore(whiteRooks,blackKing,whitePawns,blackPawns,true);
         double whiteKnightScore=knightScore(whiteKnight,blackKing);
         double whiteQueenScore=queenScore(whiteQueens,blackKing);
-        double whiteScore=whitePawnScore+whiteBishopScore+whiteRookScore+whiteKnightScore+whiteQueenScore;
+        double whiteKingScore=kingScore(bb,whiteKing,whitePieces,whiteQueens,blackPieces,blackQueens);
+        double whiteScore=whitePawnScore+whiteBishopScore+whiteRookScore+whiteKnightScore+whiteQueenScore+whiteKingScore;
 
         double blackPawnScore=pawnScore(blackPawns,whitePawns,false,blackPieces,whitePieces);
         double blackBishopScore=bishopScore(blackBishops,blackPawns,whitePawns);
         double blackRookScore=rookScore(blackRooks,whiteKing,blackPawns,whitePawns,false);
         double blackKnightScore=knightScore(blackKnight,whiteKing);
         double blackQueenScore=queenScore(blackQueens,whiteKing);
-
-        //TODO King safety score
-        double blackScore=blackPawnScore+blackBishopScore+blackRookScore+blackKnightScore+blackQueenScore;
-        return (whiteScore-blackScore)/100.0;
+        double blackKingScore=kingScore(bb,blackKing,blackPieces,blackQueens,whitePieces,whiteQueens);
+        double blackScore=blackPawnScore+blackBishopScore+blackRookScore+blackKnightScore+blackQueenScore+blackKingScore;
+        double rating= (whiteScore-blackScore)/100.0;
+        if(Constants.VERBOSE){
+            System.out.println("----------------------------------------------------");
+            System.out.println("Board Rating: "+rating);
+            System.out.println("White: ");
+            System.out.println("\tPawns: "+whitePawnScore);
+            System.out.println("\tBishops: "+whiteBishopScore);
+            System.out.println("\tRooks: "+whiteRookScore);
+            System.out.println("\tKnights: "+whiteKnightScore);
+            System.out.println("\tQueens: "+whiteQueenScore);
+            System.out.println("\tKing: "+whiteKingScore);
+            System.out.println("\tTotal"+whiteScore);
+            System.out.println("Black: ");
+            System.out.println("\tPawns: "+blackPawnScore);
+            System.out.println("\tBishops: "+blackBishopScore);
+            System.out.println("\tRooks: "+blackRookScore);
+            System.out.println("\tKnights: "+blackKnightScore);
+            System.out.println("\tQueens: "+blackQueenScore);
+            System.out.println("\tKing: "+blackKingScore);
+            System.out.println("\tTotal"+blackScore);
+            System.out.println("----------------------------------------------------");
+        }
+        return rating;
     }
     public static double pawnScore(long myPawns, long enemyPawns,boolean myColor, long myPieces, long enemyPieces){
         double score=0;
-        int whitePawnsCount= getPieces(myPawns);
+        int whitePawnsCount=0;
         int doubleWhitePawns=0;
         int isolatedWhitePawns=0;
         double passedScore=0;
@@ -108,6 +150,7 @@ public class BoardRating {
         long wPClone = myPawns;
         long whitePawn = myPawns & ~(myPawns - 1);
         while (whitePawn != 0) {
+            whitePawnsCount++;
             //Isolated pawns
             int pos=63-Long.numberOfTrailingZeros(whitePawn);
             wPClone &= ~whitePawn;
@@ -147,11 +190,12 @@ public class BoardRating {
             //Advancement score
             int advancement;
             if(myColor) {
-                 advancement = 7 - pos / 8;
-            }else{
                 advancement=pos/8;
+            }else{
+                advancement = 7 - pos / 8;
             }
-            advancementScore= ADVANCEMENT_MULTIPLIER_RANK[advancement]*ADVANCEMENT_MULTIPLIER_FILE[pos%8];
+            //advancementScore= ADVANCEMENT_MULTIPLIER_RANK[advancement]*ADVANCEMENT_MULTIPLIER_FILE[pos%8];
+            advancementScore+= ADVANCEMENT_SCORE[advancement][pos%8];
 
 
         }
@@ -160,12 +204,12 @@ public class BoardRating {
         return score;
     }
     public static double bishopScore(long myBishops, long myPawns,long enemyPawns){
-        int bishops=getPieces(myBishops);
-        int twoBishopBonus=bishops==2?TWO_BISHOP_BONUS:0;
+        int bishops=0;
         long bishopClone = myBishops;
         long bishop = bishopClone & ~(bishopClone - 1);
         double bishopBlockedPenalty=0;
         while (bishop != 0) {
+            bishops++;
             int pos=63-Long.numberOfTrailingZeros(bishop);
             //Get diagonally adjacent fields
             long adjacentPawnsOnDiagoanlSquares= BitBoardMoves.KING_MOVES[pos]&~BitBoardMoves.horizontalAndVerticalMoves(pos,0L)&(myPawns|enemyPawns);
@@ -174,6 +218,7 @@ public class BoardRating {
             bishopClone &= ~bishop;
             bishop = bishopClone & ~(bishopClone - 1);
         }
+        int twoBishopBonus=bishops==2?TWO_BISHOP_BONUS:0;
         return bishops*BISHOP_FACTOR+twoBishopBonus+bishopBlockedPenalty;
     }
     public static double rookScore(long myRooks,long enemyKing,long myPawns,long enemyPawns,boolean myColor){
@@ -256,13 +301,60 @@ public class BoardRating {
         }
         return queenScore;
     }
-    public static int getPieces(long pieceBoard){
-        int count=0;
-        for(int i=0;i<64;i++){
-            if(((pieceBoard>>>i)&1)!=0){
-                count++;
+    public static double kingScore(BitBoard bb,long myKing,long myPieces, long myQueens,long enemyPieces,long enemyQueens){
+        double kingScore=0;
+        //Castle Logic
+        if(bb.move){
+            if(!bb.hasCastledWhite&&!bb.castleWK&&!bb.castleWQ){
+                kingScore+=CASTLING_NOT_POSSIBLE_ANYMORE;
+            }else if((bb.castleWK||bb.castleWQ)){
+                if(!bb.castleWK){
+                    kingScore+=CASTLING_KING_SIDE_NOT_POSSIBLE;
+                }else if(!bb.castleWQ){
+                    kingScore+= CASTLING_QUEEN_SIDE_NOT_POSSIBLE;
+                }
+            }
+        }else{
+            if(!bb.hasCastledBlack&&!bb.castleBK&&!bb.castleBQ){
+                kingScore+=CASTLING_NOT_POSSIBLE_ANYMORE;
+            }else if((bb.castleBK||bb.castleBQ)){
+                if(!bb.castleBK){
+                    kingScore+=CASTLING_KING_SIDE_NOT_POSSIBLE;
+                }else if(!bb.castleBQ){
+                    kingScore+= CASTLING_QUEEN_SIDE_NOT_POSSIBLE;
+                }
             }
         }
-        return count;
+
+        //King safety
+        long kingPos=63-Long.numberOfTrailingZeros(myKing);
+        long myQuadrant;
+        if(kingPos%8<4){
+            //Left quadrant
+            if(kingPos/8<4){
+                //Top left
+                myQuadrant=BitBoardMoves.QUADRANTS[BitBoardMoves.TOP_LEFT_QUADRANT];
+            }else{
+                myQuadrant=BitBoardMoves.QUADRANTS[BitBoardMoves.BOTTOM_LEFT_QUADRANT];
+            }
+        }else{
+            if(kingPos/8<4){
+                //Top right
+                myQuadrant=BitBoardMoves.QUADRANTS[BitBoardMoves.TOP_RIGHT_QUADRANT];
+            }else{
+                myQuadrant=BitBoardMoves.QUADRANTS[BitBoardMoves.BOTTOM_RIGHT_QUADRANT];
+            }
+        }
+        //My pieces in quadrant
+        int myPiecesCount=getPieces(myQuadrant&myPieces);
+        int enemyPiecesCount=getPieces(myQuadrant&enemyPieces)+(QUADRANT_PIECE_QUEEN_MULTIPLIER-1)*getPieces(myQuadrant&enemyQueens);
+        if(enemyPiecesCount>myPiecesCount){
+            kingScore+=(enemyPiecesCount-myPiecesCount)*QUADRANT_PIECE_DIFFERENCE_MULTIPLIER;
+        }
+
+        return kingScore;
+    }
+    public static int getPieces(long pieceBoard){
+        return Long.bitCount(pieceBoard);
     }
 }

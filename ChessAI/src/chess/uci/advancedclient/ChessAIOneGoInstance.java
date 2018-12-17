@@ -37,7 +37,6 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
         }
 
         this.position.initBoard();
-        System.out.println("new AI v5");
         for (int i = 1; i < 100; i++) {
             BitBoardMoveRating bbr= alphaBeta(this.position,i,-1000,1000,this.position.move?1:-1);
             this.bestMove = bbr.bm;
@@ -82,12 +81,3 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
     }
 }
 
-class BitBoardMoveRating {
-    BitBoardMove bm;
-    double rating;
-
-    public BitBoardMoveRating(BitBoardMove bm, double rating) {
-        this.bm = bm;
-        this.rating = rating;
-    }
-}

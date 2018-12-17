@@ -2,6 +2,7 @@ package helpers;
 
 import chess.*;
 import chess.bitboards.BitBoard;
+import chess.bitboards.BitBoardMoves;
 import chess.pieces.King;
 import chess.pieces.Knight;
 
@@ -9,7 +10,31 @@ import java.util.List;
 
 public class BitBoardGenerator {
     public static void main(String[] args) {
-        System.out.println(generateKingBitBoards());
+        System.out.println(generateQuadrantBitBoards());
+    }
+    public static String generateQuadrantBitBoards(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        //Quadrant top left
+        long leftFiles=(BitBoardMoves.FILES[BitBoardMoves.FILE_A]|BitBoardMoves.FILES[BitBoardMoves.FILE_B]|BitBoardMoves.FILES[BitBoardMoves.FILE_C]|BitBoardMoves.FILES[BitBoardMoves.FILE_D]);
+        long rightFiles=(BitBoardMoves.FILES[BitBoardMoves.FILE_E]|BitBoardMoves.FILES[BitBoardMoves.FILE_F]|BitBoardMoves.FILES[BitBoardMoves.FILE_G]|BitBoardMoves.FILES[BitBoardMoves.FILE_H]);
+        long topRanks=(BitBoardMoves.RANKS[BitBoardMoves.RANK_8]|BitBoardMoves.RANKS[BitBoardMoves.RANK_7]|BitBoardMoves.RANKS[BitBoardMoves.RANK_6]|BitBoardMoves.RANKS[BitBoardMoves.RANK_5]);
+        long bottomRanks=(BitBoardMoves.RANKS[BitBoardMoves.RANK_4]|BitBoardMoves.RANKS[BitBoardMoves.RANK_3]|BitBoardMoves.RANKS[BitBoardMoves.RANK_2]|BitBoardMoves.RANKS[BitBoardMoves.RANK_1]);
+
+        long topLeft=leftFiles&topRanks;
+        long topRight=rightFiles&topRanks;
+        long bottomLeft=leftFiles&bottomRanks;
+        long bottomRight=rightFiles&bottomRanks;
+        //System.out.println(BitBoard.getOneBitBoardString(topLeft));
+        //System.out.println(BitBoard.getOneBitBoardString(topRight));
+        //System.out.println(BitBoard.getOneBitBoardString(bottomLeft));
+        //System.out.println(BitBoard.getOneBitBoardString(bottomRight));
+        sb.append(String.format("0x%016x",topLeft)+ "L,");
+        sb.append(String.format("0x%016x",topRight)+ "L,");
+        sb.append(String.format("0x%016x",bottomLeft)+ "L,");
+        sb.append(String.format("0x%016x",bottomRight)+ "L,");
+        sb.append("};");
+        return sb.toString();
     }
     public static String generateKingBitBoards(){
         StringBuilder sb = new StringBuilder();
