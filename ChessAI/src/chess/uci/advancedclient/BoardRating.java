@@ -37,7 +37,7 @@ public class BoardRating {
     public final static int FILE_SHARE_BONUS=15;
     public final static int FILE_NO_PAWNS_BONUS=10;
     public final static int FILE_NO_FRIENDLY_PAWNS_BONUS=3;
-    public final static double[] KING_TROPISM={30,20,15,10,5,0,0,0};
+    public final static double[] KING_TROPISM={25,20,15,10,5,0,0,0};
 
     //Knight constants
     public final static int KNIGHT_FACTOR=325;
@@ -55,8 +55,8 @@ public class BoardRating {
 
     //Queen constants
     public final static int QUEEN_FACTOR=900;
-    public final static double KING_CLOSENESS_MULTIPLIER=0.5;
-    public final static double KING_TROPISM_MULTIPLIER=0.5;
+    public final static double KING_CLOSENESS_MULTIPLIER=0.4;
+    public final static double KING_TROPISM_MULTIPLIER=0.4;
 
     //King constants
     public final static int CASTLING_NOT_POSSIBLE_ANYMORE=-15;
