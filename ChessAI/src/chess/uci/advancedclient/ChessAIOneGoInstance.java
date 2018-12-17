@@ -31,13 +31,12 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
                             t.stop();
                             System.out.println("bestmove " + t.bestMove);
                         }
-                    }, (int) (3000)
+                    }, (int) (10000)
             );
 
         }
 
         this.position.initBoard();
-        System.out.println("new AI v4");
         for (int i = 1; i < 100; i++) {
             BitBoardMoveRating bbr= alphaBeta(this.position,i,-1000,1000,this.position.move?1:-1);
             this.bestMove = bbr.bm;
@@ -49,15 +48,15 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
     public static BitBoardMoveRating alphaBeta(BitBoard position, int depth, double alpha, double beta, int maximizing) {
         position.initBoard();
         if (depth == 0) {
-            return new BitBoardMoveRating(null, maximizing*BoardRating.getBoardRating(position));
+            return new BitBoardMoveRating(null, maximizing*BoardRating.getBoardRating(position,depth));
         }
         if (position.status != ChessGameStatus.INGAME) {
             if (position.status == ChessGameStatus.DRAW) {
                 return new BitBoardMoveRating(null, 0);
             } else if (position.status == ChessGameStatus.BLACKWIN) {
-                return new BitBoardMoveRating(null, maximizing * -300);
+                return new BitBoardMoveRating(null, maximizing * -300-maximizing*(depth));
             } else {
-                return new BitBoardMoveRating(null, maximizing * 300);
+                return new BitBoardMoveRating(null, maximizing * 300+maximizing*(depth));
             }
         }
 
@@ -82,12 +81,3 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
     }
 }
 
-class BitBoardMoveRating {
-    BitBoardMove bm;
-    double rating;
-
-    public BitBoardMoveRating(BitBoardMove bm, double rating) {
-        this.bm = bm;
-        this.rating = rating;
-    }
-}

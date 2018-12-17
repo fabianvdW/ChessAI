@@ -29,4 +29,6 @@ public class Constants {
             {"P", "P", "P", "P", "P", "P", "P", "P"},
             {"R", "N", "B", "Q", "K", "B", "N", "R"}};
 
+    public final static boolean VERBOSE=false;
+
 }

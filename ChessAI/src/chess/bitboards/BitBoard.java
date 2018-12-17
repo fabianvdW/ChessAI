@@ -28,6 +28,8 @@ public class BitBoard {
 
     public boolean castleWK;
     public boolean castleWQ;
+    public boolean hasCastledWhite;
+    public boolean hasCastledBlack;
     public boolean castleBK;
     public boolean castleBQ;
     public List<BitBoardMove> moveHistory;
@@ -53,10 +55,12 @@ public class BitBoard {
         this.enPassant = 0L;
         this.castleBK = true;
         this.castleBQ = true;
+        this.hasCastledBlack=false;
         this.castleWK = true;
         this.castleWQ = true;
+        this.hasCastledWhite=false;
         this.moveHistory = new ArrayList<>();
-        move = true;
+        this.move = true;
         this.status = ChessGameStatus.INGAME;
     }
 
@@ -149,6 +153,13 @@ public class BitBoard {
         this.castleBK = castleBK;
         this.castleBQ = castleBQ;
         this.moveHistory = moveHistory;
+        if(this.moveHistory.get(this.moveHistory.size()-1).desc=='C'){
+            if(move){
+                hasCastledBlack=true;
+            }else{
+                hasCastledWhite=true;
+            }
+        }
         this.move = move;
         this.status = ChessGameStatus.INGAME;
     }
