@@ -4,6 +4,7 @@ import chess.ChessColor;
 import chess.ChessGameStatus;
 import chess.ChessPosition;
 import chess.pieces.*;
+import chess.uci.advancedclient.ChessAIOneGoInstance;
 import helpers.Constants;
 import helpers.FENLoader;
 import helpers.StringColor;
@@ -153,7 +154,7 @@ public class BitBoard {
         this.castleBK = castleBK;
         this.castleBQ = castleBQ;
         this.moveHistory = moveHistory;
-        if(this.moveHistory.get(this.moveHistory.size()-1).desc=='C'){
+        if(this.moveHistory.size()>0&& this.moveHistory.get(this.moveHistory.size()-1).desc=='C'){
             if(move){
                 hasCastledBlack=true;
             }else{

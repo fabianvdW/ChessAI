@@ -3,9 +3,10 @@ package helpers;
 import chess.bitboards.BitBoard;
 
 public class PerftDebugging {
-
+    public static int nodes=0;
 
     public static int perftRoot(BitBoard bb, int depth){
+        nodes=1;
         bb.initBoard();
         int count=0;
         for(BitBoard next: bb.bm.legalFollowingGameStates.values()){
@@ -18,13 +19,15 @@ public class PerftDebugging {
         return count;
     }
     public static int perft(BitBoard bb, int depth){
+        nodes+=1;
         if(depth==0){
             return 1;
         }else{
             bb.initBoard();
             int count=0;
             for(BitBoard next: bb.bm.legalFollowingGameStates.values()){
-                count+=perft(next,depth-1);
+                BitBoard next2=  new BitBoard(next.whitePieces,next.blackPieces,next.enPassant,next.castleWK,next.castleWQ,next.castleBK,next.castleBQ,next.moveHistory,next.move);
+                count+=perft(next2,depth-1);
             }
             return count;
         }

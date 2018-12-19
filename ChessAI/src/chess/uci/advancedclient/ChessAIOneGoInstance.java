@@ -9,6 +9,8 @@ import chess.uci.simpleclient.SimpleClientGoInstance;
 import java.util.List;
 
 public class ChessAIOneGoInstance extends UCIGoInstance {
+    public static int nodes;
+    public static int profiler;
 
     public ChessAIOneGoInstance(BitBoard position) {
         super(position);
@@ -38,36 +40,38 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
 
         this.position.initBoard();
         for (int i = 1; i < 100; i++) {
-            BitBoardMoveRating bbr= alphaBeta(this.position,i,-1000,1000,this.position.move?1:-1);
+            BitBoardMoveRating bbr = alphaBeta(this.position, i, -1000, 1000, this.position.move ? 1 : -1);
             this.bestMove = bbr.bm;
-            System.out.println("Depth "+i+" rating: "+bbr.rating);
+            System.out.println("Depth " + i + " rating: " + bbr.rating);
         }
     }
 
 
     public static BitBoardMoveRating alphaBeta(BitBoard position, int depth, double alpha, double beta, int maximizing) {
+        nodes += 1;
         position.initBoard();
-        if (depth == 0) {
-            return new BitBoardMoveRating(null, maximizing*BoardRating.getBoardRating(position,depth));
-        }
+
         if (position.status != ChessGameStatus.INGAME) {
             if (position.status == ChessGameStatus.DRAW) {
                 return new BitBoardMoveRating(null, 0);
             } else if (position.status == ChessGameStatus.BLACKWIN) {
-                return new BitBoardMoveRating(null, maximizing * -300-maximizing*(depth));
+                return new BitBoardMoveRating(null, maximizing * -300 - maximizing * (depth));
             } else {
-                return new BitBoardMoveRating(null, maximizing * 300+maximizing*(depth));
+                return new BitBoardMoveRating(null, maximizing * 300 + maximizing * (depth));
             }
         }
 
-        List<BitBoardMove> childNodes = position.bm.legalMoves;
+        if (depth == 0) {
+            return new BitBoardMoveRating(null, maximizing*BoardRating.getBoardRating(position,depth));
+        }
+
         double value = -100000.0;
         BitBoardMove best = null;
-        for (BitBoardMove bbm : childNodes) {
-            BitBoard next= position.bm.legalFollowingGameStates.get(bbm);
-            BitBoard next2=  new BitBoard(next.whitePieces,next.blackPieces,next.enPassant,next.castleWK,next.castleWQ,next.castleBK,next.castleBQ,next.moveHistory,next.move);
+        for (BitBoardMove bbm : position.bm.legalMoves) {
+            BitBoard next = position.bm.legalFollowingGameStates.get(bbm);
+            BitBoard next2 = new BitBoard(next.whitePieces, next.blackPieces, next.enPassant, next.castleWK, next.castleWQ, next.castleBK, next.castleBQ, next.moveHistory, next.move);
             BitBoardMoveRating bbr = alphaBeta(next2, depth - 1, -1 * beta, -1 * alpha, -1 * maximizing);
-            bbr.rating*=-1;
+            bbr.rating *= -1;
             value = value > bbr.rating ? value : bbr.rating;
             if (value > alpha) {
                 alpha = value;

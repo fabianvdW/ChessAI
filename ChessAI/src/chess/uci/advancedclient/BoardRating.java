@@ -68,7 +68,7 @@ public class BoardRating {
 
     public static double getBoardRating(BitBoard bb,int depth){
         //1 for pawn, 3 for bishop knight, 5 for rook, 9 for queen -
-        if(bb.status!=ChessGameStatus.INGAME){
+        /*if(bb.status!=ChessGameStatus.INGAME){
             if(bb.status==ChessGameStatus.DRAW){
                 return 0;
             }else if(bb.status==ChessGameStatus.BLACKWIN){
@@ -76,7 +76,7 @@ public class BoardRating {
             }else{
                 return 300+depth;
             }
-        }
+        }*/
         //https://www.redhotpawn.com/rival/programming/evaluation.php
         long whitePawns=bb.whitePieces[BitBoard.PAWNS];
         long whiteBishops=bb.whitePieces[BitBoard.BISHOPS];
