@@ -6,6 +6,8 @@ import chess.bitboards.BitBoardMove;
 import chess.uci.UCIGoInstance;
 import chess.uci.simpleclient.SimpleClientGoInstance;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ChessAIOneGoInstance extends UCIGoInstance {
@@ -65,6 +67,8 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
             return new BitBoardMoveRating(null, maximizing*BoardRating.getBoardRating(position,depth));
         }
 
+        //Move ordering
+        Collections.sort(position.bm.legalMoves, new BitBoardMoveComparator(position.bm.legalFollowingGameStates,maximizing==1));
         double value = -100000.0;
         BitBoardMove best = null;
         for (BitBoardMove bbm : position.bm.legalMoves) {
