@@ -7,7 +7,6 @@ import helpers.PerftDebugging;
 public class TestPerft {
     public static void main(String[] args) {
         BitBoard bb;
-
         bb = FENLoader.getBitBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
         assert (PerftDebugging.perft(bb, 1) == 20);
         System.out.println("Test 1 passed!");
@@ -142,6 +141,6 @@ public class TestPerft {
         long t0=System.currentTimeMillis();
         assert(PerftDebugging.perftRoot(bb,6)==119060324);
         long t1=System.currentTimeMillis();
-        System.out.println("NPS: "+119060324/((t1-t0)/1000.0));
+        System.out.println("NPS: "+PerftDebugging.nodes/((t1-t0)/1000.0));
     }
 }
