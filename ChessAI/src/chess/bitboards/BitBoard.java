@@ -348,6 +348,20 @@ public class BitBoard {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof  BitBoard){
+            BitBoard bb= (BitBoard)o;
+            return this.whitePieces==bb.whitePieces && this.blackPieces==bb.blackPieces&& this.enPassant==bb.enPassant&& this.castleBK==bb.castleBK&& this.castleBQ==bb.castleBQ
+                    && this.castleWQ==bb.castleWQ&&this.castleWK==bb.castleWK;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return 1;
+    }
     public String getBitBoardString() {
         StringBuilder sb = new StringBuilder();
         sb.append("whitePawns Long: " + String.format("0x%016X", whitePieces[PAWNS]));
