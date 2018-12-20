@@ -3,13 +3,11 @@ package chess.uci.advancedclient;
 import chess.ChessGameStatus;
 import chess.bitboards.BitBoard;
 import chess.bitboards.BitBoardMove;
+import chess.bitboards.BitBoardMoves;
 import chess.uci.UCIGoInstance;
 import chess.uci.simpleclient.SimpleClientGoInstance;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ChessAIOneGoInstance extends UCIGoInstance {
     public static int nodes;
@@ -40,63 +38,70 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
             );
 
         }
-
-        this.position.initBoard();
+        
         for (int i = 1; i < 100; i++) {
-            BitBoardMoveRating bbr = alphaBetaRoot(this.position, i, this.position.move ? 1 : -1);
-            this.bestMove = bbr.bm;
-            System.out.println("Depth " + i + " rating: " + bbr.rating);
+            List<BitBoardMoveRating> bbr = alphaBetaRoot(this.position, i, this.position.move ? 1 : -1);
+            this.bestMove = bbr.get(1).bm;
+            System.out.println("Depth " + i + " rating: " + bbr.get(0).rating);
         }
     }
 
 
-    public static BitBoardMoveRating alphaBeta(BitBoard position,double rating, int depth, double alpha, double beta, int maximizing, int maxDepth) {
+    public static List<BitBoardMoveRating> alphaBeta(BitBoard position, double rating, int depth, double alpha, double beta, int maximizing, int maxDepth, BitBoardMove currMove) {
         nodes += 1;
-        long t0=System.currentTimeMillis();
         position.initBoard();
-        long t1=System.currentTimeMillis();
-        profiler+=(t1-t0);
+        ArrayList<BitBoardMoveRating> ratings = new ArrayList<>();
+
         if (position.status != ChessGameStatus.INGAME) {
             if (position.status == ChessGameStatus.DRAW) {
-                return new BitBoardMoveRating(null, 0);
+                ratings.add(new BitBoardMoveRating(currMove, 0, position));
             } else if (position.status == ChessGameStatus.BLACKWIN) {
-                return new BitBoardMoveRating(null, maximizing * -300 + maximizing * (maxDepth-depth));
+                ratings.add(new BitBoardMoveRating(currMove, maximizing * -300 + maximizing * (maxDepth - depth), position));
             } else {
-                return new BitBoardMoveRating(null, maximizing * 300 - maximizing * (maxDepth-depth));
+                ratings.add(new BitBoardMoveRating(currMove, maximizing * 300 - maximizing * (maxDepth - depth), position));
             }
+            return ratings;
         }
 
         if (depth == 0) {
-            return new BitBoardMoveRating(null, maximizing * rating);
+            ratings.add(new BitBoardMoveRating(currMove, maximizing * rating, position));
+            return ratings;
         }
 
         //Move ordering
-        HashMap<BitBoardMove,Double> boardRatings= new HashMap<>();
-        for(BitBoardMove bbm: position.bm.legalMoves){
-            boardRatings.put(bbm,BoardRating.getBoardRating(position.bm.legalFollowingGameStates.get(bbm)));
+        HashMap<BitBoardMove, Double> boardRatings = new HashMap<>();
+        for (BitBoardMove bbm : position.bm.legalMoves) {
+            boardRatings.put(bbm, BoardRating.getBoardRating(position.bm.legalFollowingGameStates.get(bbm)));
         }
         Collections.sort(position.bm.legalMoves, new BitBoardMoveComparator(boardRatings, maximizing == 1));
         double value = -100000.0;
-        BitBoardMove best = null;
+        List<BitBoardMoveRating> bestPv = null;
         for (BitBoardMove bbm : position.bm.legalMoves) {
             BitBoard next = position.bm.legalFollowingGameStates.get(bbm);
             BitBoard next2 = new BitBoard(next.whitePieces, next.blackPieces, next.enPassant, next.castleWK, next.castleWQ, next.castleBK, next.castleBQ, next.moveHistory, next.move);
-            BitBoardMoveRating bbr = alphaBeta(next2,boardRatings.get(bbm), depth - 1, -1 * beta, -1 * alpha, -1 * maximizing, maxDepth);
-            bbr.rating *= -1;
+            List<BitBoardMoveRating> followingBestMoves = alphaBeta(next2, boardRatings.get(bbm), depth - 1, -1 * beta, -1 * alpha, -1 * maximizing, maxDepth, bbm);
+            for (BitBoardMoveRating bbr : followingBestMoves) {
+                bbr.rating *= -1;
+            }
+            BitBoardMoveRating bbr = followingBestMoves.get(0);
             value = value > bbr.rating ? value : bbr.rating;
             if (value > alpha) {
                 alpha = value;
-                best = bbm;
+                bestPv = followingBestMoves;
             }
             if (alpha > beta) {
                 break;
             }
         }
-        return new BitBoardMoveRating(best, value);
+        ratings.add(new BitBoardMoveRating(currMove, value, position));
+        if (bestPv != null) {
+            ratings.addAll(bestPv);
+        }
+        return ratings;
     }
 
-    public static BitBoardMoveRating alphaBetaRoot(BitBoard position, int depth, int maximizing) {
-        return alphaBeta(position,BoardRating.getBoardRating(position), depth, -1000, 1000, maximizing, depth);
+    public static List<BitBoardMoveRating> alphaBetaRoot(BitBoard position, int depth, int maximizing) {
+        return alphaBeta(position, BoardRating.getBoardRating(position), depth, -1000, 1000, maximizing, depth, null);
     }
 }
 
