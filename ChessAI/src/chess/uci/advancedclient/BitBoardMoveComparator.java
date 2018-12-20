@@ -7,16 +7,16 @@ import java.util.Comparator;
 import java.util.Map;
 
 public class BitBoardMoveComparator implements Comparator<BitBoardMove> {
-    Map<BitBoardMove,BitBoard> map;
+    Map<BitBoardMove,Double> map;
     boolean move;
-    public BitBoardMoveComparator(Map<BitBoardMove,BitBoard> moves,boolean move){
-        this.map=moves;
+    public BitBoardMoveComparator(Map<BitBoardMove,Double> ratings,boolean move){
+        this.map=ratings;
         this.move=move;
     }
     @Override
     public int compare(BitBoardMove o1, BitBoardMove o2) {
-        double r1= BoardRating.getBoardRating(map.get(o1),0);
-        double r2= BoardRating.getBoardRating(map.get(o2),0);
+        double r1= map.get(o1);
+        double r2= map.get(o2);
         if(r1>r2){
             if(move) {
                 return -1;

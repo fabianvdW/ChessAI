@@ -20,6 +20,6 @@ public class TestBoardRating {
         BitBoard bb =BitBoard.toBitBoard(board,true);
         bb.initBoard();
         bb.status=ChessGameStatus.INGAME;
-        System.out.println(BoardRating.getBoardRating(bb,0));
+        System.out.println(BoardRating.getBoardRating(bb));
     }
 }

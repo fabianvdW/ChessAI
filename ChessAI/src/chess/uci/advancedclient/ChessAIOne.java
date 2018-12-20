@@ -3,7 +3,7 @@ package chess.uci.advancedclient;
 import chess.uci.UCIPlayer;
 
 public class ChessAIOne extends UCIPlayer {
-    static String name="name AdvancedClient v6";
+    static String name="name AdvancedClient v7";
     static String author="author Fabian von der Warth";
 
     public ChessAIOne(){

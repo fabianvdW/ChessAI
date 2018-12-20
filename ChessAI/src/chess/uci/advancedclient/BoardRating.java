@@ -66,7 +66,7 @@ public class BoardRating {
     public final static int QUADRANT_PIECE_DIFFERENCE_MULTIPLIER=-5;
     public final static int QUADRANT_PIECE_QUEEN_MULTIPLIER=3;
 
-    public static double getBoardRating(BitBoard bb,int depth){
+    public static double getBoardRating(BitBoard bb){
         //1 for pawn, 3 for bishop knight, 5 for rook, 9 for queen -
         /*if(bb.status!=ChessGameStatus.INGAME){
             if(bb.status==ChessGameStatus.DRAW){
