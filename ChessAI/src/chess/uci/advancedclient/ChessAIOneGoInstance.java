@@ -38,16 +38,26 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
             );
 
         }
-        
+
+        Map<Integer, Map<BitBoard, BitBoardMove>> pvresults = new HashMap<>();
         for (int i = 1; i < 100; i++) {
-            List<BitBoardMoveRating> bbr = alphaBetaRoot(this.position, i, this.position.move ? 1 : -1);
-            this.bestMove = bbr.get(1).bm;
+            List<BitBoardMoveRating> bbr = ChessAIOneGoInstance.alphaBetaRoot(position, i, position.move ? 1 : -1,pvresults);
+            this.bestMove=bbr.get(1).bm;
+            for (int j = 1; j <= i; j++) {
+                Map<BitBoard, BitBoardMove> existing = pvresults.getOrDefault(j, new HashMap<>());
+                BitBoardMoveRating bbc = bbr.get(j);
+                BitBoard before = bbr.get(j - 1).bb;
+                if (!existing.containsKey(before)) {
+                    existing.put(before, bbc.bm);
+                }
+                pvresults.put(j, existing);
+            }
             System.out.println("Depth " + i + " rating: " + bbr.get(0).rating);
         }
     }
 
 
-    public static List<BitBoardMoveRating> alphaBeta(BitBoard position, double rating, int depth, double alpha, double beta, int maximizing, int maxDepth, BitBoardMove currMove) {
+    public static List<BitBoardMoveRating> alphaBeta(BitBoard position, double rating, int depth, double alpha, double beta, int maximizing, int maxDepth, BitBoardMove currMove,Map<Integer,Map<BitBoard,BitBoardMove>> pvresults) {
         nodes += 1;
         position.initBoard();
         ArrayList<BitBoardMoveRating> ratings = new ArrayList<>();
@@ -73,13 +83,16 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
         for (BitBoardMove bbm : position.bm.legalMoves) {
             boardRatings.put(bbm, BoardRating.getBoardRating(position.bm.legalFollowingGameStates.get(bbm)));
         }
-        Collections.sort(position.bm.legalMoves, new BitBoardMoveComparator(boardRatings, maximizing == 1));
+        //Iterative deepening results
+        Map<BitBoard,BitBoardMove> depthResults= pvresults.getOrDefault(maxDepth-depth+1,new HashMap<>());
+        BitBoardMove boardResults=depthResults.getOrDefault(position,null);
+        Collections.sort(position.bm.legalMoves, new BitBoardMoveComparator(boardRatings, maximizing == 1,boardResults));
         double value = -100000.0;
         List<BitBoardMoveRating> bestPv = null;
         for (BitBoardMove bbm : position.bm.legalMoves) {
             BitBoard next = position.bm.legalFollowingGameStates.get(bbm);
             BitBoard next2 = new BitBoard(next.whitePieces, next.blackPieces, next.enPassant, next.castleWK, next.castleWQ, next.castleBK, next.castleBQ, next.moveHistory, next.move);
-            List<BitBoardMoveRating> followingBestMoves = alphaBeta(next2, boardRatings.get(bbm), depth - 1, -1 * beta, -1 * alpha, -1 * maximizing, maxDepth, bbm);
+            List<BitBoardMoveRating> followingBestMoves = alphaBeta(next2, boardRatings.get(bbm), depth - 1, -1 * beta, -1 * alpha, -1 * maximizing, maxDepth, bbm,pvresults);
             for (BitBoardMoveRating bbr : followingBestMoves) {
                 bbr.rating *= -1;
             }
@@ -100,8 +113,8 @@ public class ChessAIOneGoInstance extends UCIGoInstance {
         return ratings;
     }
 
-    public static List<BitBoardMoveRating> alphaBetaRoot(BitBoard position, int depth, int maximizing) {
-        return alphaBeta(position, BoardRating.getBoardRating(position), depth, -1000, 1000, maximizing, depth, null);
+    public static List<BitBoardMoveRating> alphaBetaRoot(BitBoard position, int depth, int maximizing,Map<Integer,Map<BitBoard,BitBoardMove>> pvresults) {
+        return alphaBeta(position, BoardRating.getBoardRating(position), depth, -1000, 1000, maximizing, depth, null,pvresults);
     }
 }
 
