@@ -6,6 +6,6 @@ public class RunChessAI {
     public static void main(String[] args){
         UCIPlayer p= new ChessAIOne();
         p.start();
-
+        System.out.println("Main Program started!");
     }
 }

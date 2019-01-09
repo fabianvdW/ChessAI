@@ -20,8 +20,8 @@ public class BoardRating {
             {  0, 30, 32, 34, 34, 32, 30,  0},
             {  0, 23, 25, 27, 27, 25, 23,  0},
             {  0, 16, 18, 20, 20, 18, 16,  0},
-            {  0,  9, 11, 13, 13, 11,  9,  0},
-            {  0,  3,4.5,  6,  6,4.5,  3,  0},
+            {  0,  9, 11, 16, 16, 11,  9,  0},
+            {  0,  6,  9, 12, 12,  9,  6,  0},
             {  0,  0,  0,  0,  0,  0,  0,  0},
             {  0,  0,  0,  0,  0,  0,  0,  0}
     };
@@ -55,8 +55,8 @@ public class BoardRating {
 
     //Queen constants
     public final static int QUEEN_FACTOR=900;
-    public final static double KING_CLOSENESS_MULTIPLIER=0.4;
-    public final static double KING_TROPISM_MULTIPLIER=0.4;
+    public final static double KING_CLOSENESS_MULTIPLIER=0.6;
+    public final static double KING_TROPISM_MULTIPLIER=0.6;
 
     //King constants
     public final static int CASTLING_NOT_POSSIBLE_ANYMORE=-15;
