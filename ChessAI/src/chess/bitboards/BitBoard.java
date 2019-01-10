@@ -189,6 +189,12 @@ public class BitBoard {
             }
         }
     }
+    public  int getAmountOfWhitePieces(){
+        return Long.bitCount(this.whitePieces[0])+Long.bitCount(this.whitePieces[1])+Long.bitCount(this.whitePieces[2])+Long.bitCount(this.whitePieces[3])+Long.bitCount(this.whitePieces[4])+Long.bitCount(this.whitePieces[5]);
+    }
+    public  int getAmountOfBlackPieces(){
+        return Long.bitCount(this.blackPieces[0])+Long.bitCount(this.blackPieces[1])+Long.bitCount(this.blackPieces[2])+Long.bitCount(this.blackPieces[3])+Long.bitCount(this.blackPieces[4])+Long.bitCount(this.blackPieces[5]);
+    }
     public static Map<ChessPiece,List<BitBoardMove>> mapLegalMovesToPieces(BitBoard bb){
         if(bb.bm==null){
             bb.initBoard();
